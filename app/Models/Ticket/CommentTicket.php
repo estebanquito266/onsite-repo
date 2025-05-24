@@ -4,6 +4,8 @@ namespace App\Models\Ticket;
 
 use App\Models\Admin\User;
 use App\Models\Cliente\Cliente;
+use App\Models\Onsite\EmpresaOnsite;
+use App\Models\User as ModelsUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -19,11 +21,11 @@ class CommentTicket extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class,'user_comment_id');
+        return $this->belongsTo(ModelsUser::class,'user_comment_id');
     }
 
     public function cliente(): BelongsTo
     {
-        return $this->belongsTo(Cliente::class,'cliente_id');
+        return $this->belongsTo(EmpresaOnsite::class,'cliente_id');
     }
 }

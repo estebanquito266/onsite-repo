@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Onsite\VisitaController;
 use App\Http\Controllers\googleApi\GoogleCalendarController;
+use App\Http\Controllers\Onsite\EmpresaOnsiteController;
 use App\Http\Controllers\Onsite\GarantiaOnsiteController;
 use App\Http\Controllers\Onsite\LocalidadController;
 use App\Http\Controllers\Onsite\ObraOnsiteController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Respuestos\OrdenPedidoRespuestosController;
 use App\Http\Controllers\Respuestos\PiezaRespuestosOnsiteController;
 use App\Http\Controllers\SolicitudBoucherController;
 use App\Http\Controllers\SolicitudTipoTarifaController;
+use App\Http\Controllers\Ticket\CommentTicketController;
 use App\Http\Controllers\Ticket\TicketController;
 use App\Http\Controllers\UserController;
 use App\Models\Onsite\ObraOnsite;
@@ -402,5 +404,10 @@ Route::post('filtrarTickets', [TicketController::class, 'filtrarTickets']);
 Route::post('filtrarTicketsCerrados', [TicketController::class, 'filtrarTicketsCerrados']);
 Route::get('exportarTickets', [TicketController::class, 'exportarTickets']);
 
-// Route::resource('commentTicket', CommentTicketController::class);
-// Route::get('findCommentsByTicketId', [CommentTicketController::class, 'findCommentsByTicketId']);
+Route::resource('commentTicket', CommentTicketController::class);
+Route::get('findCommentsByTicketId', [CommentTicketController::class, 'findCommentsByTicketId']);
+
+Route::get('findReparacionById/{idReparacion}', [ReparacionOnsiteController::class, 'findReparacionById']);
+Route::get('findClienteReparacionById/{id}', [EmpresaOnsiteController::class, 'getEmpresaOnsite']);
+Route::get('buscarClientes/{textoBuscar}', [EmpresaOnsiteController::class, 'getClientes']);
+

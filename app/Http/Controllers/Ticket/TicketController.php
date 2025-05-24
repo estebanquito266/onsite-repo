@@ -16,6 +16,7 @@ use App\Services\Onsite\TicketsService;
 use App\Enums\TicketType;
 use App\Models\Admin\Company;
 use App\Models\Derivacion\Derivacion;
+use App\Models\Onsite\ReparacionOnsite;
 use App\Models\Reparacion\Reparacion;
 
 class TicketController extends Controller
@@ -65,7 +66,7 @@ class TicketController extends Controller
     public function createFromReparacion(Request $request, $reparacionid)
     {
         $data = $this->ticketsService->create();
-        $reparacion = Reparacion::where('id', $reparacionid)->firstOrFail();
+        $reparacion = ReparacionOnsite::where('id', $reparacionid)->firstOrFail();
         $data['ticket_tipo'] =  TicketType::Reparacion;
         $data['rep_id'] =  $reparacionid;
         $data['cliente_reparacion'] =  $reparacion->cliente;

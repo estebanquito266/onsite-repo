@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use PhpParser\CommentTest;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket\CommentTicket;
-use App\Services\CommentTicketService;
+use App\Services\Onsite\CommentTicketService;
 
 class CommentTicketController extends Controller
 {

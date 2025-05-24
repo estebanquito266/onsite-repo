@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use App\CategoryTicket;
 use App\GroupTicket;
 use App\Enums\TicketType;
+use App\Http\Requests\Onsite\HistorialEstadoOnsiteRequest;
 // use App\Http\Requests\HistorialEstadoDerivacionRequest;
 use App\Http\Requests\Onsite\TicketRequest;
 use App\Models\Company;
@@ -32,9 +33,11 @@ use App\Models\Ticket\PriorityTicket;
 use App\Models\Ticket\StatusTicket;
 use App\Models\Ticket\Ticket;
 use App\Notifications\TicketNotification;
-use App\Services\CommentTicketService;
+use App\Services\Onsite\CommentTicketService;
 // use App\Services\HistorialEstadosDerivacionService;
 // use App\Services\HistorialEstadosService;
+
+use App\Services\Onsite\HistorialEstadosOnsiteService as HistorialEstadosService;
 use App\Models\User;
 use Throwable;
 
@@ -45,16 +48,12 @@ class TicketsService
     protected $commentTicketService;
     protected $mailService;
 
-    // public function __construct(
-    //     HistorialEstadosService $historialEstadosService,
-    //     HistorialEstadosDerivacionService $historialEstadosDerivacionService,
-    //     MailService $mailService
+    public function __construct(
+        HistorialEstadosService $historialEstadosService
         
-    // ) {
-    //     $this->historialEstadosService = $historialEstadosService;
-    //     $this->historialEstadosDerivacionService = $historialEstadosDerivacionService;
-    //     $this->mailService = $mailService;
-    // }
+    ) {
+        $this->historialEstadosService = $historialEstadosService;
+    }
     
     public function getPaginatedListbyLoggedUser(Array $status = null){
         if(Session::get('perfilAdmin'))
@@ -212,11 +211,10 @@ class TicketsService
         $motivos_consulta = MotivoConsultaTicket::select('id', 'name')->where('company_id', $company_id)->get();
         $categorias = CategoryTicket::select('id','name')->where('company_id', $company_id)->get();
         $grupos = GroupTicket::select('id','name')->where('company_id', $company_id)->get();
-        $cliente = EmpresaOnsite::where('id', $ticket->id_empresa_onsite)->where('company_id', Session::get('userCompanyIdDefault'))->selectRaw("CONCAT(nombre, '') as nombreDni, id")->pluck('nombreDni', 'id');
+        $cliente = EmpresaOnsite::where('id', $ticket->id_empresa_onsite)->where('company_id', Session::get('userCompanyIdDefault'))->selectRaw("nombre as nombreDni, id")->pluck('nombreDni', 'id');
         $clientes = EmpresaOnsite::select('id', 'nombre')->where('company_id', $company_id)->get();
         // $clientesDerivaciones = ClienteDerivacion::select('id', 'nombre')->where('company_id', $company_id)->get();
 
-        
         //Como los id de grupos solo son de grupos de la company actual, por ende no es necesario filtrar por user company_id
         $users = User::select('users.*')
         ->join('user_group_ticket','users.id','=','user_group_ticket.user_id')
@@ -242,6 +240,22 @@ class TicketsService
         if($ticket->user_owner_id != Auth::user()->id){
             $status = StatusTicket::select('id','name')->where('id','<>',5)->get();
         }
+        // dd([
+        //     'cliente' => $cliente,
+        //     'clientes' => $clientes,
+        //     'ticket' => $ticket,
+        //     'reparaciones' => $reparaciones,
+        //     // 'derivaciones' => $derivaciones,
+        //     'motivos_consulta' => $motivos_consulta,
+        //     'categorias' => $categorias,
+        //     'users' => $users,
+        //     'commentsTickets' => $commentsTickets,
+        //     'grupos' => $grupos,
+        //     // 'clientesDerivaciones' => $clientesDerivaciones,
+        //     'priorities' => $priorities,
+        //     'status' => $status,
+        //     'tipos'=>$tipos
+        // ]);
 
         return [
             'cliente' => $cliente,
@@ -262,7 +276,7 @@ class TicketsService
     }
     //Registra en el historial la creación de un ticket para una reparacion
     public function registerHistorialEstadoReparacion(Ticket $ticket, ReparacionOnsite $reparacion, $msg = null){
-        $nuevoHistorialEstadoArray = new Request([
+        $nuevoHistorialEstadoArray = new HistorialEstadoOnsiteRequest([
             'company_id'    => $ticket->company_id,
             'id_reparacion' => $reparacion->id,
             'id_estado'     => $reparacion->id_estado,
@@ -375,15 +389,11 @@ class TicketsService
         $request['company_id'] = $company_id;
 
         if($request->reparacion_id!=""){
-            $reparacion = Reparacion::find($request->reparacion_id);
+            $reparacion = ReparacionOnsite::find($request->reparacion_id);
         }else{
             $request['reparacion_id']=null;
         }
-        if($request->derivacion_id!=""){
-            $derivacion = Derivacion::find($request->derivacion_id);
-        }else{
-            $request['derivacion_id']=null;
-        }
+        $request['derivacion_id']=null;
         $name="";
         if($request->hasFile('ticket_file')){
             $file = $request->file('ticket_file');

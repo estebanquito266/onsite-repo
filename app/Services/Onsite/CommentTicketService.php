@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Onsite;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
@@ -15,9 +15,14 @@ use App\Models\Admin\User;
 use App\Models\Ticket\CommentTicket;
 use App\Models\Ticket\Ticket;
 use App\Notifications\CommentTicketNotification;
-use App\Services\TicketsService;
+use App\Services\Onsite\TicketsService;
 use App\Models\Derivacion\Derivacion;
+use App\Models\Onsite\ReparacionOnsite;
 use App\Models\Reparacion\Reparacion;
+use App\Models\User as ModelsUser;
+use App\Services\Onsite\MailService;
+
+
 
 
 use Throwable;
@@ -82,12 +87,12 @@ class CommentTicketService
             $commentTicket->file = $name;
             $commentTicket->save();
 
-            $users = User::join('user_group_ticket', 'users.id', '=', 'user_group_ticket.user_id')
+            $users = ModelsUser::join('user_group_ticket', 'users.id', '=', 'user_group_ticket.user_id')
             ->where('user_group_ticket.group_ticket_id', $ticket->group_user_receiver_id)
             ->get();
 
-            $user = User::find($commentTicket->user_receiver_id);
-            $userOwner = User::find($ticket->user_owner_id);
+            $user = ModelsUser::find($commentTicket->user_receiver_id);
+            $userOwner = ModelsUser::find($ticket->user_owner_id);
 
             //Chequea si el usuario receptor y el usuario propietario ya existe en el grupo, para no notificar 2 veces
             if(isset($user)){
@@ -115,20 +120,20 @@ class CommentTicketService
             $comentarioHistorial .= ". Ticket";
 
             if(!empty($ticket->reparacion_id)){
-                $reparacion = Reparacion::find($ticket->reparacion_id);
+                $reparacion = ReparacionOnsite::find($ticket->reparacion_id);
                 if($reparacion){
                     $this->ticketsService->registerHistorialEstadoReparacion($ticket, $reparacion,$comentarioHistorial);
                 }
                 
             }
 
-            if(!empty($ticket->derivacion_id)){
-                $derivacion = Derivacion::find($ticket->derivacion_id);
-                if($derivacion){
-                    $this->ticketsService->registerHistorialEstadoDerivacion($ticket, $derivacion,$comentarioHistorial);
-                }
+            // if(!empty($ticket->derivacion_id)){
+            //     $derivacion = Derivacion::find($ticket->derivacion_id);
+            //     if($derivacion){
+            //         $this->ticketsService->registerHistorialEstadoDerivacion($ticket, $derivacion,$comentarioHistorial);
+            //     }
                 
-            }
+            // }
             
         
             //Conformo el mensaje para la notificacion
@@ -141,15 +146,16 @@ class CommentTicketService
                     'ticket_id' => $ticket->id,
                     'email_to'=> $user->email,
                 ];
-                try {
-                    $user->notify(new CommentTicketNotification($ticket,$notifMsg,$this->mailService));
-                } catch (Throwable  $e) {
-                    Log::alert('No se pudo enviar el mail speedup. ERROR: ' . $e->getMessage());
-                    Log::info($e->getFile() . '(' . $e->getLine() . ')');
+                //@todo: activar cuando este habilitado el envio de mails pero revisar paramcompany que no existe en onsite
+                // try {
+                //     $user->notify(new CommentTicketNotification($ticket,$notifMsg,$this->mailService));
+                // } catch (Throwable  $e) {
+                //     Log::alert('No se pudo enviar el mail speedup. ERROR: ' . $e->getMessage());
+                //     Log::info($e->getFile() . '(' . $e->getLine() . ')');
     
-                    $envio_email = 'No se pudo enviar el mail speedup. ERROR: ' . $e->getMessage();
-                    Log::alert($envio_email);
-                }                
+                //     $envio_email = 'No se pudo enviar el mail speedup. ERROR: ' . $e->getMessage();
+                //     Log::alert($envio_email);
+                // }                
 
             } 
 

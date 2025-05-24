@@ -41,10 +41,10 @@
             <div class="form-group col-md-6" id="div_buscar_cliente_reparacion">
               <label>Buscar Cliente:</label>
               <div class="form-group input-group ">
-                @if(isset($cliente_reparacion))
+                @if(isset($cliente_reparacion->nombre))
                   <input class="form-control" id="textoBuscarCliente" name="textoBuscar" type="text" value="{{$cliente_reparacion->nombre}}" disabled>                
-                @elseif(isset($ticket))
-                {!!Form::text('textoBuscar',($ticket->type==1?$ticket->cliente->nombre:""), ['class'=>'form-control','placeholder'=>'Ingrese dni/cuit o nombre del cliente a buscar','id'=>'textoBuscarCliente'])!!}
+                {{-- @elseif(isset($ticket))
+                {!!Form::text('textoBuscar',($ticket->type==1?$ticket->cliente->nombre:""), ['class'=>'form-control','placeholder'=>'Ingrese dni/cuit o nombre del cliente a buscar','id'=>'textoBuscarCliente'])!!} --}}
                 @else
                 {!!Form::text('textoBuscar',null, ['class'=>'form-control','placeholder'=>'Ingrese dni/cuit o nombre del cliente a buscar','id'=>'textoBuscarCliente'])!!}
                 @endif
@@ -55,7 +55,7 @@
                 @endif
               </div>
             </div>
-            <div class="form-group col-md-6" id="div_buscar_cliente_derivacion">
+            {{-- <div class="form-group col-md-6" id="div_buscar_cliente_derivacion">
               <label>Buscar Cliente Derivacion:</label>
               <div class="form-group input-group ">
                 @if(isset($cliente_derivacion))
@@ -72,18 +72,18 @@
                 </span>
                 @endif
               </div>
-            </div>
+            </div> --}}
 
             <div class="form-group col-md-6" id="div_cliente_id">
               <label>Cliente:</label>
               <select name="cliente_id" id="cliente_id" class="form-control">
                 <option value="">Seleccione el cliente</option>
-                @if(isset($cliente_reparacion))
+                @if(isset($cliente_reparacion->nombre))
                   <option value="{{$cliente_reparacion->id}}" selected>{{$cliente_reparacion->nombre}} - {{$cliente_reparacion->dni_cuit}}</option>
-                @elseif(isset($cliente_derivacion))
-                  <option value="{{$cliente_derivacion->id}}" selected>{{$cliente_derivacion->nombre}} - {{$cliente_derivacion->dni_cuit}}</option>
-                @elseif(isset($ticket) && !empty($ticket->type))
-                  <option value="{{($ticket->type==1?$ticket->cliente->id:$ticket->cliente_derivacion->id)}}" selected>{{($ticket->type==1?$ticket->cliente->nombre:$ticket->cliente_derivacion->nombre)}} - {{$ticket->type==1?$ticket->cliente->dni_cuit:""}}</option>
+                {{-- @elseif(isset($cliente_derivacion->nombre))
+                  <option value="{{$cliente_derivacion->id}}" selected>{{$cliente_derivacion->nombre}} - {{$cliente_derivacion->dni_cuit}}</option> --}}
+                @elseif(isset($ticket) && !empty($ticket->type) && isset($ticket->cliente->id))
+                  <option value="{{($ticket->type && isset($ticket->cliente->id)==1?$ticket->cliente->id:$ticket->cliente_derivacion->id)}}" selected>{{($ticket->type==1?$ticket->cliente->nombre:$ticket->cliente_derivacion->nombre)}} - {{$ticket->type==1?$ticket->cliente->dni_cuit:""}}</option>
                 @endif
               </select>
             </div>
