@@ -133,17 +133,17 @@ class User extends Authenticatable
 
 	public function ordenes_retiro_domicilio()
 	{
-		return $this->hasMany('Riparazione\Models\Retiros\OrdenRetiroDomicilio', 'vendedor_id');
+		return $this->hasMany('App\Models\Retiros\OrdenRetiroDomicilio', 'vendedor_id');
 	}
 
 	public function turnos()
 	{
-		return $this->hasMany('Riparazione\Models\SucursalCalendario', 'vendedor_id');
+		return $this->hasMany('App\Models\SucursalCalendario', 'vendedor_id');
 	}
 
 	public function ordenes_retiro_tecnocompro()
 	{
-		return $this->hasMany('Riparazione\Models\Retiros\OrdenRetiroTecnocompro', 'usuario_id');
+		return $this->hasMany('App\Models\Retiros\OrdenRetiroTecnocompro', 'usuario_id');
 	}
 
 	public function historial_estados_onsite()
