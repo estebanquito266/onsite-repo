@@ -115,18 +115,20 @@ class HistorialEstadosOnsiteService
         return $datos;
     }
 
-    public function store(HistorialEstadoOnsiteRequest $request)
+    public function store(HistorialEstadoOnsiteRequest $request,  $companyId = null)
     {
         $request['visible'] = $request['visible'] ? 1 : 0;
 
+        $request['company_id'] = !$companyId ? User::find(Auth::user()->id)->companies->first()->id : $companyId;
 
-        if (!isset($request['company_id']) || is_null($request['company_id']))
-            $request['company_id'] = User::find(Auth::user()->id)->companies->first()->id;
+        // if (!isset($request['company_id']) || is_null($request['company_id']))
+        //     $request['company_id'] = User::find(Auth::user()->id)->companies->first()->id;
 
         $historialEstadoOnsite = HistorialEstadoOnsite::create($request->all());
 
         return $historialEstadoOnsite;
     }
+    
 
     public function update(HistorialEstadoOnsiteRequest $request, $id)
     {

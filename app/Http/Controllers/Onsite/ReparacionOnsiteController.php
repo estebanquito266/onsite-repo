@@ -487,4 +487,12 @@ class ReparacionOnsiteController extends Controller
 
 		return $html;
 	}
+
+	public function findReparacionById($idReparacion){
+		//Retorna un registro en formato json en base al parametro idReparacion
+		$company_id = Session::get('userCompanyIdDefault');
+		//dd($idReparacion);
+		$reparacion = ReparacionOnsite::where([['company_id', $company_id],['id',$idReparacion]])->get();
+		return response()->json($reparacion);
+	}
 }

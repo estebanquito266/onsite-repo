@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	var basePath = '/riparazione/public';
+	var basePath = '/App/public';
 
 	$('button[name=visibilidadHistorialEstadoOnsite]').click(function () {
 

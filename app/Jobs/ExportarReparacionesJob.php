@@ -87,7 +87,9 @@ class ExportarReparacionesJob implements ShouldQueue
 
         if (isset($this->request['id_empresa']) && count($this->request['id_empresa']) > 0) {
             $filename .= 'EMP_';
-            $query = $query->whereIn('id_empresa_onsite', $this->request['id_empresa'], 'or');
+            $query = $query->whereIn('id_empresa_onsite', $this->request['id_empresa']);
+            //$query = $query->where('id_empresa_onsite', 1095);
+
             foreach ($this->request['id_empresa'] as $key => $value) {
                 $filename .= $value . '-';
             }
