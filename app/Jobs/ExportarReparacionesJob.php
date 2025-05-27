@@ -83,6 +83,7 @@ class ExportarReparacionesJob implements ShouldQueue
                 $tipo = 'exportacion_no_exitosa'; //es para filtrar el listado de las exportaciones generadas
 
                 break;
+                
         }
 
         if (isset($this->request['id_empresa']) && count($this->request['id_empresa']) > 0) {
