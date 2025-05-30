@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\Onsite\ReparacionOnsiteRequest;
 use App\Http\Requests\Onsite\ReparacionOnsiteUpdateRequest;
+use App\Imports\ReparacionOnsiteImport;
 use App\Jobs\ExportarReparacionesJob;
 use App\Jobs\ImportarReparacionesJob;
 use App\Models\Notificacion;
@@ -224,6 +225,7 @@ class ReparacionOnsiteController extends Controller
 
 	public function filtrarReparacionOnsite(Request $request)
 	{
+		$request->flash();
 		$datos = $this->reparacionOnsiteService->filtrarReparacionOnsite($request);
 		return view($datos['vista'], $datos);
 	}
@@ -486,5 +488,99 @@ class ReparacionOnsiteController extends Controller
 
 
 		return $html;
+	}
+	
+
+	public function importarReparacionOnsite()
+	{
+		return view('_onsite.reparaciononsite.imports.createImportReparacionOnsite');
+	}
+
+	public function importFileReparacionOnsite(Request $request)
+	{
+		$messages = [
+			'file.required' => 'Seleccione un archivo de Excel para procesar.'
+		];
+
+		$request->validate([
+			'file' => 'required|max:10000|mimes:xlsx,xls',
+		], $messages);
+
+		$excel = $request->file('file');
+		$import = new ReparacionOnsiteImport($this->reparacionOnsiteService, $this->importacionService);
+
+
+		Excel::import($import, $excel);
+
+		$result_processed = ['rows_processed' => $import->getRowCount()];
+		$failures_rows = '';
+
+		$i = 0;
+
+		$result_processed = $this->processResult($import, 'assurant_deducibles');
+
+		if ($result_processed) return $result_processed;
+	}
+
+	function processResult($import, $tipo)
+	{
+		$result_processed = ['rows_processed' => $import->getRowCount()];
+		$failures_rows = '';
+
+		$i = 0;
+
+		foreach ($import->failures() as $failure) {
+			if ($i < count($import->failures()) - 1)
+				$failures_rows .= '[' . $failure->row() . ']-';
+			else {
+				$failures_rows .= '[' . $failure->row() . ']';
+			}
+			$i++;
+		}
+
+		/* las funciones de php se utilizan para convertir el string en array y tomar valores únicos, luego se vuelve a convertir en string */
+		$result_processed['rows_failures'] = implode('-', array_unique(explode('-', $failures_rows), SORT_STRING));
+
+		$result_processed['rows_failures_total'] = count(array_unique(explode('-', $failures_rows), SORT_STRING));
+
+		Log::info('Row count: ' . $import->getRowCount());
+		Log::info('Errors: ');
+		Log::info($import->errors());
+
+		$failures = $import->failures();
+
+
+		if ($tipo == 'reparaciones') {
+			if (count($failures) > 0) {
+				Log::info('No se procesaron las siguiente filas: ');
+				foreach ($failures as $failure) {
+					Log::info('ROW: ' . $failure->row() . '-' . $failure->attribute() . ': ' . $failure->values()['ticketunico']); // The values of the row that has failed.
+				}
+			}
+
+			
+		} else {
+			if (count($failures) > 0) {
+				Log::info('No se procesaron las siguiente filas: ');
+				foreach ($failures as $failure) {
+					Log::info('ROW: ' . $failure->row() . '-' . $failure->attribute() . ': ' . $failure->values()['marca'] . ' - ' . $failure->values()['codigo_sap']); // The values of the row that has failed.
+				}
+			}
+		}
+
+		Log::info($result_processed);
+		return $result_processed;
+	}
+
+
+	function getRowsReparacionesProcessed()
+	{
+		$reparacion_mirgor = ReparacionOnsite::orderby('id', 'desc')->first();
+
+		if ($reparacion_mirgor)
+
+			return  $reparacion_mirgor->id;
+
+		else return 1;
 	}
 }

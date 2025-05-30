@@ -43,7 +43,7 @@ class ImportacionService
 	private $salteadosExistentes = 0;
 	private $reparacionesActualizadas = 0;
 	private $filasActualizadas;
-	private $usuarioId;
+	public $usuarioId;
 	private $companyId;
 	private $filasExistentes;
 
@@ -100,9 +100,6 @@ class ImportacionService
 
 		// Convert the CSV to an array
 		$registros = $this->csvToArray($absolutePath);
-
-
-
 
 		if (is_null($company_id)) {
 			$this->companyId = Session::get('userCompanyIdDefault');
@@ -228,7 +225,6 @@ class ImportacionService
 					if ($reparacionOnsite != null) {
 
 						$this->reparacionesCreadas++;
-
 						$this->reparacionesOnsiteService->actualizarImagenes($reparacionOnsite['reparacionOnsite'], $registro);
 					} else {
 						$this->salteadosError++;
@@ -248,7 +244,6 @@ class ImportacionService
 					$reparacionOnsite = $this->updateReparacionOnsite($reparacionOnsite, $estadoReparacionOnsiteId, $tipoServicioOnsite, $registro, $company_id, $user_id);
 
 					if ($reparacionOnsite != null) {
-
 						$this->reparacionesActualizadas++;
 						$this->filasActualizadas = $this->filasActualizadas . ' ' . ($fila + 2) . ',';
 					} else {
@@ -267,7 +262,7 @@ class ImportacionService
 		return $succes;
 	}
 
-	private function updateReparacionOnsite($reparacionOnsite, $estadoReparacionOnsiteId, $tipoServicioOnsite, $registro, $company_id = null, $user_id = null)
+	public function updateReparacionOnsite($reparacionOnsite, $estadoReparacionOnsiteId, $tipoServicioOnsite, $registro, $company_id = null, $user_id = null)
 	{
 		Log::info('ImportadorService - updateReparacionOnsite');
 		if ($reparacionOnsite) {
@@ -397,12 +392,37 @@ class ImportacionService
 
 
 
+			/* $data['codigo_activo_descripcion1'] =  $registro['codigo_activo_descripcion1'] ?? null;
+			$data['codigo_activo_descripcion10'] =  $registro['codigo_activo_descripcion10'] ?? null;
+			$data['codigo_activo_descripcion2'] =  $registro['codigo_activo_descripcion2'] ?? null;
+			$data['codigo_activo_descripcion3'] =  $registro['codigo_activo_descripcion3'] ?? null;
+			$data['codigo_activo_descripcion4'] =  $registro['codigo_activo_descripcion4'] ?? null;
+			$data['codigo_activo_descripcion5'] =  $registro['codigo_activo_descripcion5'] ?? null;
+			$data['codigo_activo_descripcion6'] =  $registro['codigo_activo_descripcion6'] ?? null;
+			$data['codigo_activo_descripcion7'] =  $registro['codigo_activo_descripcion7'] ?? null;
+			$data['codigo_activo_descripcion8'] =  $registro['codigo_activo_descripcion8'] ?? null;
+			$data['codigo_activo_descripcion9'] =  $registro['codigo_activo_descripcion9'] ?? null;
+			$data['codigo_activo_nuevo1'] =  $registro['codigo_activo_nuevo1'] ?? null;
+			$data['codigo_activo_nuevo10'] =  $registro['codigo_activo_nuevo10'] ?? null;
+			$data['codigo_activo_nuevo2'] =  $registro['codigo_activo_nuevo2'] ?? null;
+			$data['codigo_activo_nuevo3'] =  $registro['codigo_activo_nuevo3'] ?? null;
+			$data['codigo_activo_nuevo4'] =  $registro['codigo_activo_nuevo4'] ?? null;
+			$data['codigo_activo_nuevo5'] =  $registro['codigo_activo_nuevo5'] ?? null;
+			$data['codigo_activo_nuevo6'] =  $registro['codigo_activo_nuevo6'] ?? null;
+			$data['codigo_activo_nuevo7'] =  $registro['codigo_activo_nuevo7'] ?? null;
+			$data['codigo_activo_nuevo8'] =  $registro['codigo_activo_nuevo8'] ?? null;
+			$data['codigo_activo_nuevo9'] =  $registro['codigo_activo_nuevo9'] ?? null;
+			$data['codigo_activo_retirado1'] =  $registro['codigo_activo_retirado1'] ?? null;
+			$data['codigo_activo_retirado10'] =  $registro['codigo_activo_retirado10'] ?? null;
+			$data['codigo_activo_retirado2'] =  $registro['codigo_activo_retirado2'] ?? null;
+			$data['codigo_activo_retirado3'] =  $registro['codigo_activo_retirado3'] ?? null;
+			$data['codigo_activo_retirado4'] =  $registro['codigo_activo_retirado4'] ?? null;
+			$data['codigo_activo_retirado5'] =  $registro['codigo_activo_retirado5'] ?? null;
+			$data['codigo_activo_retirado6'] =  $registro['codigo_activo_retirado6'] ?? null;
+			$data['codigo_activo_retirado7'] =  $registro['codigo_activo_retirado7'] ?? null;
+			$data['codigo_activo_retirado8'] =  $registro['codigo_activo_retirado8'] ?? null;
+			$data['codigo_activo_retirado9'] =  $registro['codigo_activo_retirado9'] ?? null; */
 
-			for ($i = 1; $i <= 10; $i++) {
-				if (isset($registro['IMAGEN_ONSITE_' . $i]) && !empty($registro['IMAGEN_ONSITE_' . $i])) {
-					$data['IMAGEN_ONSITE_' . $i] = $registro['IMAGEN_ONSITE_' . $i];
-				}
-			}
 
 			$data['ruta'] = 'reparacionOnsite';
 
@@ -440,7 +460,7 @@ class ImportacionService
 		return null;
 	}
 
-	private function insertReparacionOnsite($clave, $empresaOnsite, $sucursalOnsite, $terminal, $tipoServicioOnsite, $estadoReparacionOnsiteId, $registro, $company_id = null)
+	public function insertReparacionOnsite($clave, $empresaOnsite, $sucursalOnsite, $terminal, $tipoServicioOnsite, $estadoReparacionOnsiteId, $registro, $company_id = null)
 	{
 		Log::info('ImportacionService - insertReparacionOnsite');
 		//Log::info($clave);
@@ -595,7 +615,7 @@ class ImportacionService
 	}
 	*/
 
-	private function getEstadoReparacionOnsiteId($estadoId)
+	public function getEstadoReparacionOnsiteId($estadoId)
 	{
 
 		$estadoReparacionOnsiteId = EstadoOnsiteRepository::ESTADO_NUEVO;
@@ -608,7 +628,7 @@ class ImportacionService
 		return $estadoReparacionOnsiteId;
 	}
 
-	private function getTipoServicioOnsite($tipoServicioOnsiteId)
+	public function getTipoServicioOnsite($tipoServicioOnsiteId)
 	{
 		if ($tipoServicioOnsiteId) {
 			return $this->tiposServiciosOnsite->getTipoServicioById($tipoServicioOnsiteId);
@@ -616,7 +636,12 @@ class ImportacionService
 		return null;
 	}
 
-	private function getEmpresaOnsite($empresaOnsiteId)
+	public function setUserId($userId)
+	{
+		$this->usuarioId = $userId;
+	}
+
+	public function getEmpresaOnsite($empresaOnsiteId)
 	{
 		if ($empresaOnsiteId) {
 			return $this->empresasOnsiteService->getEmpresaById($empresaOnsiteId);
@@ -624,7 +649,7 @@ class ImportacionService
 		return null;
 	}
 
-	private function getTerminalOnsite($nroTerminal, $sucursalOnsite, $empresaOnsite, $fila, $registro = false)
+	public function getTerminalOnsite($nroTerminal, $sucursalOnsite, $empresaOnsite, $fila, $registro = false)
 	{
 		Log::info('ImportacionService - getTerminalOnsite');
 
@@ -645,7 +670,7 @@ class ImportacionService
 		return $terminal;
 	}
 
-	private function crearTerminalOnsite($sucursalOnsite, $empresaOnsite, $data = false)
+	public function crearTerminalOnsite($sucursalOnsite, $empresaOnsite, $data = false)
 	{
 		Log::info('ImportacionService - crearTerminalOnsite');
 
@@ -700,7 +725,7 @@ class ImportacionService
 		return $nro;
 	}
 
-	private function getReparacionOnsite($reparacionOnsiteId, $clave)
+	public function getReparacionOnsite($reparacionOnsiteId, $clave)
 	{
 		$reparacionOnsite = null;
 		if ($reparacionOnsiteId != null) {
@@ -714,7 +739,7 @@ class ImportacionService
 		return $reparacionOnsite;
 	}
 
-	private function getSucursalOnsite($param)
+	public function getSucursalOnsite($param)
 	{
 		Log::info('ImportacionService - getSucursalOnsite');
 		//Log::info($param);
@@ -733,7 +758,7 @@ class ImportacionService
 			if (!$localidad) {
 				$localidad = $this->localidadesOnsite->getLocalidadByCodigoPostal($param['localidadCodigoPostal']);
 			}
-			//Log::info($localidad);
+			Log::info($localidad);
 
 			if ($localidad) {
 				Log::info('ImportacionService - getSucursalOnsite - store Sucursal');
