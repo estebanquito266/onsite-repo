@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Session;
 use App\Models\User;
 use App\Models\Onsite\EmpresaOnsite;
 use Log;
+use DB;
+
 
 class EmpresaOnsiteService
 {
@@ -31,6 +33,26 @@ class EmpresaOnsiteService
 
     return $empresaOnsite;
   }
+
+  public static function listarPorTextoBuscar($textoBuscar)
+	{
+		$company_id = self::getStaticCompanyDefaultId();
+    $query = DB::table('empresas_onsite')
+			->selectRaw(" empresas_onsite.id, empresas_onsite.nombre as nombreDniCuit")
+			->whereRaw(" CONCAT(empresas_onsite.id,' ',empresas_onsite.nombre) like '%$textoBuscar%'")
+			->where('empresas_onsite.company_id', $company_id)
+			->orderBy('empresas_onsite.nombre', 'asc');
+		return $query->get();
+	}
+
+  public static function getStaticCompanyDefaultId()
+	{
+		$company_id = null;
+		if (Session::has('userCompanyIdDefault')) {
+			$company_id = Session::get('userCompanyIdDefault');
+		}
+		return $company_id;
+	}
 
   public static function listado($userCompanyId)
   {

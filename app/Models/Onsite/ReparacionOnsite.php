@@ -83,6 +83,11 @@ class ReparacionOnsite extends Model
 
 	];
 
+	public function cliente()
+	{
+		return $this->belongsTo(EmpresaOnsite::class, 'id_empresa_onsite');
+	}
+
 	// RELACIONES
 	public function estado_onsite()
 	{

@@ -16,6 +16,14 @@ class EmpresaOnsiteController extends Controller
 	{				
 		$this->EmpresaOnsiteService = $EmpresaOnsiteService;		
 	}
+	public function getClientes(Request $request, $textoBuscar)
+	{
+		if ($request->ajax()) {
+			$clientes = $this->EmpresaOnsiteService->listarPorTextoBuscar($textoBuscar);
+			return response()->json($clientes);
+		}
+	}
+
 
     public function getEmpresaOnsite($empresaOnsiteId) {
 		$empresaOnsite = $this->EmpresaOnsiteService->findEmpresaOnsite($empresaOnsiteId);
