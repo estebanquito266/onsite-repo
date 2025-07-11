@@ -310,7 +310,7 @@
 
 @section('scripts')
 {!!Html::script('js/clientes-tickets.js')!!}
-{!!Html::script('js/derivaciones.js')!!}
+{{-- {!!Html::script('js/derivaciones.js')!!} --}}
 {!!Html::script('js/reparaciones.js')!!}
 {!!Html::script('/assets/js/tickets/ticket-form.js')!!}
 @endsection
