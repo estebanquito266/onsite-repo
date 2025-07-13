@@ -1,23 +1,3 @@
-
-<script  src="/assets/js/pusher.js"></script>
-<script type="module">
-  
-
-    
-  var userid = '<?php echo auth()->user()->id; ?>';
-  const channel = 'private-channel-process-bar.'+userid;
-  window.Echo.private(channel)
-    .listen('NewNoty', (e) => {
-        //console.log(e.data);
-        existsNoty();
-  });
-
-
-		
-
-			
-</script>
-
 <script>
 		function showGranOverlay() {
 			document.getElementById('granoverlay').style.display = 'flex';
