@@ -58,7 +58,7 @@ class ExportarReparacionesJob implements ShouldQueue
 
 
         // Query the database with lazy collection
-        $query = DB::table('view_reparaciones_onsite')
+        $query = DB::table('reparaciones_onsite_export_witfiles')
             //->where('id_empresa_onsite', 1095)
             //->where('id', '<' , 50000)
             //->where('estado_activo', true)
@@ -88,8 +88,6 @@ class ExportarReparacionesJob implements ShouldQueue
         if (isset($this->request['id_empresa']) && count($this->request['id_empresa']) > 0) {
             $filename .= 'EMP_';
             $query = $query->whereIn('id_empresa_onsite', $this->request['id_empresa']);
-            //$query = $query->where('id_empresa_onsite', 1095);
-
             foreach ($this->request['id_empresa'] as $key => $value) {
                 $filename .= $value . '-';
             }
@@ -245,7 +243,8 @@ class ExportarReparacionesJob implements ShouldQueue
                     'ACLARACION_CLIENTE',
                     'FIRMA_TECNICO',
                     'ACLARACION_TECNICO',
-                    'created_at'
+                    'created_at',
+                    'EVIDENCIAS'
 
                 ];
 
@@ -351,6 +350,7 @@ class ExportarReparacionesJob implements ShouldQueue
                     'firma_tecnico',
                     'aclaracion_tecnico',
                     'created_at',
+                    'files'
                 ];
                 break;
 
@@ -363,9 +363,9 @@ class ExportarReparacionesJob implements ShouldQueue
                     /* NUEVO */
                     'SUCURSAL_DIRECCION',
                     'LOCALIDAD_PROVINCIA',
-                    'LOCALIDAD_ESTANDARD',                    
+                    'LOCALIDAD_ESTANDARD',
                     //'TERMINAL_SERIE',
-                    'LOCALIDAD_TECNICO',                    
+                    'LOCALIDAD_TECNICO',
                     'ESTADO',
                     'FECHA_INGRESO',
                     //'INFORME_TECNICO',                    
@@ -376,7 +376,8 @@ class ExportarReparacionesJob implements ShouldQueue
                     /* NUEVO */
                     'CODIGO_ACTIVO_RETIRADO2',
                     'CODIGO_ACTIVO_DESCRIPCION2',
-                    'DEVOLUCIÓN'
+                    'DEVOLUCIÓN',
+                    'EVIDENCIAS'
 
                 ];
 
@@ -388,9 +389,9 @@ class ExportarReparacionesJob implements ShouldQueue
                     /* NUEVO */
                     'direccion',
                     'provincia_nombre',
-                    'localidad_estandard',                    
+                    'localidad_estandard',
                     //'serie',
-                    'usuario',                    
+                    'usuario',
                     'estado_nombre',
                     'fecha_ingreso',
                     //'informe_tecnico',
@@ -401,7 +402,8 @@ class ExportarReparacionesJob implements ShouldQueue
                     /* NUEVO */
                     'codigo_activo_retirado2',
                     'codigo_activo_descripcion2',
-                    'monto'
+                    'monto',
+                    'files'
 
                 ];
                 break;
@@ -422,7 +424,7 @@ class ExportarReparacionesJob implements ShouldQueue
                     'FECHA_VENCIMIENTO',
                     'FECHA_CERRADO',
                     'OBSERVACIONES_INTERNAS',
-
+                    'EVIDENCIAS'
 
                 ];
 
@@ -441,6 +443,7 @@ class ExportarReparacionesJob implements ShouldQueue
                     'vencimiento',
                     'fecha_cerrado',
                     'observaciones_internas',
+                    'files'
 
                 ];
                 break;
