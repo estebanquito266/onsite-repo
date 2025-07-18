@@ -61,6 +61,22 @@
         </li>
         @endif
 
+        @if(Session::has('reporteReparacionOnsite') )
+        <li>
+          <a href="{!! URL::to('/reporteReparacionOnsite/3') !!}" @if( Request::segment(1)=='reporteReparacionOnsite' && Request::segment(2)=='3') class="mm-active" @endif>
+            <i class="metismenu-icon pe-7s-graph2"></i>Reporte Servicios
+          </a>
+        </li>
+        @endif
+
+        @if(Session::has('reporteReparacionOnsite') )
+        <li>
+          <a href="{!! URL::to('/reporteReparacionOnsite/4') !!}" @if( Request::segment(1)=='reporteReparacionOnsite' && Request::segment(2)=='4') class="mm-active" @endif>
+            <i class="metismenu-icon pe-7s-graph2"></i>Reporte Casos Activos
+          </a>
+        </li>
+        @endif
+
         <li class="app-sidebar__heading">SERVICIOS</li>
 
 

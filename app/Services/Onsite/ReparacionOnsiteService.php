@@ -196,6 +196,21 @@ class ReparacionOnsiteService
 						Log::alert('es dos');
 
 					break;
+
+				case 3:
+					$datos['reportesGenerados'] = Notificacion::whereIn('empresa_id', $id_empresas)
+						->where('tipo', 'exportacion_servicios')
+						->orderBy('id', 'desc')->limit(5)->get();
+						Log::alert('es tres');
+
+					break;
+				case 4:
+					$datos['reportesGenerados'] = Notificacion::whereIn('empresa_id', $id_empresas)
+						->where('tipo', 'exportacion_servicios_activos')
+						->orderBy('id', 'desc')->limit(5)->get();
+						Log::alert('es cuatro');
+
+					break;
 			}
 		}
 		$datos['tiposServicios'] = $this->tiposServiciosService->listado($params['company_id']);
