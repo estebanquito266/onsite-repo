@@ -96,6 +96,8 @@ class ReparacionOnsiteController extends Controller
    */
   public function index(Request $request)
   {
+    Log::alert('index app');
+
     $user_id = Auth::user()->id;
 
     $reparaciones_onsite_query = $this->reparacion_onsite_repository->filtrar($request['filter']);
@@ -103,6 +105,8 @@ class ReparacionOnsiteController extends Controller
     $reparaciones_onsite_query->where('id_tecnico_asignado', $user_id)->applySorts($request['sort']);
 
     $reparaciones_onsite = $this->marcaVencimientos($reparaciones_onsite_query->get());
+
+    Log::alert(json_encode($reparaciones_onsite));
 
     return ReparacionOnsiteCollection::make($reparaciones_onsite);
   }
