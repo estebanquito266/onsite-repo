@@ -106,7 +106,7 @@ class ReparacionOnsiteController extends Controller
 
     $reparaciones_onsite = $this->marcaVencimientos($reparaciones_onsite_query->get());
 
-    Log::alert(json_encode($reparaciones_onsite));
+    
 
     return ReparacionOnsiteCollection::make($reparaciones_onsite);
   }
