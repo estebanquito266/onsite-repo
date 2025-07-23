@@ -145,6 +145,9 @@ class ReparacionOnsiteController extends Controller
   public function show(ReparacionOnsite $reparacion_onsite)
   {
 
+    Log::alert('test APP TECNICOS');
+    Log::alert(json_encode(ReparacionOnsiteResource::make($reparacion_onsite)));
+
     return ReparacionOnsiteResource::make($reparacion_onsite);
   }
 
@@ -720,7 +723,7 @@ class ReparacionOnsiteController extends Controller
   public function getReparacion($company_id, $id_reparacion)
   {
     try {
-      
+
       $mje = $this->reparacion_onsite_service->getDataEdit($id_reparacion, $company_id);
 
       if ($mje) {
@@ -745,7 +748,7 @@ class ReparacionOnsiteController extends Controller
   public function getReparacionPorClave($company_id, $clave)
   {
     try {
-      
+
       $mje = $this->reparacion_onsite_service->getDataEditByClave($company_id, $clave);
       if ($mje) {
         return response()->json([
