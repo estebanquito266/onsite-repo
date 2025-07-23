@@ -114,6 +114,7 @@ class ReparacionOnsiteController extends Controller
    */
   public function dashboard(Request $request)
   {
+    Log::alert('dashboard app');
     $reparaciones_onsite_activas = $this->getActivasByAuthUserQuery();
 
     $cantidad_total = $reparaciones_onsite_activas->count();
@@ -130,6 +131,8 @@ class ReparacionOnsiteController extends Controller
         'estado' => $reparacion_activa->id_estado,
       ];
     }
+
+    Log::alert(json_encode($respuesta));
 
     return response()->json([
       'data' => array_values($respuesta)
