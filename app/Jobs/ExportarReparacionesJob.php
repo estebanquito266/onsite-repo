@@ -54,13 +54,16 @@ class ExportarReparacionesJob implements ShouldQueue
         Log::alert('comienza exportación');
         //  (new ReparacionesOnsiteExport($this->request, $this->userCompanyId))->store('exports/listado_rep_onsite.xlsx', 'local');
 
-        $view_reparaciones_onsite = config('queries.view_reparaciones_onsite');
+        //$view_reparaciones_onsite = config('queries.view_reparaciones_onsite');
         
-        /*$query = DB::table('view_reparaciones_onsite')
-            ->orderBy('id', 'desc');*/
+        $query = DB::table('view_reparaciones_onsite')
+            //->where('id_empresa_onsite', 1095)
+            //->where('id', '<' , 50000)
+            //->where('estado_activo', true)
+            ->orderBy('id', 'desc');
 
-        $query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"))
-                                        ->orderBy('id','desc');
+        /*$query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"))
+                                        ->orderBy('id','desc');*/
 
         switch ($this->request['exitoso']) {
             case 0:
