@@ -863,8 +863,8 @@ class VisitasService
             $observaciones = '-';
 
 
-        $resultado = ReparacionChecklistOnsite::where('company_id', $this->userCompanyId)
-            ->where('reparacion_onsite_id', $reparacion->id)
+        $resultado = ReparacionChecklistOnsite::/* where('company_id', $this->userCompanyId)
+            -> */where('reparacion_onsite_id', $reparacion->id)
             ->first();
 
 
