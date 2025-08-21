@@ -776,6 +776,30 @@ class ReparacionOnsiteController extends Controller
     }
   }
 
+  public function getReparacionIdPorEstado($company_id, $id_estado)
+  {
+    try {
+
+      $mje = $this->reparacion_onsite_service->getDataRepIdByEstado($company_id, $id_estado);
+      if ($mje) {
+        return response()->json([
+          'data' => $mje,
+        ], 200);
+      } else
+        return response()->json([
+          'error' => 'Error de conexión al servidor',
+          'message' => 'Server Error'
+        ], 500);
+    } catch (\Exception $e) {
+      Log::error('getReparacionIdPorEstado: ' . json_encode($id_estado) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
+
+      return response()->json([
+        'error' => $e->getMessage(),
+        'message' => 'Server Error'
+      ], 500);
+    }
+  }
+
   public function storeReparacionApi(Request $request, $company_id)
   {
     try {

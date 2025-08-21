@@ -2549,6 +2549,18 @@ class ReparacionOnsiteService
 		return $reparaciones_onsite_data;
 	}
 
+	public function getDataRepIdByEstado($company_id, $id_estado)
+	{
+
+		$reparaciones_onsite_data = ReparacionOnsite::where('id_estado', $id_estado)
+								->where('company_id', $company_id)
+								->pluck('id')
+								->toArray();
+
+
+		return $reparaciones_onsite_data;
+	}
+
 	public function findReparacionDetalle($id)
 	{
 		$reparacionDetalle = ReparacionDetalle::where('reparacion_id', $id)->first();
