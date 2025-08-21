@@ -24,9 +24,11 @@
                 <div class="dropdown d-inline-block">
                 <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" class="dropdown-toggle btn btn-primary btn-pill mt-2" name="botonGuardarEstado" value="1" id="button-cambiar">Crear y Cambiar Estado</button>
                 <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu-rounded dropdown-menu">
+                    @if(isset($status))
                     @foreach($status as $st)
                     <button type="submit" tabindex="0" class="dropdown-item" name="status_id" value="{{ $st->id }}">Nuevo Estado: {{ $st->name }}</button>
                     @endforeach
+                    @endif
                 </div>
                 </div>
 		</div>
@@ -51,6 +53,7 @@
                 </tr>
             </thead>
             <tbody class="small" id="comentariosBody">
+                @if(isset($commentsTickets))
                 @forelse($commentsTickets as $comentario)
                 <tr>
                     <td>{{$comentario->id}}</td>
@@ -74,6 +77,7 @@
                     <td><span class="">Ningún dato disponible en esta tabla-</span></td>
                     </tr>
                 @endforelse
+                @endif
                 
             </tbody>
             <tfoot>

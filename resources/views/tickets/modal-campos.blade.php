@@ -42,9 +42,11 @@
                                     <option value="{{$user->id}}" {{$user->id == $ticket->user_receiver_id ? 'selected' : '' }}>{{'['.$user->id.'] '.$user->name}}</option>
                                 @endforeach
                             @else
+                                @if(isset($users))
                                 @foreach($users as $user)
                                     <option value="{{$user->id}}" >{{'['.$user->id.'] '.$user->name}}</option>
                                 @endforeach
+                                @endif
                             @endif
                         </select>
                     </div>
