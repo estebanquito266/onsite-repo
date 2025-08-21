@@ -214,9 +214,15 @@ class ReparacionOnsiteController extends Controller
 
     $fecha_hora = $request['fecha_coordinada'] . ' ' . $hora;
 
-    $this->createGoogleCalendarEvent($reparacion_onsite, $fecha_hora);
-
     $reparacion_onsite->save();
+
+    try {
+
+      $this->createGoogleCalendarEvent($reparacion_onsite, $fecha_hora);
+    } catch (\Throwable $th) {
+      Log::alert('Fallo al crear el evento en el calendario de onsite');
+    }
+
 
     $user_id = Auth::user()->id;
 
