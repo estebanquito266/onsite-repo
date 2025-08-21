@@ -378,6 +378,10 @@ class ImportacionService
 				$data['informe_tecnico'] = $registro['INFORME_TECNICO'];
 			}
 
+			if (isset($registro['JUSTIFICACION']) && $registro['JUSTIFICACION']) {
+				$data['justificacion'] = $registro['JUSTIFICACION'];
+			}
+
 			/* este codigo reemplaza la porción comentada de abajo */
 
 			$fields = [
@@ -486,7 +490,7 @@ class ImportacionService
 
 			$observacionUbicacion = (isset($registro['OBSERVACION_UBICACION'])) ? $registro['OBSERVACION_UBICACION'] : '-';
 
-
+			$justificacion = (isset($registro['JUSTIFICACION'])) ? $registro['JUSTIFICACION'] : null;
 
 			$observacion = 'Reparación generada por Importación';
 
@@ -515,6 +519,7 @@ class ImportacionService
 				'problemaResuelto' => $problemaResuelto,
 				'observacionesInternas' => $observacionesInternas,
 				'visibleCliente' => $visibleCliente,
+				'justificacion' => $justificacion,
 
 				'codigo_activo_descripcion1' => $registro['codigo_activo_descripcion1'] ?? null,
 				'codigo_activo_descripcion10' => $registro['codigo_activo_descripcion10'] ?? null,

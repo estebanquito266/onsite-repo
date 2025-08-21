@@ -155,3 +155,30 @@
         </div>
     </div>
 </div>
+
+
+<div class="main-card mb-3 card ">
+    <div class="card-header bg-alternate">
+    </div>
+    <div class="card-body">
+        <div class="form-row mt-3">
+            <div class="form-group col-lg-12 col-md-12">
+                <label>Log </label>
+                <input type="text" class="form-control" placeholder="Ingrese log" name="log" value="{{ (isset($reparacionOnsite)) ? $reparacionOnsite->log : '' }}">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-card mb-3 card ">
+    <div class="card-header bg-alternate">
+    </div>
+    <div class="card-body">
+        <div class="form-row mt-3">
+            <div class="form-group col-lg-12 col-md-12">
+                <label>Justificación </label>
+                <input type="text" class="form-control" placeholder="Ingrese justificación" name="justificacion" value="{{ (isset($reparacionOnsite)) ? $reparacionOnsite->justificacion : '' }}">
+            </div>
+        </div>
+    </div>
+</div>
