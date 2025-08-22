@@ -804,16 +804,11 @@ class ReparacionOnsiteService
 			$newEstadoOnsite = $this->estado_onsite_repository->getEstadoOnsite($newEstado);
 			//if ($newEstado == 4) {
 			//if ($newEstado == EstadoOnsite::CERRADA ){
-			
 			if (is_object($newEstadoOnsite) && isset($newEstadoOnsite->cerrado) && $newEstadoOnsite->cerrado) {
-
-				$fecha_cerrado = (isset($request['fecha_cerrado'])) ? $request['fecha_cerrado'] : '';
-
-				if (empty($fecha_cerrado)) {
-					$fecha_cerrado = $sysdate;
+				if (!isset($request['fecha_cerrado']) || empty($request['fecha_cerrado'])) {
+					$request['fecha_cerrado'] = $sysdate;
 				}
-				
-				if ($fecha_cerrado <= $request['fecha_vencimiento']) {
+				if ($request['fecha_cerrado'] <= $request['fecha_vencimiento']) {
 
 					$request['sla_status'] = 'IN';
 				} else {
@@ -841,10 +836,6 @@ class ReparacionOnsiteService
 			$request['fecha_coordinada'] = date('Y-m-d', strtotime($request['fecha_cerrado']));
 		}
 
-		// si no vino fecha_cerrado o esta vacia la quitamos de la actualizacion
-		if (isset($request['fecha_cerrado']) && empty(trim($request['fecha_cerrado']))) {
-			unset($request['fecha_cerrado']);
-		}
 
 
 		$reparacionOnsite->update($request->all());
@@ -2554,7 +2545,7 @@ class ReparacionOnsiteService
 
 		$reparaciones_onsite_data = ReparacionOnsite::where('id_estado', $id_estado)
 								->where('company_id', $company_id)
-								->pluck('id')
+								->pluck('clave','id')
 								->toArray();
 
 
