@@ -43,6 +43,17 @@ use App\Services\Onsite\EmpresaOnsiteService;
 use App\Services\Onsite\SucursalOnsiteService;
 use App\Services\Onsite\TerminalOnsiteService;
 use App\Services\Onsite\SistemaOnsiteService;
+use Riparazione\Services\TicketsService;
+use Riparazione\Services\CommentTicketService;
+
+
+use App\Models\MotivoConsultaTicket;
+use App\CategoryTicket;
+use App\GroupTicket;
+use App\Models\Ticket\PriorityTicket;
+use App\Models\Ticket\StatusTicket;
+
+
 use Carbon\Carbon;
 use DateTime;
 use DB;
@@ -407,6 +418,20 @@ class ReparacionOnsiteService
 
 			$datos['sistemaOnsiteReparacion'] = $sistemaOnsiteReparacion;
 
+			$grupos = GroupTicket::select('id', 'name')->where('company_id', Session::get('userCompanyIdDefault'))->get();
+
+			$motivos_consulta_ticket = MotivoConsultaTicket::select('id', 'name')->where('company_id', Session::get('userCompanyIdDefault'))->get();
+			$categorias_ticket = CategoryTicket::select('id', 'name')->where('company_id', Session::get('userCompanyIdDefault'))->get();
+			$grupos_ticket_ticket = GroupTicket::select('id', 'name')->where('company_id', Session::get('userCompanyIdDefault'))->get();
+			$priorities_ticket = PriorityTicket::select('id', 'name')->get();
+			$status_ticket = StatusTicket::select('id', 'name')->get();
+
+			$datos['commentsTickets'] = array();
+            $datos['motivos_consulta'] = $motivos_consulta_ticket;
+            $datos['categorias'] = $categorias_ticket;
+            $datos['grupos'] = $grupos_ticket_ticket;
+            $datos['priorities'] = $priorities_ticket;
+            $datos['status'] = $status_ticket;
 			return $datos;
 		} else {
 			return false;

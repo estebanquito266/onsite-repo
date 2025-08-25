@@ -25,6 +25,9 @@
               {!!Form::text('reparacion_id',(isset($ticket)?($ticket->reparacion_id!=0?$ticket->reparacion_id:null):null), ['class'=>'form-control','placeholder'=>'Ingrese ID de Reparación a buscar...','id'=>'reparacion_id'])!!}
               @endif
               <span class="help-block badge badge-secondary" id="reparacionMsg"></span>
+              {{-- <span id="reparacionDataClave">Clave: {{$reparacion->clave ?? ''}}</span>
+              <span id="reparacionDataSucursal">Sucursal: {{$reparacion->sucursal_onsite->razon_social ?? ''}}</span>
+              <span id="reparacionDataEstado">Estado: {{$reparacion->estado_onsite->nombre ?? ''}}</span> --}}
             </div>
 
             <div class="form-group col-md-6" id="ticket_derivacion_id_create">
@@ -38,21 +41,24 @@
             </div>
 
 
-            <div class="form-group col-md-6" id="div_buscar_cliente_reparacion">
+            <div class="form-group col-md-6" id="div_buscar_cliente_reparacion" style="display: none;">
               <label>Buscar Cliente:</label>
               <div class="form-group input-group ">
                 @if(isset($cliente_reparacion->nombre))
-                  <input class="form-control" id="textoBuscarCliente" name="textoBuscar" type="text" value="{{$cliente_reparacion->nombre}}" disabled>                
+                  <input class="form-control" id="textoBuscarCliente" name="textoBuscar" type="text" value="{{$cliente_reparacion->nombre}}" disabled style="display: none;">                
                 {{-- @elseif(isset($ticket))
                 {!!Form::text('textoBuscar',($ticket->type==1?$ticket->cliente->nombre:""), ['class'=>'form-control','placeholder'=>'Ingrese dni/cuit o nombre del cliente a buscar','id'=>'textoBuscarCliente'])!!} --}}
-                @else
-                {!!Form::text('textoBuscar',null, ['class'=>'form-control','placeholder'=>'Ingrese dni/cuit o nombre del cliente a buscar','id'=>'textoBuscarCliente'])!!}
+                {{-- @else
+                {!!Form::text('textoBuscar',null, ['class'=>'form-control','placeholder'=>'Ingrese dni/cuit o nombre del cliente a buscar','id'=>'textoBuscarCliente'])!!} --}}
                 @endif
                 @if(!isset($cliente_reparacion))
-                <span class="input-group-btn">
+                {{-- <span class="input-group-btn">
                   <button class="btn btn-primary" type="button" id="buscarCliente"><i class="fa fa-search"></i></button>
-                </span>
+                </span> --}}
                 @endif
+                {{-- <p id="reparacionDataClave" style="display: none;"></p>
+                <p id="reparacionDataSucursal" style="display: none;"></p>
+                <p id="reparacionDataEstado" style="display: none;"></p> --}}
               </div>
             </div>
             {{-- <div class="form-group col-md-6" id="div_buscar_cliente_derivacion">
@@ -74,7 +80,7 @@
               </div>
             </div> --}}
 
-            <div class="form-group col-md-6" id="div_cliente_id">
+            <div class="form-group col-md-6" id="div_cliente_id" style="display: none;">
               <label>Cliente:</label>
               <select name="cliente_id" id="cliente_id" class="form-control">
                 <option value="">Seleccione el cliente</option>
