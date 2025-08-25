@@ -24,6 +24,9 @@
                     {!!Form::text('reparacion_id',(isset($ticket)?($ticket->reparacion_id!=0?$ticket->reparacion_id:null):null), ['class'=>'form-control','placeholder'=>'Ingrese ID de Reparación a buscar...','id'=>'reparacion_id'])!!}
                     @endif
                     <span class="help-block badge badge-secondary" id="reparacionMsg"></span>
+                    <p style="display:none;" id="reparacionDataClave" style="margin-top: 12px">Clave: {{$reparacion->clave ?? ''}}</p>
+                    <p style="display:none;" id="reparacionDataSucursal">Sucursal: {{$reparacion->sucursal_onsite->razon_social ?? ''}}</p>
+                    <p style="display:none;" id="reparacionDataEstado">Estado: {{$reparacion->estado_onsite->nombre ?? ''}}</p>
                 </div>
 
                 <div class="form-group col-md-12" id="ticket_derivacion_id_create">
@@ -37,7 +40,7 @@
                 </div>
 
 
-                <div class="form-group col-md-12" id="div_buscar_cliente_reparacion">
+                <div class="form-group col-md-12" id="div_buscar_cliente_reparacion" style="display: none;">
                     <label>Buscar Cliente:</label>
                     <div class="form-group input-group ">
                         @if(isset($cliente_reparacion))
@@ -73,9 +76,9 @@
                     </div>
                 </div>
 
-                <div class="form-group col-md-12" id="div_cliente_id">
+                <div class="form-group col-md-12" id="div_cliente_id2" style="display:none">
                     <label>Cliente:</label>
-                    <select name="cliente_id" id="cliente_id" class="form-control">
+                    <select name="cliente_id" id="cliente_id" class="form-control" style="display:none">
                         <option value="">Seleccione el cliente</option>
                         @if(isset($cliente_reparacion))
                         <option value="{{$cliente_reparacion->id}}" selected>{{$cliente_reparacion->nombre}} - {{$cliente_reparacion->dni_cuit}}</option>

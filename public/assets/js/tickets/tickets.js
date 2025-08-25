@@ -281,10 +281,11 @@ $(document).ready(function() {
           $('#ticket_group_user_receiver_id_show #group_user_receiver_id').val(response.group_user_receiver_id).prop('disabled',true).removeAttr("name");
           
 
-          if($('#ticket_user_receiver_id_show #user_id option[value=' + response.user_receiver_id + ']').length === 0 && response.user_receiver_id.length > 0) {
+          if($('#ticket_user_receiver_id_show #user_id option[value=' + response.user_receiver_id + ']').length === 0 && response.user_receiver_id > 0) {
               $('#ticket_user_receiver_id_show #user_id').append('<option value="' + response.user_receiver_id + '">['+response.user_receiver_id+'] ' + response.user_receiver.name + '</option>');
           }
 
+          console.log(response, "asdasdasd");
           $('#ticket_user_receiver_id_show #user_id').val(response.user_receiver_id).prop('disabled',true).removeAttr("name");
 
           $('#ticket_priority_ticket_id_show #priority_ticket_id').val(response.priority_ticket_id).prop('disabled',true).removeAttr("name");

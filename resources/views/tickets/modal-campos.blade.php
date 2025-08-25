@@ -19,7 +19,10 @@
                 <div class="form-group" id="ticket_reparacion_id_create" style="display: none">
                     <label for="reparacion_id">Reparación:</label>
                     {!!Form::text('reparacion_id',(isset($ticket)?($ticket->reparacion_id!=0?$ticket->reparacion_id:null):null), ['class'=>'form-control','placeholder'=>'Ingrese ID de Reparación a buscar...','id'=>'reparacion_id'])!!}		
-                    <span class="help-block badge badge-secondary" id="reparacionMsg"></span>  
+                    <span class="help-block badge badge-secondary" id="reparacionMsg"></span>
+                    <p id="reparacionDataClaveModal" style="display: none"></p>
+                    <p id="reparacionDataSucursalModal" style="display: none"></p>
+                    <p id="reparacionDataEstadoModal" style="display: none"></p>  
                 </div>
                 <div id="ticket_reparacion_id_show" style="display: none"></div>
 
@@ -79,7 +82,7 @@
                 <div class="row">
                     <div class="col-6">
                         <div class="form-group" id="ticket_priority_ticket_id_create">
-                        <label for="priority_ticket_id">Prioridad:</label>
+                        <label for="priority_ticket_id">Prioridad: acaestoy</label>
                         <select name="priority_ticket_id" id="priority_ticket_id" class="form-control" required>
                             <option value="">-- Seleccione Prioridad --</option>
                             @if(isset($priorities))
@@ -206,7 +209,6 @@
         </div>
     </div>
 </div>
-
 
 
 @section('scripts')

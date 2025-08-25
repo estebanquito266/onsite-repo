@@ -66,10 +66,13 @@ class TicketController extends Controller
     public function createFromReparacion(Request $request, $reparacionid)
     {
         $data = $this->ticketsService->create();
-        $reparacion = ReparacionOnsite::where('id', $reparacionid)->firstOrFail();
+        $reparacion = ReparacionOnsite::with(['estado_onsite', 'sucursal_onsite', 'cliente'])->where('id', $reparacionid)->firstOrFail();
         $data['ticket_tipo'] =  TicketType::Reparacion;
         $data['rep_id'] =  $reparacionid;
         $data['cliente_reparacion'] =  $reparacion->cliente;
+        $data['reparacion'] =  $reparacion;
+
+
         return view('tickets.create',$data);
     }
 

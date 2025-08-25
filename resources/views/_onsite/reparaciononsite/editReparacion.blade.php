@@ -53,6 +53,7 @@
 
 </div>
 </div>
+{{-- {{dd($reparacionOnsite);}} --}}
 @include('_onsite.reparaciononsite._cardsTickets',['tickets'=>$reparacionOnsite->tickets])
 
 @endsection
@@ -76,5 +77,5 @@
 @include('_onsite.historialestadoonsite.modalpro')
 @include('_onsite.reparaciononsite.modalVisita')
 @include('_onsite.reparaciononsite.modal_reparacion_visitas')
-@include('tickets.modal-form')
+@include('tickets.modal-form', ['priorities' => $priorities, 'status' =>$status, 'motivos_consulta' =>$motivos_consulta, 'dataCompleta' =>$dataCompleta])
 @endsection
