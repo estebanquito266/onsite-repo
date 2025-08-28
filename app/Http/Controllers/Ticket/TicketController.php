@@ -138,7 +138,7 @@ class TicketController extends Controller
     public function edit($id)
     {
         $data = $this->ticketsService->edit($id);
-
+// dd($data['reparacion']);
 
         return view('tickets.edit',$data);
     }

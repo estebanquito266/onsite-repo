@@ -58,9 +58,9 @@ class TicketsService
     public function getPaginatedListbyLoggedUser(Array $status = null){
         if(Session::get('perfilAdmin'))
             if($status)
-                return Ticket::with(['cliente', 'motivo_consulta'])->where('company_id', Session::get('userCompanyIdDefault'))->whereIn('status_ticket_id',$status)->orderBy('id','DESC')->paginate(100);
+                return Ticket::with(['cliente', 'motivo_consulta', 'reparacion.estado_onsite', 'reparacion.sucursal_onsite'])->where('company_id', Session::get('userCompanyIdDefault'))->whereIn('status_ticket_id',$status)->orderBy('id','DESC')->paginate(100);
             else
-                return Ticket::with(['cliente', 'motivo_consulta'])->where('company_id', Session::get('userCompanyIdDefault'))->orderBy('id','DESC')->paginate(100);
+                return Ticket::with(['cliente', 'motivo_consulta', 'reparacion.sucursal_onsite', 'reparacion.estado_onsite'])->where('company_id', Session::get('userCompanyIdDefault'))->orderBy('id','DESC')->paginate(100);
         else
             if($status)
                 return Ticket::where('company_id',Session::get('userCompanyIdDefault'))
@@ -210,11 +210,17 @@ class TicketsService
 
         $ticket = Ticket::with(['cliente', 'motivo_consulta'])->where('id',$id)->first();
         $reparaciones = ReparacionOnsite::select('id')->where('company_id', $company_id)->get();
+        if(isset($ticket->reparacion_id)) {
+           $reparacion = ReparacionOnsite::with(['estado_onsite', 'sucursal_onsite'])->find($ticket->reparacion_id);
+        } else {
+             $reparacion = null;
+            
+        }
         // $derivaciones = Derivacion::select('id')->where('company_id', $company_id)->get();
         $motivos_consulta = MotivoConsultaTicket::select('id', 'name')->where('company_id', $company_id)->get();
         $categorias = CategoryTicket::select('id','name')->where('company_id', $company_id)->get();
         $grupos = GroupTicket::select('id','name')->where('company_id', $company_id)->get();
-        $cliente = EmpresaOnsite::where('id', $ticket->id_empresa_onsite)->where('company_id', Session::get('userCompanyIdDefault'))->selectRaw("nombre as nombreDni, id")->pluck('nombreDni', 'id');
+        $cliente = EmpresaOnsite::where('id', $ticket->id_empresa_onsite ?? null)->where('company_id', Session::get('userCompanyIdDefault'))->selectRaw("nombre as nombreDni, id")->pluck('nombreDni', 'id');
         $clientes = EmpresaOnsite::select('id', 'nombre')->where('company_id', $company_id)->get();
         // $clientesDerivaciones = ClienteDerivacion::select('id', 'nombre')->where('company_id', $company_id)->get();
 
@@ -240,7 +246,7 @@ class TicketsService
         }
 
       
-        if($ticket->user_owner_id != Auth::user()->id){
+        if(isset($ticket->user_owner_id) && $ticket->user_owner_id != Auth::user()->id){
             $status = StatusTicket::select('id','name')->where('id','<>',5)->get();
         }
         // dd([
@@ -265,6 +271,7 @@ class TicketsService
             'clientes' => $clientes,
             'ticket' => $ticket,
             'reparaciones' => $reparaciones,
+            'reparacion' => $reparacion,
             // 'derivaciones' => $derivaciones,
             'motivos_consulta' => $motivos_consulta,
             'categorias' => $categorias,

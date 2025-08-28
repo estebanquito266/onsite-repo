@@ -25,9 +25,10 @@
               {!!Form::text('reparacion_id',(isset($ticket)?($ticket->reparacion_id!=0?$ticket->reparacion_id:null):null), ['class'=>'form-control','placeholder'=>'Ingrese ID de Reparación a buscar...','id'=>'reparacion_id'])!!}
               @endif
               <span class="help-block badge badge-secondary" id="reparacionMsg"></span>
-              {{-- <span id="reparacionDataClave">Clave: {{$reparacion->clave ?? ''}}</span>
-              <span id="reparacionDataSucursal">Sucursal: {{$reparacion->sucursal_onsite->razon_social ?? ''}}</span>
-              <span id="reparacionDataEstado">Estado: {{$reparacion->estado_onsite->nombre ?? ''}}</span> --}}
+
+              <p id="reparacionDataClave" style="margin-top: 12px">Clave: {{$reparacion->clave ?? ''}}</p>
+              <p id="reparacionDataSucursal">Sucursal: {{$reparacion->sucursal_onsite->razon_social ?? ''}}</p>
+              <p id="reparacionDataEstado">Estado: {{$reparacion->estado_onsite->nombre ?? ''}}</p>
             </div>
 
             <div class="form-group col-md-6" id="ticket_derivacion_id_create">
@@ -82,12 +83,12 @@
 
             <div class="form-group col-md-6" id="div_cliente_id" style="display: none;">
               <label>Cliente:</label>
-              <select name="cliente_id" id="cliente_id" class="form-control">
+              <input type="hidden" name="cliente_id" id="cliente_id" value="{{ $ticket->cliente_id ?? '' }}">
+              <select name="cliente_id2" id="cliente_id" class="form-control" style="display: none;" disabled>
                 <option value="">Seleccione el cliente</option>
                 @if(isset($cliente_reparacion->nombre))
                   <option value="{{$cliente_reparacion->id}}" selected>{{$cliente_reparacion->nombre}} - {{$cliente_reparacion->dni_cuit}}</option>
-                {{-- @elseif(isset($cliente_derivacion->nombre))
-                  <option value="{{$cliente_derivacion->id}}" selected>{{$cliente_derivacion->nombre}} - {{$cliente_derivacion->dni_cuit}}</option> --}}
+                
                 @elseif(isset($ticket) && !empty($ticket->type) && isset($ticket->cliente->id))
                   <option value="{{($ticket->type && isset($ticket->cliente->id)==1?$ticket->cliente->id:$ticket->cliente_derivacion->id)}}" selected>{{($ticket->type==1?$ticket->cliente->nombre:$ticket->cliente_derivacion->nombre)}} - {{$ticket->type==1?$ticket->cliente->dni_cuit:""}}</option>
                 @endif

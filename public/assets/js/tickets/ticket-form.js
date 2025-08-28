@@ -62,14 +62,14 @@ $(document).ready(function () {
     $('#div_buscar_cliente_derivacion').hide();
     $('#ticket_reparacion_id_create').show();
     $('#ticket_derivacion_id_create').hide();
-    $('#div_cliente_id').show();
+    // $('#div_cliente_id').show();
     $('#ticket_derivacion_id_create').prop('required', true);
   } else if (tipo_ticket == 2) {
     // $('#div_buscar_cliente_reparacion').hide();
     $('#div_buscar_cliente_derivacion').show();
     $('#ticket_reparacion_id_create').hide();
     $('#ticket_derivacion_id_create').show();
-    $('#div_cliente_id').show();
+    // $('#div_cliente_id').show();
     $('#ticket_derivacion_id_create').prop('required', false);
   } else {
     // $('#div_buscar_cliente_reparacion').hide();
@@ -85,10 +85,10 @@ $(document).ready(function () {
     placeholder: "Selecciona una opción",
   });
   //aplicacion select2 para los menu desplegables
-  $("#motivo_consulta_ticket_id, #category_ticket_id, #user_id, #group_user_receiver_id, #cliente_id").select2({
-    theme: "bootstrap4",
-    placeholder: "Selecciona una opción",
-  });
+  // $("#motivo_consulta_ticket_id, #category_ticket_id, #user_id, #group_user_receiver_id, #cliente_id").select2({
+  //   theme: "bootstrap4",
+  //   placeholder: "Selecciona una opción",
+  // });
 
   if ($("#fieldset_setup").val() == "disable_fields") { //Chequeo el valor del input para deshabilitar los campos del formulario (show/edit)
     $("#comentariosForm").show();
