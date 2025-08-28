@@ -77,5 +77,5 @@
 @include('_onsite.historialestadoonsite.modalpro')
 @include('_onsite.reparaciononsite.modalVisita')
 @include('_onsite.reparaciononsite.modal_reparacion_visitas')
-@include('tickets.modal-form', ['priorities' => $priorities, 'status' =>$status, 'motivos_consulta' =>$motivos_consulta, 'dataCompleta' =>$dataCompleta])
+@include('tickets.modal-form')
 @endsection
