@@ -290,6 +290,7 @@
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Clave</th>
                     <th>Ingreso</th>
                     <th>Prioridad</th>
                     <th>Operación</th>
@@ -310,6 +311,7 @@
                         {!! link_to_route('ticket.edit', $title = $ticket->id, $parameters = $ticket->id, $attributes =
                         null)!!}
                     </td>
+                    <td>@if(isset($ticket->reparacion)) {{$ticket->reparacion->clave}} @else "" @endif</td>
                     <td>{{date('d/m/Y', strtotime($ticket->created_at))}}</td>
                     <td class="text-center">
 
@@ -463,6 +465,7 @@
             <tfoot>
                 <tr>
                     <th>#</th>
+                    <th>Clave</th>
                     <th>Ingreso</th>
                     <th>Prioridad</th>
                     <th>N° Operación</th>
