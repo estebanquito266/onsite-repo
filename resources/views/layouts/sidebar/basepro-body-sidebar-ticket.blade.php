@@ -16,7 +16,7 @@
             }
         @endphp
         <li>
-            <a href="{{ Session::get('speedup_url').'ticket' }}">
+            <a href="{!! URL::to('/ticket/') !!}">
                 <i class="metismenu-icon {{Session::get($session_icon,'pe-7s-news-paper')}} {{$iconforced}}"></i>Listar Tickets
             </a>
         </li>
@@ -31,7 +31,7 @@
         @endphp
 
         <li>
-            <a href="{{ Session::get('speedup_url').'indexCerrados' }}">
+            <a href="{!! URL::to('/indexCerrados/') !!}">
                 <i class="metismenu-icon {{Session::get($session_icon,'pe-7s-news-paper')}} {{$iconforced}}"></i>Listar Tickets Cerrados
             </a>
         </li>
