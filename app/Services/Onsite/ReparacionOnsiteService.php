@@ -207,6 +207,21 @@ class ReparacionOnsiteService
 						Log::alert('es dos');
 
 					break;
+
+				case 3:
+					$datos['reportesGenerados'] = Notificacion::whereIn('empresa_id', $id_empresas)
+						->where('tipo', 'exportacion_servicios')
+						->orderBy('id', 'desc')->limit(5)->get();
+						Log::alert('es tres');
+
+					break;
+				case 4:
+					$datos['reportesGenerados'] = Notificacion::whereIn('empresa_id', $id_empresas)
+						->where('tipo', 'exportacion_servicios_activos')
+						->orderBy('id', 'desc')->limit(5)->get();
+						Log::alert('es cuatro');
+
+					break;
 			}
 		}
 		$datos['tiposServicios'] = $this->tiposServiciosService->listado($params['company_id']);
@@ -2558,6 +2573,18 @@ class ReparacionOnsiteService
 				if ($data_reparacion) $reparaciones_onsite_data[] = $data_reparacion;
 			}
 		} else return false;
+
+		return $reparaciones_onsite_data;
+	}
+
+	public function getDataRepIdByEstado($company_id, $id_estado)
+	{
+
+		$reparaciones_onsite_data = ReparacionOnsite::where('id_estado', $id_estado)
+								->where('company_id', $company_id)
+								->pluck('clave','id')
+								->toArray();
+
 
 		return $reparaciones_onsite_data;
 	}

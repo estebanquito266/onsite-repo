@@ -6,7 +6,21 @@
 
 <div class="main-card mb-3 card">
     <div class="card-header">
-        <h3 class="mr-3">Reporte de Reparaciones Onsite</h3>
+     
+        
+        @switch(intval($exitoso))
+            @case(3)
+                <h3 class="mr-3">Reporte de Servicios Onsite</h3>
+                @break
+
+            @case(4)
+                <h3 class="mr-3">Reporte de Casos Activos</h3>
+                @break
+
+            @default
+                <h3 class="mr-3">Reporte de Reparaciones Onsite</h3>
+        @endswitch
+
     </div>
     <div class="card-body text-center">
 
@@ -42,12 +56,22 @@
                             </select>
                         </div>
                     </div>
-                    <div class=' col-lg-4'>
-                        <div class='form-group'>
-                            <label>Solo Estados Activos</label>
-                            <input type="checkbox" id="estados_activo" name="estados_activo" data-toggle="toggle" data-on="SI" data-off="NO" data-onstyle="primary" data-offstyle="secondary" {{ (($estados_activo) ? 'checked' : '')}}>
+                    
+                    @if(intval($exitoso) === 3)
+                        <div class=' col-lg-4'>
+                            <div class='form-group swithdisabled swithdisabled-on '>
+                                <label>Solo Estados Activos</label>
+                                <input disabled type="checkbox" id="estados_activo" name="estados_activo" data-toggle="toggle" data-on="SI" data-off="NO" data-onstyle="primary" data-offstyle="secondary" {{ (($estados_activo) ? '' : '')}}>
+                            </div>
                         </div>
-                    </div>
+                    @else 
+                        <div class=' col-lg-4'>
+                            <div class='form-group {{ intval($exitoso) === 4 ? "swithdisabled swithdisabled-on" : "" }} '>
+                                <label>Solo Estados Activos</label>
+                                <input {{ intval($exitoso) === 4 ? 'disabled' : '' }} type="checkbox" id="estados_activo" name="estados_activo" data-toggle="toggle" data-on="SI" data-off="NO" data-onstyle="primary" data-offstyle="secondary" {{ (($estados_activo) ? 'checked' : '')}}>
+                            </div>
+                        </div>
+                    @endif
                     @if($exitoso == 0)
                     <div class=' col-lg-4'>
                         <div class='form-group'>
@@ -201,4 +225,23 @@
 
 @section('scripts')
 <script type="text/javascript" src="{!! asset('/assets/js/_onsite/reparacion-reporte.js') !!}"></script>
+
+<style>
+		.swithdisabled-on .btn-primary.toggle-on {
+			background-color: #829ee6 !important;
+			/* Color de fondo */
+		}
+
+		.swithdisabled-on .toggle-off {
+			font-size: 12px !important;
+		}
+
+		.swithdisabled-on .toggle {
+			border: 2px solid #e1e1e1;
+		}
+	</style>
+
 @endsection
+
+
+	

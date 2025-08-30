@@ -54,15 +54,16 @@ class ExportarReparacionesJob implements ShouldQueue
         Log::alert('comienza exportación');
         //  (new ReparacionesOnsiteExport($this->request, $this->userCompanyId))->store('exports/listado_rep_onsite.xlsx', 'local');
 
-
-
-
-        // Query the database with lazy collection
+        //$view_reparaciones_onsite = config('queries.view_reparaciones_onsite');
+        
         $query = DB::table('view_reparaciones_onsite')
             //->where('id_empresa_onsite', 1095)
             //->where('id', '<' , 50000)
             //->where('estado_activo', true)
             ->orderBy('id', 'desc');
+
+        /*$query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"))
+                                        ->orderBy('id','desc');*/
 
         switch ($this->request['exitoso']) {
             case 0:
@@ -74,21 +75,30 @@ class ExportarReparacionesJob implements ShouldQueue
                 $filename = 'reparaciones_EX_';
                 $query = $query->whereIn('id_estado', [45]);
                 $tipo = 'exportacion_exitosa'; //es para filtrar el listado de las exportaciones generadas
-
                 break;
 
             case 2:
                 $query = $query->whereIn('id_estado', [46]);
                 $filename = 'reparaciones_NO_EX_';
                 $tipo = 'exportacion_no_exitosa'; //es para filtrar el listado de las exportaciones generadas
-
                 break;
-                
+            case 3:
+                $filename = 'servicios_';
+                $tipo = 'exportacion_servicios'; //es para filtrar el listado de las exportaciones generadas
+                unset($this->request['estados_activo']);
+                break;
+            case 4:
+                $filename = 'servicios_ACT_';
+                $tipo = 'exportacion_servicios_activos'; //es para filtrar el listado de las exportaciones generadas
+                $this->request['estados_activo'] = 'on';
+                break;
         }
 
         if (isset($this->request['id_empresa']) && count($this->request['id_empresa']) > 0) {
-            $filename .= 'EMP_';            
+            $filename .= 'EMP_';
             $query = $query->whereIn('id_empresa_onsite', $this->request['id_empresa']);
+            //$query = $query->where('id_empresa_onsite', 1095);
+
             foreach ($this->request['id_empresa'] as $key => $value) {
                 $filename .= $value . '-';
             }
@@ -126,6 +136,17 @@ class ExportarReparacionesJob implements ShouldQueue
 
 
         $query = $query->get(); // Use lazy() to fetch data in chunks
+
+        $reparacionIds = $query->pluck('id')->all();
+
+        $imagenes = DB::table('imagenes_onsite')
+                            ->select('reparacion_onsite_id', 'archivo')
+                            ->whereIn('reparacion_onsite_id', $reparacionIds)
+                            ->orderBy('reparacion_onsite_id')
+                            ->orderBy('id')
+                            ->get()
+                            ->groupBy('reparacion_onsite_id');
+    
 
         Log::info('Memory usage after get: ' . memory_get_usage());
 
@@ -244,6 +265,7 @@ class ExportarReparacionesJob implements ShouldQueue
                     'ACLARACION_CLIENTE',
                     'FIRMA_TECNICO',
                     'ACLARACION_TECNICO',
+                    'JUSTIFICACION',
                     'created_at'
 
                 ];
@@ -349,6 +371,7 @@ class ExportarReparacionesJob implements ShouldQueue
                     'aclaracion_cliente',
                     'firma_tecnico',
                     'aclaracion_tecnico',
+                    'justificacion',
                     'created_at',
                 ];
                 break;
@@ -443,10 +466,169 @@ class ExportarReparacionesJob implements ShouldQueue
 
                 ];
                 break;
+
+            case 3:
+
+                $header = [
+                    'CLAVE',
+                    'SUCURSAL_DIRECCION',
+                    'SUCURSAL_TELEFONO',
+                    'ID_TERMINAL',
+                    'TERMINAL_MARCA',
+                    'TERMINAL_MODELO',
+                    'TERMINAL_SERIE',
+                    'LOCALIDAD',
+                    'LOCALIDAD_PROVINCIA',
+                    'LOCALIDAD_ESTANDARD',
+                    'LOCALIDAD_CODIGO_POSTAL',
+                    'LOCALIDAD_NIVEL',
+                    'LOCALIDAD_ATIENDE_DESDE',
+                    'TAREA',
+                    'DETALLE_TAREA',
+                    'TIPO_SERVICIO',
+                    'ESTADO',
+                    'FECHA_INGRESO',
+                    'OBSERVACION_UBICACION',
+                    'TECNICO_ASIGNADO',
+                    'INFORME_TECNICO',
+                    'FECHA_REGISTRACION_COORDINACION',
+                    'FECHA_1_VISITA',
+                    'FECHA_1_VENCIMIENTO',
+                    'FECHA_VENCIMIENTO',
+                    'FECHA_CERRADO',
+                    'SLA_STATUS',
+                    'SLA_JUSTIFICADO',
+                    'REQUIERE_NUEVA_VISITA',
+                    'OBSERVACIONES_INTERNAS',
+                    'CODIGO_ACTIVO_NUEVO1',
+                    'CODIGO_ACTIVO_RETIRADO1',
+                    'CODIGO_ACTIVO_DESCRIPCION1',
+                    'CODIGO_ACTIVO_NUEVO2',
+                    'CODIGO_ACTIVO_RETIRADO2',
+                    'FIRMA_CLIENTE',
+                    'ACLARACION_CLIENTE',
+                    'FIRMA_TECNICO',
+                    'ACLARACION_TECNICO',
+
+                ];
+
+                // Add header row dynamically
+                $columns = [
+                    'clave',
+                    'direccion',
+                    'telefono_contacto',
+                    'id_terminal',
+                    'marca',
+                    'modelo',
+                    'serie',
+                    'localidad',
+                    'provincia_nombre',
+                    'localidad_estandard',
+                    'codigo',
+                    'nivel_nombre',
+                    'atiende_desde',
+                    'tarea',
+                    'tarea_detalle',
+                    'ts_nombre',
+                    'estado_nombre',
+                    'fecha_ingreso',
+                    'observacion_ubicacion',
+                    'tecnico',
+                    'informe_tecnico',
+                    'fecha_registracion_coordinacion',
+                    'primer_visita',
+                    'vencimiento',
+                    'fecha_vencimiento',
+                    'fecha_cerrado',
+                    'sla_status',
+                    'sla_justificado',
+                    'requiere_nueva_visita',
+                    'observaciones_internas',
+                    'codigo_activo_nuevo1',
+                    'codigo_activo_retirado1',
+                    'codigo_activo_descripcion1',
+                    'codigo_activo_nuevo2',
+                    'codigo_activo_retirado2',
+                    'firma_cliente',
+                    'aclaracion_cliente',
+                    'firma_tecnico',
+                    'aclaracion_tecnico',
+                ];
+
+                break;
+
+            case 4:
+
+                $header = [
+                    'CLAVE',
+                    'SUCURSAL_DIRECCION',
+                    'SUCURSAL_TELEFONO',
+                    'ID_TERMINAL',
+                    'TERMINAL_MARCA',
+                    'TERMINAL_MODELO',
+                    'TERMINAL_SERIE',
+                    'LOCALIDAD',
+                    'LOCALIDAD_PROVINCIA',
+                    'LOCALIDAD_ESTANDARD',
+                    'LOCALIDAD_CODIGO_POSTAL',
+                    'LOCALIDAD_NIVEL',
+                    'LOCALIDAD_ATIENDE_DESDE',
+                    'TAREA',
+                    'DETALLE_TAREA',
+                    'TIPO_SERVICIO',
+                    'ESTADO',
+                    'FECHA_INGRESO',
+                    'OBSERVACION_UBICACION',
+                    'TECNICO_ASIGNADO',
+                    'FECHA_1_VISITA',
+                    'FECHA_1_VENCIMIENTO',
+                    'FECHA_VENCIMIENTO',
+                    'SLA_STATUS',
+                    'OBSERVACIONES_INTERNAS',
+                    'JUSTIFICACION',
+
+                ];
+
+                // Add header row dynamically
+                $columns = [
+                    'clave',
+                    'direccion',
+                    'telefono_contacto',
+                    'id_terminal',
+                    'marca',
+                    'modelo',
+                    'serie',
+                    'localidad',
+                    'provincia_nombre',
+                    'localidad_estandard',
+                    'codigo',
+                    'nivel_nombre',
+                    'atiende_desde',
+                    'tarea',
+                    'tarea_detalle',
+                    'ts_nombre',
+                    'estado_nombre',
+                    'fecha_ingreso',
+                    'observacion_ubicacion',
+                    'tecnico',
+                    'primer_visita',
+                    'vencimiento',
+                    'fecha_vencimiento',
+                    'sla_status',
+                    'observaciones_internas',
+                    'justificacion'
+                ];
+
+
+                break;
         }
 
-
-
+        for ($i = 1; $i <= 5; $i++) {
+            $header[] = 'EVIDENCIA ' . $i;
+        }
+        
+        $header[] = 'Log';
+        
 
         $style = (new StyleBuilder())
             ->setBackgroundColor(Color::LIGHT_BLUE)
@@ -472,16 +654,30 @@ class ExportarReparacionesJob implements ShouldQueue
             ->build();
 
 
+        $URL_IMG = config('app.URL_IMG');
 
-
-        $query->chunk(1000)->each(function ($chunk) use ($writer, $columns, $style) {
-            $chunk->each(function ($reparacion) use ($writer, $columns, $style) {
+        $query->chunk(1000)->each(function ($chunk) use ($writer, $columns, $style,$imagenes,$URL_IMG) {
+            $chunk->each(function ($reparacion) use ($writer, $columns, $style,$imagenes,$URL_IMG) {
 
                 $data = [];
                 foreach ($columns as $column) {
                     $data[] = $reparacion->$column ?? null; // Use null if column is missing
                 }
 
+                $imgs = $imagenes->get($reparacion->id, collect())->take(5);
+
+                for ($i = 0; $i < 5; $i++) {
+                    $archivo = null;
+                    if(isset($imgs[$i]) && $imgs[$i]->archivo){
+                        $archivo = "{$URL_IMG}/".$imgs[$i]->archivo;
+                        $archivo = '=HYPERLINK("' . $archivo . '", "'.$archivo.'")';
+                    }
+                    $data[] = $archivo;
+                }
+
+
+                $data[] = $reparacion->log; //Columna Log
+                
                 $rowFromValues = WriterEntityFactory::createRowFromArray($data, $style); //php viejo
 
                 //$writer->addRow(Row::fromValues($data, $style)); php nuevo

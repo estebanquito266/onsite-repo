@@ -80,7 +80,10 @@ class ReparacionOnsite extends Model
 
 		'sistema_onsite_id',
 		'reparacion_onsite_puesta_marcha_id',
-		'solicitud_tipo_id'
+		'solicitud_tipo_id',
+
+		'justificacion',
+		'log'
 
 	];
 

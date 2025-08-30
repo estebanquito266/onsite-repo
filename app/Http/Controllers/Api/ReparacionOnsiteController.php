@@ -96,6 +96,8 @@ class ReparacionOnsiteController extends Controller
    */
   public function index(Request $request)
   {
+    Log::alert('index app');
+
     $user_id = Auth::user()->id;
 
     $reparaciones_onsite_query = $this->reparacion_onsite_repository->filtrar($request['filter']);
@@ -103,6 +105,8 @@ class ReparacionOnsiteController extends Controller
     $reparaciones_onsite_query->where('id_tecnico_asignado', $user_id)->applySorts($request['sort']);
 
     $reparaciones_onsite = $this->marcaVencimientos($reparaciones_onsite_query->get());
+
+    Log::alert(json_encode($reparaciones_onsite));
 
     return ReparacionOnsiteCollection::make($reparaciones_onsite);
   }
@@ -114,6 +118,7 @@ class ReparacionOnsiteController extends Controller
    */
   public function dashboard(Request $request)
   {
+    Log::alert('dashboard app');
     $reparaciones_onsite_activas = $this->getActivasByAuthUserQuery();
 
     $cantidad_total = $reparaciones_onsite_activas->count();
@@ -131,6 +136,8 @@ class ReparacionOnsiteController extends Controller
       ];
     }
 
+    Log::alert(json_encode($respuesta));
+
     return response()->json([
       'data' => array_values($respuesta)
     ]);
@@ -144,6 +151,9 @@ class ReparacionOnsiteController extends Controller
    */
   public function show(ReparacionOnsite $reparacion_onsite)
   {
+
+    Log::alert('test APP TECNICOS');
+    Log::alert(json_encode(ReparacionOnsiteResource::make($reparacion_onsite)));
 
     return ReparacionOnsiteResource::make($reparacion_onsite);
   }
@@ -204,9 +214,15 @@ class ReparacionOnsiteController extends Controller
 
     $fecha_hora = $request['fecha_coordinada'] . ' ' . $hora;
 
-    $this->createGoogleCalendarEvent($reparacion_onsite, $fecha_hora);
-
     $reparacion_onsite->save();
+
+    try {
+
+      $this->createGoogleCalendarEvent($reparacion_onsite, $fecha_hora);
+    } catch (\Throwable $th) {
+      Log::alert('Fallo al crear el evento en el calendario de onsite');
+    }
+
 
     $user_id = Auth::user()->id;
 
@@ -720,7 +736,7 @@ class ReparacionOnsiteController extends Controller
   public function getReparacion($company_id, $id_reparacion)
   {
     try {
-      
+
       $mje = $this->reparacion_onsite_service->getDataEdit($id_reparacion, $company_id);
 
       if ($mje) {
@@ -745,7 +761,7 @@ class ReparacionOnsiteController extends Controller
   public function getReparacionPorClave($company_id, $clave)
   {
     try {
-      
+
       $mje = $this->reparacion_onsite_service->getDataEditByClave($company_id, $clave);
       if ($mje) {
         return response()->json([
@@ -758,6 +774,30 @@ class ReparacionOnsiteController extends Controller
         ], 500);
     } catch (\Exception $e) {
       Log::error('update_reparacion_api: ' . json_encode($clave) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
+
+      return response()->json([
+        'error' => $e->getMessage(),
+        'message' => 'Server Error'
+      ], 500);
+    }
+  }
+
+  public function getReparacionIdPorEstado($company_id, $id_estado)
+  {
+    try {
+
+      $mje = $this->reparacion_onsite_service->getDataRepIdByEstado($company_id, $id_estado);
+      if ($mje) {
+        return response()->json([
+          'data' => $mje,
+        ], 200);
+      } else
+        return response()->json([
+          'error' => 'Error de conexión al servidor',
+          'message' => 'Server Error'
+        ], 500);
+    } catch (\Exception $e) {
+      Log::error('getReparacionIdPorEstado: ' . json_encode($id_estado) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
 
       return response()->json([
         'error' => $e->getMessage(),

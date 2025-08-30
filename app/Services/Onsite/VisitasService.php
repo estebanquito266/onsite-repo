@@ -855,7 +855,11 @@ class VisitasService
         $obra = $reparacion->sistema_onsite->obra_onsite->nombre;
         //$tipo_servicio = $reparacion->tipo_servicio_onsite->nombre;
         $tipo_servicio = $reparacion->solicitud_tipo->nombre;
-        $detalle_tarea = $reparacion->informe_tecnico;
+
+        $detalle_tarea = '-';
+        if (!is_null($reparacion->informe_tecnico) && strlen($reparacion->informe_tecnico) > 2)
+            $detalle_tarea = $reparacion->informe_tecnico;
+
 
         if ($reparacion->observaciones_internas != 'null') {
             $observaciones = $reparacion->observaciones_internas;
@@ -863,8 +867,8 @@ class VisitasService
             $observaciones = '-';
 
 
-        $resultado = ReparacionChecklistOnsite::where('company_id', $this->userCompanyId)
-            ->where('reparacion_onsite_id', $reparacion->id)
+        $resultado = ReparacionChecklistOnsite::/* where('company_id', $this->userCompanyId)
+            -> */where('reparacion_onsite_id', $reparacion->id)
             ->first();
 
 

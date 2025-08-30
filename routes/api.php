@@ -255,6 +255,9 @@ Route::group(['middleware' => ['auth:api', 'cors'], 'prefix' => 'api'], function
   /* reparacion por clave */
   Route::get('reparacion/clave/{company_id}/{clave}', [ReparacionOnsiteController::class, 'getReparacionPorClave']);
 
+  /* reparaciones id por estado_id */
+  Route::get('reparacion/estado/{company_id}/{id_estado}', [ReparacionOnsiteController::class, 'getReparacionIdPorEstado']);
+
   /* crear reparacion */
   Route::post('reparacion/create/{company_id}', [ReparacionOnsiteController::class, 'storeReparacionApi']);
 

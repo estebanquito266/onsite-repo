@@ -101,6 +101,9 @@ class ImportacionService
 		// Convert the CSV to an array
 		$registros = $this->csvToArray($absolutePath);
 
+
+
+
 		if (is_null($company_id)) {
 			$this->companyId = Session::get('userCompanyIdDefault');
 		} else $this->companyId = $company_id;
@@ -225,6 +228,7 @@ class ImportacionService
 					if ($reparacionOnsite != null) {
 
 						$this->reparacionesCreadas++;
+
 						$this->reparacionesOnsiteService->actualizarImagenes($reparacionOnsite['reparacionOnsite'], $registro);
 					} else {
 						$this->salteadosError++;
@@ -244,6 +248,7 @@ class ImportacionService
 					$reparacionOnsite = $this->updateReparacionOnsite($reparacionOnsite, $estadoReparacionOnsiteId, $tipoServicioOnsite, $registro, $company_id, $user_id);
 
 					if ($reparacionOnsite != null) {
+
 						$this->reparacionesActualizadas++;
 						$this->filasActualizadas = $this->filasActualizadas . ' ' . ($fila + 2) . ',';
 					} else {
@@ -373,6 +378,10 @@ class ImportacionService
 				$data['informe_tecnico'] = $registro['INFORME_TECNICO'];
 			}
 
+			if (isset($registro['JUSTIFICACION']) && $registro['JUSTIFICACION']) {
+				$data['justificacion'] = $registro['JUSTIFICACION'];
+			}
+
 			/* este codigo reemplaza la porción comentada de abajo */
 
 			$fields = [
@@ -392,37 +401,12 @@ class ImportacionService
 
 
 
-			/* $data['codigo_activo_descripcion1'] =  $registro['codigo_activo_descripcion1'] ?? null;
-			$data['codigo_activo_descripcion10'] =  $registro['codigo_activo_descripcion10'] ?? null;
-			$data['codigo_activo_descripcion2'] =  $registro['codigo_activo_descripcion2'] ?? null;
-			$data['codigo_activo_descripcion3'] =  $registro['codigo_activo_descripcion3'] ?? null;
-			$data['codigo_activo_descripcion4'] =  $registro['codigo_activo_descripcion4'] ?? null;
-			$data['codigo_activo_descripcion5'] =  $registro['codigo_activo_descripcion5'] ?? null;
-			$data['codigo_activo_descripcion6'] =  $registro['codigo_activo_descripcion6'] ?? null;
-			$data['codigo_activo_descripcion7'] =  $registro['codigo_activo_descripcion7'] ?? null;
-			$data['codigo_activo_descripcion8'] =  $registro['codigo_activo_descripcion8'] ?? null;
-			$data['codigo_activo_descripcion9'] =  $registro['codigo_activo_descripcion9'] ?? null;
-			$data['codigo_activo_nuevo1'] =  $registro['codigo_activo_nuevo1'] ?? null;
-			$data['codigo_activo_nuevo10'] =  $registro['codigo_activo_nuevo10'] ?? null;
-			$data['codigo_activo_nuevo2'] =  $registro['codigo_activo_nuevo2'] ?? null;
-			$data['codigo_activo_nuevo3'] =  $registro['codigo_activo_nuevo3'] ?? null;
-			$data['codigo_activo_nuevo4'] =  $registro['codigo_activo_nuevo4'] ?? null;
-			$data['codigo_activo_nuevo5'] =  $registro['codigo_activo_nuevo5'] ?? null;
-			$data['codigo_activo_nuevo6'] =  $registro['codigo_activo_nuevo6'] ?? null;
-			$data['codigo_activo_nuevo7'] =  $registro['codigo_activo_nuevo7'] ?? null;
-			$data['codigo_activo_nuevo8'] =  $registro['codigo_activo_nuevo8'] ?? null;
-			$data['codigo_activo_nuevo9'] =  $registro['codigo_activo_nuevo9'] ?? null;
-			$data['codigo_activo_retirado1'] =  $registro['codigo_activo_retirado1'] ?? null;
-			$data['codigo_activo_retirado10'] =  $registro['codigo_activo_retirado10'] ?? null;
-			$data['codigo_activo_retirado2'] =  $registro['codigo_activo_retirado2'] ?? null;
-			$data['codigo_activo_retirado3'] =  $registro['codigo_activo_retirado3'] ?? null;
-			$data['codigo_activo_retirado4'] =  $registro['codigo_activo_retirado4'] ?? null;
-			$data['codigo_activo_retirado5'] =  $registro['codigo_activo_retirado5'] ?? null;
-			$data['codigo_activo_retirado6'] =  $registro['codigo_activo_retirado6'] ?? null;
-			$data['codigo_activo_retirado7'] =  $registro['codigo_activo_retirado7'] ?? null;
-			$data['codigo_activo_retirado8'] =  $registro['codigo_activo_retirado8'] ?? null;
-			$data['codigo_activo_retirado9'] =  $registro['codigo_activo_retirado9'] ?? null; */
 
+			for ($i = 1; $i <= 10; $i++) {
+				if (isset($registro['IMAGEN_ONSITE_' . $i]) && !empty($registro['IMAGEN_ONSITE_' . $i])) {
+					$data['IMAGEN_ONSITE_' . $i] = $registro['IMAGEN_ONSITE_' . $i];
+				}
+			}
 
 			$data['ruta'] = 'reparacionOnsite';
 
@@ -506,7 +490,7 @@ class ImportacionService
 
 			$observacionUbicacion = (isset($registro['OBSERVACION_UBICACION'])) ? $registro['OBSERVACION_UBICACION'] : '-';
 
-
+			$justificacion = (isset($registro['JUSTIFICACION'])) ? $registro['JUSTIFICACION'] : null;
 
 			$observacion = 'Reparación generada por Importación';
 
@@ -535,6 +519,7 @@ class ImportacionService
 				'problemaResuelto' => $problemaResuelto,
 				'observacionesInternas' => $observacionesInternas,
 				'visibleCliente' => $visibleCliente,
+				'justificacion' => $justificacion,
 
 				'codigo_activo_descripcion1' => $registro['codigo_activo_descripcion1'] ?? null,
 				'codigo_activo_descripcion10' => $registro['codigo_activo_descripcion10'] ?? null,
@@ -758,7 +743,7 @@ class ImportacionService
 			if (!$localidad) {
 				$localidad = $this->localidadesOnsite->getLocalidadByCodigoPostal($param['localidadCodigoPostal']);
 			}
-			Log::info($localidad);
+			//Log::info($localidad);
 
 			if ($localidad) {
 				Log::info('ImportacionService - getSucursalOnsite - store Sucursal');

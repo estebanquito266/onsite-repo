@@ -23,7 +23,7 @@
         <form action="{{ url('importarReparacionesOnsite') }}" method="POST" class="form-inline" enctype="multipart/form-data">
           {{ csrf_field() }}
           <div class="form-group mr-2">
-            <a href="imports/template_reparaciones_onsite_2024.csv" class="btn btn-light btn-pill" style="display:inline;"><i class="fa fa-arrow-circle-down"></i> Template Importac. </a>
+            <a href="imports/template_reparaciones_onsite_2025.csv" class="btn btn-light btn-pill" style="display:inline;"><i class="fa fa-arrow-circle-down"></i> Template Importac. </a>
           </div>
           <div class="form-group">
             <input type="file" name="archivo" class="form-control mr-2">

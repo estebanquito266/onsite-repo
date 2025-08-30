@@ -240,4 +240,5 @@ return [
 
     ],
 
+    'URL_IMG' => env('URL_IMG', 'https://onsite.speedup.com.ar/imagenes/reparaciones_onsite'), //Setear en el .env para entornos locales
 ];

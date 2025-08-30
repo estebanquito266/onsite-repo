@@ -62,7 +62,8 @@ class UpdateReparacionRequest extends FormRequest
             'sistema_onsite_id' => '',
             'reparacion_onsite_puesta_marcha_id' => '',
             'solicitud_tipo_id' => '',
-
+            'justificacion',
+            'log',
             'ruta'  => '',
             'id_tecnico_asignado'  => '',
             'sla_justificado'  => '',
