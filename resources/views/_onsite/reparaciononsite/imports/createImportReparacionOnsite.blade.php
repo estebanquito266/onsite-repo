@@ -42,7 +42,7 @@
 											<i class="pe-7s-menu btn-icon-wrapper"></i>
 										</button>
 										<div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu-right rm-pointers dropdown-menu-shadow dropdown-menu-hover-link dropdown-menu" style="">
-											<a href="imports/template_reparaciones_onsite_2025.csv" type="button" tabindex="0" class="dropdown-item" id="showtoast">
+											<a href="{{'/imports/template_reparaciones_onsite_2024.xlsx'}}" type="button" tabindex="0" class="dropdown-item" id="showtoast">
 												<i class="dropdown-icon lnr-inbox"> </i><span>Descargar Modelo</span>
 											</a>
 										</div>
