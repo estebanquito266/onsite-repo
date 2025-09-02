@@ -6,37 +6,16 @@
 @include('_onsite.reparaciononsite.top')
 
 <div class="main-card mb-3 card">
+
+
   <div class="card-header">
-    <span class="col-lg-8">
-      <h3 class="mr-3">Reparaciones</h3>
-    </span>
-    <span class="col-lg-4 float-right">
-      <span class="text-center col-md-4 small p-1 text-capitalize">
-        <button type="button" data-toggle="collapse" href="#filtro" class="btn-shadow btn btn-secondary btn-sm">
-          <i class="fa fa-filter"></i>
-        </button>
-        Filtrar
-      </span>
+        <h3 class="mr-3">{{strtoupper("Reparaciones")}}</h3>
 
-      <span class="text-center col-md-4 small p-1 text-capitalize">
-        <a type="button" href="/exports/listado_reparaciononsite_{{ $user_id }}.xlsx" class="btn-shadow btn btn-secondary btn-sm">
-          <i class="fa fa-download"></i>
-        </a>
-        Descargar
-      </span>
-      <span class="text-center col-md-4 small p-1 text-capitalize">
-        <button type="button" data-toggle="collapse" href="#importador" class="btn-shadow btn btn-secondary btn-sm">
-          <i class="fa fa-upload"></i>
-        </button>
-        Importar
-      </span>
-    </span>
-
-  </div>
+    </div>
 
   <div class="card-body">
 
-    @include('_onsite.reparaciononsite.filtroIndex')
+  @include('_onsite.reparaciononsite.filtroIndex2')
 
 
     <div class="collapse border pl-3 pr-3 mb-5" id="importador">
@@ -88,21 +67,21 @@
       </div>
     </div>
 
-    <table style="width: 100%;" id="example" class="table table-hover table-striped table-bordered ">
+    <table style="width: 100%;" id="example22333" class="table table-hover table-striped table-bordered " >
       <thead>
         <tr>
-          <th>Clave</th>
+          <th class="all">Clave</th>
           <th>Empresa</th>
           <th>Sucursal</th>
           <th>Terminal</th>
-          <th>Tipo de Servicio</th>
+          <th>Servicio</th>
           <th>Estado</th>
-          <th>Técnico Asignado</th>
-          <th>Fecha de Ingreso</th>
-          <th>Fecha Vencimiento</th>
+          <th>Técnico</th>
+          <th>Ingreso</th>
+          <th>Vencimiento</th>
           <th>SLA</th>
           <th>Prioridad</th>
-          <th>Nota</th>
+          <th class="all">Nota</th>
         </tr>
       </thead>
       <tbody class="small">
@@ -123,17 +102,17 @@
           <td>
             {{ ($reparacionOnsite->tipo_servicio_onsite) ? $reparacionOnsite->tipo_servicio_onsite->nombre : '' }}
           </td>
-          <td class="text-center">
+          <td class="text-left">
             <button class="btn btn-link" name="consultarHistorialEstadoOnsite" data-toggle="modal" data-target="#modalHistorialEstadosOnsite" value="{{ $reparacionOnsite->id }}" type="button">{{ ($reparacionOnsite->estado_onsite) ? $reparacionOnsite->estado_onsite->nombre : '' }}</button>
           </td>
           <td>
             {{ ($reparacionOnsite->tecnicoAsignado) ? $reparacionOnsite->tecnicoAsignado->name : '' }}
           </td>
           <td>
-            {{$reparacionOnsite->fecha_ingreso}}
+          {{$reparacionOnsite->fecha_ingreso?date('Y-m-d', strtotime($reparacionOnsite->fecha_ingreso)):' '}}
           </td>
           <td>
-            {{$reparacionOnsite->fecha_vencimiento}}
+          {{$reparacionOnsite->fecha_vencimiento?date('Y-m-d', strtotime($reparacionOnsite->fecha_vencimiento)):' '}}
           </td>
 
           @if( $reparacionOnsite->fecha_cerrado == '0000-00-00 00:00:00' )
@@ -178,8 +157,10 @@
                 <td>
                   {{$reparacionOnsite->prioridad}}
                 </td>
-                <td>
-                  <button class='btn btn-info btn-link my-2' name='agregarNota' data-toggle='modal' data-target='#modalAgregarNota' value='{{$reparacionOnsite->id}}'><i class="fa fa-sticky-note" aria-hidden="true" title="Agregar nota" data-toggle="tooltip"></i></button>
+                <td class="text-center ">
+                  <button class="btn-icon btn-icon-only btn-shadow btn-outline-2x btn btn-outline-info btn-sm" style="padding: 1px 5px;" name='agregarNota' data-toggle='modal' data-target='#modalAgregarNota' value='{{$reparacionOnsite->id}}'>
+                    <i class="pe-7s-note btn-icon-wrapper" style="font-size: 20px;"> </i>
+                  </button>
                 </td>
         </tr>
         @endforeach
@@ -190,11 +171,11 @@
           <th>Empresa</th>
           <th>Sucursal</th>
           <th>Terminal</th>
-          <th>Tipo de Servicio</th>
+          <th>Servicio</th>
           <th>Estado</th>
-          <th>Técnico Asignado</th>
-          <th>Fecha de Ingreso</th>
-          <th>Fecha Vencimiento</th>
+          <th>Técnico</th>
+          <th>Ingreso</th>
+          <th>Vencimiento</th>
           <th>SLA</th>
           <th>Prioridad</th>
           <th>Nota</th>
@@ -204,11 +185,7 @@
 
     <!---- PAGINATE -->
 
-    @if( Request::path() =='reparacionOnsite' || Request::path() =='reparacionOnsitePosnet' )
-    @include('pagination.default-limit-links', ['paginator' => $reparacionesOnsite, 'filters' => ''])
-    @else
-    @include('pagination.default-limit-links', ['paginator' => $reparacionesOnsite, 'filters' => '&texto='. $texto .'&id_empresa='. $id_empresa .'&id_tipo_servicio='. $id_tipo_servicio .'&id_estado='. $id_estado .'&id_tecnico='. $id_tecnico .'&fecha_vencimiento='. $fecha_vencimiento .'&estados_activo='. $estados_activo .'&ruta='. $ruta .'&liquidado_proveedor='. $liquidado_proveedor . '&sucursal_onsite=' . $sucursal_onsite . '&terminal_onsite=' . $terminal_onsite])
-    @endif
+    @include('layouts.default-limit-links', ['paginator' => $reparacionesOnsite, 'filters' => '','frmsubmit'=>'filtrarReparacionOnsite','showmessage'=>true,'class_loader'=>'clickoverlay' ])
 
     <!----  -->
 
@@ -218,10 +195,89 @@
 
 @endsection
 
+
+@section('css')
+
+
+<!-- DataTables Responsive CSS -->
+<link rel="stylesheet" href="/vendor/datatables-responsive/dataTables.responsive.css">
+@endsection
+
+
+
+
+
 @section('scripts')
 <script type="text/javascript" src="{!! asset('/assets/js/_onsite/reparaciones-onsite-historial-estados.js') !!}"></script>
 <script type="text/javascript" src="{!! asset('/assets/js/_onsite/reparaciones-onsite.js') !!}"></script>
 <script type="text/javascript" src="{!! asset('/assets/js/_onsite/agregar-nota.js') !!}"></script>
+
+<!-- DataTables JavaScript -->
+<!-- DataTables JavaScript -->
+<script src="/vendor/datatables/js/jquery.dataTables.min.js"></script>
+<script src="/vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+<script src="/vendor/datatables-responsive/dataTables.responsive.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+
+dataTableTickets = $('#example22333').DataTable({
+            paging: false,
+            responsive: true,
+            columnDefs: [{
+                "targets": [11], // Índice de la columna que no deseas que sea ordenable
+                "orderable": false
+            }],
+            info: false,
+            paging: false,
+            searching: false,
+           
+            drawCallback: function(settings) {
+                $('.dataTables_wrapper').removeClass('form-inline');
+            }
+        });
+    
+
+});
+</script>
+
+
+
+<style>
+.select2-scollable {
+    min-height: 300px !important;
+    overflow-y: auto; 
+} 
+    .btn-menu{
+        width: 150px !important;
+    }
+
+    .menu-footer{
+        background-color: white;
+        border-top: unset;
+    }
+
+    .modal-dialog {
+    box-shadow: none !important;
+}
+    .my-header{
+        text-transform: none !important;
+
+    }
+
+    table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child:before,
+    table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
+        background-color: #3ac47d;
+    }
+.dtr-details {
+    font-size: 110% !important;
+}
+.select2-container--bootstrap4 .select2-results>.select2-results__options {
+        min-height: 300px !important;
+        overflow-y: auto;
+    }
+</style>
+
 @endsection
 
 @section('modals')

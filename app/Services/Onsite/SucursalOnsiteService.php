@@ -326,7 +326,6 @@ class SucursalOnsiteService
 		} else {
 			return $consulta->paginate(100);
 		}
-		dd($consulta);
 		return $consulta;
 	}
 	public function findSucursal($id)

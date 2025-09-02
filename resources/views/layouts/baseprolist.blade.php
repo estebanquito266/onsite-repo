@@ -3,7 +3,22 @@
 
 <head>
     @include('layouts.basepro-head')
-
+    <style>
+	.granoverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #00000024;
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      flex-direction: column;
+    } 
+	</style>
 </head>
 <body>
 <div class="app-container app-theme-white body-tabs-shadow fixed-header fixed-sidebar">
@@ -32,8 +47,22 @@
 				
 			</div>
     </div>
-</div>
 
+    <div id="granoverlay" class="granoverlay">
+			<div class="loader-wrapper d-flex justify-content-center align-items-center">
+				<div class="loader">
+					<div class="ball-scale-multiple">
+					<div style="background-color: #3f6ad8eb;"></div>
+						<div style="background-color: #3f6ad8eb;"></div>
+						<div style="background-color: #3f6ad8eb;"></div>
+						<div style="background-color: #3f6ad8eb;"></div>
+					</div>
+				</div>
+			</div>
+		</div>	
+        
+</div>
+@include('layouts.base-echo')
 @include('layouts.basepro-body-drawer')
 
 <!--SCRIPTS INCLUDES-->

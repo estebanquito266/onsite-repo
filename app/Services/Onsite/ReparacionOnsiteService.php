@@ -43,6 +43,17 @@ use App\Services\Onsite\EmpresaOnsiteService;
 use App\Services\Onsite\SucursalOnsiteService;
 use App\Services\Onsite\TerminalOnsiteService;
 use App\Services\Onsite\SistemaOnsiteService;
+use Riparazione\Services\TicketsService;
+use Riparazione\Services\CommentTicketService;
+
+
+use App\Models\MotivoConsultaTicket;
+use App\CategoryTicket;
+use App\GroupTicket;
+use App\Models\Ticket\PriorityTicket;
+use App\Models\Ticket\StatusTicket;
+
+
 use Carbon\Carbon;
 use DateTime;
 use DB;
@@ -130,7 +141,6 @@ class ReparacionOnsiteService
 	{
 		$userCompanyId = Session::get('userCompanyIdDefault');
 		$userId = Auth::user()->id;
-		$listarSoloEstadosActivos = true;
 		$excludeEmpresa = '5';
 
 		$datos['sysdate'] = date('Y-m-d H:i:s');
@@ -141,14 +151,14 @@ class ReparacionOnsiteService
 		$datos['tecnicosOnsite'] = $this->userService->listarTecnicosOnsite($userCompanyId);
 		$datos['empresasOnsite'] = $this->empresaOnsiteService->listadoAll($userCompanyId, $request['includeEmpresa'], $request['excludeEmpresa']);
 
-		$datos['estados_activo'] = $listarSoloEstadosActivos;
+		$datos['estados_activo'] = ['activos'];
 		$datos['historialEstadosOnsite'] = array();
 		$datos['includeEmpresa'] = $request['includeEmpresa'];
 		$datos['excludeEmpresa'] = $request['excludeEmpresa'];
 
 		$params = [
 			'userCompanyId' => $userCompanyId,
-			'estadosActivos' => $listarSoloEstadosActivos,
+			'estadosActivos' => ['activos'],
 			'excludeEmpresa' => $request['excludeEmpresa'],
 			'includeEmpresa' => $request['includeEmpresa'],
 		];
@@ -163,6 +173,7 @@ class ReparacionOnsiteService
 
 		return $datos;
 	}
+
 
 	public function getData($params)
 	{
@@ -422,6 +433,20 @@ class ReparacionOnsiteService
 
 			$datos['sistemaOnsiteReparacion'] = $sistemaOnsiteReparacion;
 
+			$grupos = GroupTicket::select('id', 'name')->where('company_id', Session::get('userCompanyIdDefault'))->get();
+
+			$motivos_consulta_ticket = MotivoConsultaTicket::select('id', 'name')->where('company_id', Session::get('userCompanyIdDefault'))->get();
+			$categorias_ticket = CategoryTicket::select('id', 'name')->where('company_id', Session::get('userCompanyIdDefault'))->get();
+			$grupos_ticket_ticket = GroupTicket::select('id', 'name')->where('company_id', Session::get('userCompanyIdDefault'))->get();
+			$priorities_ticket = PriorityTicket::select('id', 'name')->get();
+			$status_ticket = StatusTicket::select('id', 'name')->get();
+
+			$datos['commentsTickets'] = array();
+            $datos['motivos_consulta'] = $motivos_consulta_ticket;
+            $datos['categorias'] = $categorias_ticket;
+            $datos['grupos'] = $grupos_ticket_ticket;
+            $datos['priorities'] = $priorities_ticket;
+            $datos['status'] = $status_ticket;
 			return $datos;
 		} else {
 			return false;
@@ -1099,7 +1124,7 @@ class ReparacionOnsiteService
 		$datos['id_estado'] = (isset($request['id_estado']) ? $request['id_estado'] : null);
 		$datos['id_tecnico'] = (isset($request['id_tecnico']) ? $request['id_tecnico'] : null);
 		$datos['fecha_vencimiento'] = (isset($request['fecha_vencimiento']) ? $request['fecha_vencimiento'] : null);
-		$datos['estados_activo'] = (isset($request['estados_activo']) && $request['estados_activo']) ? 1 : 0;
+		$datos['estados_activo'] = (isset($request['estados_activo']) ? $request['estados_activo'] : ['activos']);
 		$datos['liquidado_proveedor'] = (isset($request['liquidado_proveedor']) ? $request['liquidado_proveedor'] : null);
 		$datos['sucursal_onsite'] = (isset($request['sucursal_onsite']) ? $request['sucursal_onsite'] : null);
 		$datos['terminal_onsite'] = (isset($request['terminal_onsite']) ? $request['terminal_onsite'] : null);
@@ -1167,6 +1192,7 @@ class ReparacionOnsiteService
 		}
 		return $datos;
 	}
+
 
 	public function reparacionOnsiteChequeadoPorCliente($reparacionOnsiteId)
 	{
@@ -2357,9 +2383,20 @@ class ReparacionOnsiteService
 			$consulta->whereRaw(" DATE_FORMAT( reparaciones_onsite.created_at , '%Y-%m-%d' ) <= '" . $params['fechaCreacionHasta'] . "'");
 		}
 
-		if (!empty($params['estadosActivos'])) {
+		/*if (!empty($params['estadosActivos'])) {
 			$consulta = $consulta->join('estados_onsite', 'estados_onsite.id', '=', 'reparaciones_onsite.id_estado')
 				->where("estados_onsite.activo", true);
+		}*/
+
+		if (isset($params['estadosActivos']) && !in_array('todos',$params['estadosActivos'])) {
+			if(in_array('activos',$params['estadosActivos'])){
+				$consulta = $consulta->join('estados_onsite', 'estados_onsite.id', '=', 'reparaciones_onsite.id_estado')
+				->where("estados_onsite.activo", true);
+			}
+			if(in_array('inactivos',$params['estadosActivos'])){
+				$consulta = $consulta->join('estados_onsite', 'estados_onsite.id', '=', 'reparaciones_onsite.id_estado')
+				->where("estados_onsite.activo", false);
+			}
 		}
 
 		if (!empty($params['tipoEstadoOnsite'])) {
@@ -2422,7 +2459,7 @@ class ReparacionOnsiteService
 		if (!empty($params['tomar']))
 			return $consulta->skip($params['saltear'])->take($params['tomar'])->get();
 		else
-			return $consulta->paginate(100);
+			return $consulta->paginate(25);
 	}
 
 

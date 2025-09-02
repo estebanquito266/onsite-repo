@@ -43,7 +43,7 @@ class ImportacionService
 	private $salteadosExistentes = 0;
 	private $reparacionesActualizadas = 0;
 	private $filasActualizadas;
-	private $usuarioId;
+	public $usuarioId;
 	private $companyId;
 	private $filasExistentes;
 
@@ -267,7 +267,7 @@ class ImportacionService
 		return $succes;
 	}
 
-	private function updateReparacionOnsite($reparacionOnsite, $estadoReparacionOnsiteId, $tipoServicioOnsite, $registro, $company_id = null, $user_id = null)
+	public function updateReparacionOnsite($reparacionOnsite, $estadoReparacionOnsiteId, $tipoServicioOnsite, $registro, $company_id = null, $user_id = null)
 	{
 		Log::info('ImportadorService - updateReparacionOnsite');
 		if ($reparacionOnsite) {
@@ -276,27 +276,27 @@ class ImportacionService
 
 
 
-			if (isset($registro['ID_EMPRESA_ONSITE']) && $registro['ID_EMPRESA_ONSITE']) {
-				$data['id_empresa_onsite'] = $registro['ID_EMPRESA_ONSITE'];
+			if (isset($registro['id_empresa_onsite']) && $registro['id_empresa_onsite']) {
+				$data['id_empresa_onsite'] = $registro['id_empresa_onsite'];
 			}
 
-			if (isset($registro['SUCURSAL_ONSITE_ID']) && $registro['SUCURSAL_ONSITE_ID']) {
-				$data['sucursal_onsite_id'] = $registro['SUCURSAL_ONSITE_ID'];
+			if (isset($registro['sucursal_onsite_id']) && $registro['sucursal_onsite_id']) {
+				$data['sucursal_onsite_id'] = $registro['sucursal_onsite_id'];
 			}
 
-			if (isset($registro['ID_TERMINAL']) && $registro['ID_TERMINAL']) {
-				$data['id_terminal'] = $registro['ID_TERMINAL'];
+			if (isset($registro['id_terminal']) && $registro['id_terminal']) {
+				$data['id_terminal'] = $registro['id_terminal'];
 			}
 
-			if (isset($registro['TAREA']) && $registro['TAREA']) {
+			if (isset($registro['tarea']) && $registro['tarea']) {
 				//settype($registro['TAREA'], "string");
-				$data['tarea'] = (string) $registro['TAREA'];
+				$data['tarea'] = (string) $registro['tarea'];
 				$data['tarea'] = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data['tarea']);
 			}
 
-			if (isset($registro['DETALLE_TAREA']) && $registro['DETALLE_TAREA']) {
+			if (isset($registro['detalle_tarea']) && $registro['detalle_tarea']) {
 				//settype($registro['DETALLE_TAREA'], "string");
-				$data['tarea_detalle'] = (string) $registro['DETALLE_TAREA'];
+				$data['tarea_detalle'] = (string) $registro['detalle_tarea'];
 				$data['tarea_detalle'] = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data['tarea_detalle']);
 			}
 
@@ -308,78 +308,82 @@ class ImportacionService
 				$data['id_estado'] = $estadoReparacionOnsiteId;
 			}
 
-			if (isset($registro['FECHA_INGRESO']) && $registro['FECHA_INGRESO']) {
-				$data['fecha_ingreso'] = $registro['FECHA_INGRESO'];
+			if (isset($registro['fecha_ingreso']) && $registro['fecha_ingreso']) {
+				$data['fecha_ingreso'] = $registro['fecha_ingreso'];
 			}
 
-			if (isset($registro['OBSERVACION_UBICACION'])) {
-				$data['observacion_ubicacion'] = $registro['OBSERVACION_UBICACION'];
+			if (isset($registro['observacion_ubicacion'])) {
+				$data['observacion_ubicacion'] = $registro['observacion_ubicacion'];
 			}
 
-			if (isset($registro['FECHA_COORDINADA']) && $registro['FECHA_COORDINADA']) {
-				$data['fecha_coordinada'] = $registro['FECHA_COORDINADA'];
-			}
-
-
-			if (isset($registro['FECHA_VENCIMIENTO']) && $registro['FECHA_VENCIMIENTO']) {
-				$data['fecha_vencimiento'] = $registro['FECHA_VENCIMIENTO'];
-			}
-
-			if (isset($registro['FECHA_CERRADO']) && $registro['FECHA_CERRADO']) {
-				$data['fecha_cerrado'] = $registro['FECHA_CERRADO'];
-			}
-
-			if (isset($registro['SLA_STATUS']) && $registro['SLA_STATUS']) {
-				$data['sla_status'] = $registro['SLA_STATUS'];
-			}
-
-			if (isset($registro['SLA_JUSTIFICADO']) && $registro['SLA_JUSTIFICADO']) {
-				$data['sla_justificado'] = $registro['SLA_JUSTIFICADO'];
-			}
-
-			if (isset($registro['MONTO']) && $registro['MONTO']) {
-				$data['monto'] = $registro['MONTO'];
-			}
-
-			if (isset($registro['MONTO_EXTRA']) && $registro['MONTO_EXTRA']) {
-				$data['monto_extra'] = $registro['MONTO_EXTRA'];
-			}
-
-			if (isset($registro['LIQUIDADO_PROVEEDOR']) && $registro['LIQUIDADO_PROVEEDOR']) {
-				$data['liquidado_proveedor'] = $registro['LIQUIDADO_PROVEEDOR'];
+			if (isset($registro['fecha_coordinada']) && $registro['fecha_coordinada']) {
+				$data['fecha_coordinada'] = $registro['fecha_coordinada'];
 			}
 
 
-			if (isset($registro['VISIBLE_CLIENTE']) && $registro['VISIBLE_CLIENTE']) {
-				$data['visible_cliente'] = $registro['VISIBLE_CLIENTE'];
+			if (isset($registro['fecha_vencimiento']) && $registro['fecha_vencimiento']) {
+				$data['fecha_vencimiento'] = $registro['fecha_vencimiento'];
 			}
 
-			if (isset($registro['CHEQUEADO_CLIENTE']) && $registro['CHEQUEADO_CLIENTE']) {
-				$data['chequeado_cliente'] = $registro['CHEQUEADO_CLIENTE'];
+			if (isset($registro['fecha_cerrado']) && $registro['fecha_cerrado']) {
+				$data['fecha_cerrado'] = $registro['fecha_cerrado'];
 			}
 
-			if (isset($registro['PROBLEMA_RESUELTO']) && $registro['PROBLEMA_RESUELTO']) {
-				$data['problema_resuelto'] = $registro['PROBLEMA_RESUELTO'];
+			if (isset($registro['sla_status']) && $registro['sla_status']) {
+				$data['sla_status'] = $registro['sla_status'];
 			}
 
-			if (isset($registro['USUARIO_ID']) && $registro['USUARIO_ID']) {
-				$data['usuario_id'] = $registro['USUARIO_ID'];
+			if (isset($registro['sla_justificado']) && $registro['sla_justificado']) {
+				$data['sla_justificado'] = $registro['sla_justificado'];
 			}
 
-			if (isset($registro['NOTA_CLIENTE']) && $registro['NOTA_CLIENTE']) {
-				$data['nota_cliente'] = $registro['NOTA_CLIENTE'];
+			if (isset($registro['monto']) && $registro['monto']) {
+				$data['monto'] = $registro['monto'];
 			}
 
-			if (isset($registro['OBSERVACIONES_INTERNAS']) && $registro['OBSERVACIONES_INTERNAS']) {
-				$data['observaciones_internas'] = $registro['OBSERVACIONES_INTERNAS'];
+			if (isset($registro['monto_extra']) && $registro['monto_extra']) {
+				$data['monto_extra'] = $registro['monto_extra'];
 			}
 
-			if (isset($registro['INFORME_TECNICO']) && $registro['INFORME_TECNICO']) {
-				$data['informe_tecnico'] = $registro['INFORME_TECNICO'];
+			if (isset($registro['liquidado_proveedor']) && $registro['liquidado_proveedor']) {
+				$data['liquidado_proveedor'] = $registro['liquidado_proveedor'];
 			}
 
-			if (isset($registro['JUSTIFICACION']) && $registro['JUSTIFICACION']) {
-				$data['justificacion'] = $registro['JUSTIFICACION'];
+
+			if (isset($registro['visible_cliente']) && $registro['visible_cliente']) {
+				$data['visible_cliente'] = $registro['visible_cliente'];
+			}
+
+			if (isset($registro['chequeado_cliente']) && $registro['chequeado_cliente']) {
+				$data['chequeado_cliente'] = $registro['chequeado_cliente'];
+			}
+
+			if (isset($registro['problema_resuelto']) && $registro['problema_resuelto']) {
+				$data['problema_resuelto'] = $registro['problema_resuelto'];
+			}
+
+			if (isset($registro['usuario_id']) && $registro['usuario_id']) {
+				$data['usuario_id'] = $registro['usuario_id'];
+			}
+
+			if (isset($registro['nota_cliente']) && $registro['nota_cliente']) {
+				$data['nota_cliente'] = $registro['nota_cliente'];
+			}
+
+			if (isset($registro['observaciones_internas']) && $registro['observaciones_internas']) {
+				$data['observaciones_internas'] = $registro['observaciones_internas'];
+			}
+
+			if (isset($registro['informe_tecnico']) && $registro['informe_tecnico']) {
+				$data['informe_tecnico'] = $registro['informe_tecnico'];
+			}
+
+			if (isset($registro['justificacion']) && $registro['justificacion']) {
+				$data['justificacion'] = $registro['justificacion'];
+			}
+
+			if (isset($registro['log']) && $registro['log']) {
+				$data['log'] = $registro['log'];
 			}
 
 			/* este codigo reemplaza la porción comentada de abajo */
@@ -403,8 +407,8 @@ class ImportacionService
 
 
 			for ($i = 1; $i <= 10; $i++) {
-				if (isset($registro['IMAGEN_ONSITE_' . $i]) && !empty($registro['IMAGEN_ONSITE_' . $i])) {
-					$data['IMAGEN_ONSITE_' . $i] = $registro['IMAGEN_ONSITE_' . $i];
+				if (isset($registro['imagen_onsite_' . $i]) && !empty($registro['imagen_onsite_' . $i])) {
+					$data['imagen_onsite_' . $i] = $registro['imagen_onsite_' . $i];
 				}
 			}
 
@@ -416,15 +420,15 @@ class ImportacionService
 
 			/* registra reparacion_visita */
 			if (
-				isset($registro['fecha_1_visita']) && isset($registro['FECHA_VENCIMIENTO']) && isset($registro['fecha_nuevo_vencimiento'])
-				&& !empty($registro['fecha_1_visita']) && !empty($registro['FECHA_VENCIMIENTO']) && !empty($registro['fecha_nuevo_vencimiento'])
+				isset($registro['fecha_1_visita']) && isset($registro['fecha_vencimiento']) && isset($registro['fecha_nuevo_vencimiento'])
+				&& !empty($registro['fecha_1_visita']) && !empty($registro['fecha_vencimiento']) && !empty($registro['fecha_nuevo_vencimiento'])
 			) {
 
 				$reparacion_id = $reparacionOnsite->id;
 				$request_visitas = new Request([
 					'company_id' => $this->companyId,
 					'fecha' => $registro['fecha_1_visita'],
-					'fecha_vencimiento' => $registro['FECHA_VENCIMIENTO'],
+					'fecha_vencimiento' => $registro['fecha_vencimiento'],
 					'fecha_nuevo_vencimiento' => $registro['fecha_nuevo_vencimiento'],
 					'motivo' => $registro['motivo'] ?? null,
 
@@ -444,8 +448,13 @@ class ImportacionService
 		return null;
 	}
 
-	private function insertReparacionOnsite($clave, $empresaOnsite, $sucursalOnsite, $terminal, $tipoServicioOnsite, $estadoReparacionOnsiteId, $registro, $company_id = null)
+	public function insertReparacionOnsite($clave, $empresaOnsite, $sucursalOnsite, $terminal, $tipoServicioOnsite, $estadoReparacionOnsiteId, $registro, $company_id = null)
 	{
+
+		if (is_null($company_id)) {
+			$this->companyId = Session::get('userCompanyIdDefault');
+		} else $this->companyId = $company_id;
+
 		Log::info('ImportacionService - insertReparacionOnsite');
 		//Log::info($clave);
 		//Log::info($empresaOnsite);
@@ -456,41 +465,43 @@ class ImportacionService
 		//Log::info($registro);
 
 		if ($clave && $empresaOnsite && $sucursalOnsite && $terminal && $tipoServicioOnsite) {
-			$monto = (isset($registro['MONTO']) && $registro['MONTO']) ? $registro['MONTO'] : 0;
-			$montoExtra = (isset($registro['MONTO_EXTRA']) && $registro['MONTO_EXTRA']) ? $registro['MONTO_EXTRA'] : 0;
-			$liquidadoProveedor = (isset($registro['LIQUIDADO_PROVEEDOR']) && $registro['LIQUIDADO_PROVEEDOR']) ? $registro['LIQUIDADO_PROVEEDOR'] : null;
+			$monto = (isset($registro['monto']) && $registro['monto']) ? $registro['monto'] : 0;
+			$montoExtra = (isset($registro['monto_extra']) && $registro['monto_extra']) ? $registro['monto_extra'] : 0;
+			$liquidadoProveedor = (isset($registro['liquidado_proveedor']) && $registro['liquidado_proveedor']) ? $registro['liquidado_proveedor'] : null;
 			$tarea = '--';
 
-			if (isset($registro['TAREA'])) {
-				$tarea = (string) $registro['TAREA'];
+			if (isset($registro['tarea'])) {
+				$tarea = (string) $registro['tarea'];
 				$tarea  = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $tarea);
 			}
 
 			$detalleTarea = '--';
 
-			if (isset($registro['TAREA'])) {
-				$detalleTarea = (string) $registro['DETALLE_TAREA'];
+			if (isset($registro['tarea'])) {
+				$detalleTarea = (string) $registro['detalle_tarea'];
 				$detalleTarea  = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $detalleTarea);
 			}
 
-			$fechaIngreso = (isset($registro['FECHA_INGRESO'])) ? $registro['FECHA_INGRESO'] : null;
-			$fechaVencimiento = (isset($registro['FECHA_VENCIMIENTO'])) ? $registro['FECHA_VENCIMIENTO'] : null;
-			$fechaCerrado = (isset($registro['FECHA_CERRADO'])) ? $registro['FECHA_CERRADO'] : null;
-			$slaStatus = (isset($registro['SLA_STATUS'])) ? $registro['SLA_STATUS'] : null;
+			$fechaIngreso = (isset($registro['fecha_ingreso'])) ? $registro['fecha_ingreso'] : null;
+			$fechaVencimiento = (isset($registro['fecha_vencimiento'])) ? $registro['fecha_vencimiento'] : null;
+			$fechaCerrado = (isset($registro['fecha_cerrado'])) ? $registro['fecha_cerrado'] : null;
+			$slaStatus = (isset($registro['sla_status'])) ? $registro['sla_status'] : null;
 			$usuarioTecnicoId = User::_TECHNICAL;
 
 			if ($sucursalOnsite && $sucursalOnsite->localidad_onsite) {
 				$usuarioTecnicoId = $sucursalOnsite->localidad_onsite->id_usuario_tecnico;
 			}
 
-			$informeTecnico = (isset($registro['INFORME_TECNICO'])) ? $registro['INFORME_TECNICO'] : null;
-			$problemaResuelto = (isset($registro['PROBLEMA_RESUELTO'])) ? $registro['PROBLEMA_RESUELTO'] : null;
-			$observacionesInternas = (isset($registro['OBSERVACIONES_INTERNAS'])) ? $registro['OBSERVACIONES_INTERNAS'] : null;
-			$visibleCliente = (isset($registro['VISIBLE_CLIENTE'])) ? $registro['VISIBLE_CLIENTE'] : null;
+			$informeTecnico = (isset($registro['informe_tecnico'])) ? $registro['informe_tecnico'] : null;
+			$problemaResuelto = (isset($registro['problema_resuelto'])) ? $registro['problema_resuelto'] : null;
+			$observacionesInternas = (isset($registro['observaciones_internas'])) ? $registro['observaciones_internas'] : null;
+			$visibleCliente = (isset($registro['visible_cliente'])) ? $registro['visible_cliente'] : null;
 
-			$observacionUbicacion = (isset($registro['OBSERVACION_UBICACION'])) ? $registro['OBSERVACION_UBICACION'] : '-';
+			$observacionUbicacion = (isset($registro['observacion_ubicacion'])) ? $registro['observacion_ubicacion'] : '-';
 
-			$justificacion = (isset($registro['JUSTIFICACION'])) ? $registro['JUSTIFICACION'] : null;
+			$justificacion = (isset($registro['justificacion'])) ? $registro['justificacion'] : null;
+
+			$log = (isset($registro['log'])) ? $registro['log'] : null;
 
 			$observacion = 'Reparación generada por Importación';
 
@@ -520,6 +531,7 @@ class ImportacionService
 				'observacionesInternas' => $observacionesInternas,
 				'visibleCliente' => $visibleCliente,
 				'justificacion' => $justificacion,
+				'log'=>$log,
 
 				'codigo_activo_descripcion1' => $registro['codigo_activo_descripcion1'] ?? null,
 				'codigo_activo_descripcion10' => $registro['codigo_activo_descripcion10'] ?? null,
@@ -563,7 +575,7 @@ class ImportacionService
 			$request_visitas = new Request([
 				'company_id' => $this->companyId,
 				'fecha' => $registro['fecha_1_visita'],
-				'fecha_vencimiento' => $registro['FECHA_VENCIMIENTO'],
+				'fecha_vencimiento' => $registro['fecha_vencimiento'],
 				'fecha_nuevo_vencimiento' => $registro['fecha_nuevo_vencimiento'],
 				'motivo' => $registro['motivo'],
 
@@ -600,7 +612,7 @@ class ImportacionService
 	}
 	*/
 
-	private function getEstadoReparacionOnsiteId($estadoId)
+	public function getEstadoReparacionOnsiteId($estadoId)
 	{
 
 		$estadoReparacionOnsiteId = EstadoOnsiteRepository::ESTADO_NUEVO;
@@ -613,7 +625,7 @@ class ImportacionService
 		return $estadoReparacionOnsiteId;
 	}
 
-	private function getTipoServicioOnsite($tipoServicioOnsiteId)
+	public function getTipoServicioOnsite($tipoServicioOnsiteId)
 	{
 		if ($tipoServicioOnsiteId) {
 			return $this->tiposServiciosOnsite->getTipoServicioById($tipoServicioOnsiteId);
@@ -621,7 +633,12 @@ class ImportacionService
 		return null;
 	}
 
-	private function getEmpresaOnsite($empresaOnsiteId)
+	public function setUserId($userId)
+	{
+		$this->usuarioId = $userId;
+	}
+
+	public function getEmpresaOnsite($empresaOnsiteId)
 	{
 		if ($empresaOnsiteId) {
 			return $this->empresasOnsiteService->getEmpresaById($empresaOnsiteId);
@@ -629,7 +646,7 @@ class ImportacionService
 		return null;
 	}
 
-	private function getTerminalOnsite($nroTerminal, $sucursalOnsite, $empresaOnsite, $fila, $registro = false)
+	public function getTerminalOnsite($nroTerminal, $sucursalOnsite, $empresaOnsite, $fila, $registro = false)
 	{
 		Log::info('ImportacionService - getTerminalOnsite');
 
@@ -650,7 +667,7 @@ class ImportacionService
 		return $terminal;
 	}
 
-	private function crearTerminalOnsite($sucursalOnsite, $empresaOnsite, $data = false)
+	public function crearTerminalOnsite($sucursalOnsite, $empresaOnsite, $data = false)
 	{
 		Log::info('ImportacionService - crearTerminalOnsite');
 
@@ -658,8 +675,8 @@ class ImportacionService
 		$numero_terminal = $this->getNroTerminalOnsite($empresaOnsite, $sucursalOnsite->id);
 
 		if ($data) {
-			if (isset($data['NRO_TERMINAL']) && strlen($data['NRO_TERMINAL']) > 1)
-				$numero_terminal =  $data['NRO_TERMINAL'];
+			if (isset($data['nro_terminal']) && strlen($data['nro_terminal']) > 1)
+				$numero_terminal =  $data['nro_terminal'];
 		}
 
 
@@ -705,7 +722,7 @@ class ImportacionService
 		return $nro;
 	}
 
-	private function getReparacionOnsite($reparacionOnsiteId, $clave)
+	public function getReparacionOnsite($reparacionOnsiteId, $clave)
 	{
 		$reparacionOnsite = null;
 		if ($reparacionOnsiteId != null) {
@@ -719,7 +736,7 @@ class ImportacionService
 		return $reparacionOnsite;
 	}
 
-	private function getSucursalOnsite($param)
+	public function getSucursalOnsite($param)
 	{
 		Log::info('ImportacionService - getSucursalOnsite');
 		//Log::info($param);
@@ -788,4 +805,7 @@ class ImportacionService
 
 		return $data;
 	}
+
+	
+
 }

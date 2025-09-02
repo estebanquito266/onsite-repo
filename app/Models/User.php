@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\GroupTicket;
 use App\Models\EmpresaInstaladora\EmpresaInstaladoraOnsite;
 use App\Models\Onsite\ReparacionOnsite;
 use Carbon\Carbon;
@@ -215,8 +216,15 @@ class User extends Authenticatable
 		return $this->hasMany(ReparacionOnsite::class, 'id_tecnico_asignado');
 	}
 
-
-
+	public function groups_ticket()
+	{
+		return $this->hasMany('Riparazione\UserGroupTicket', 'user_id');
+	}
+	
+	public function group_ticket()
+    {
+        return $this->belongsToMany(GroupTicket::class, 'user_group_ticket', 'user_id', 'group_ticket_id')->withPivot('id');
+    }
 	/**
 	 * Send the password reset notification.
 	 *

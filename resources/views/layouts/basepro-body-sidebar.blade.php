@@ -39,6 +39,7 @@
         @include('layouts.sidebar.basepro-body-sidebar-solicitudes')
 
         @include('layouts.sidebar.basepro-body-sidebar-tecnicos')
+        @include('layouts.sidebar.basepro-body-sidebar-ticket')
         
       </ul>
     </div>

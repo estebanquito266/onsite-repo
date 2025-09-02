@@ -12,7 +12,7 @@
         <form id="formNota">
           @csrf
           @include('_onsite.reparaciononsite.nota.campos-modal-agregar')
-          <button class='btn btn-primary btn-block' id='guardarNota'>Guardar</button>
+          <button class='btn btn-primary pull-right ' id='guardarNota'>Guardar</button>
         </form>
       </div>
 

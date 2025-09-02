@@ -242,7 +242,7 @@
                                             <label class="custom-control-label" for="exampleCustomCheckbox2444">&nbsp;</label></div>
                                     </div>
                                     <div class="widget-content-left mr-3">
-                                        <div class="widget-content-left"><img width="42" class="rounded" src="/imagenes/1.jpg" alt=""/></div>
+                                        <div class="widget-content-left"><img width="42" class="rounded" src="" alt=""/></div>
                                     </div>
                                     <div class="widget-content-left">
                                         <div class="widget-heading">Go grocery shopping</div>
@@ -321,42 +321,42 @@
                                         <div class="avatar-wrapper mt-2 avatar-wrapper-overlap">
                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                 <div class="avatar-icon"><img
-                                                        src="/imagenes/1.jpg"
+                                                        src=""
                                                         alt=""></div>
                                             </div>
                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                 <div class="avatar-icon"><img
-                                                        src="/imagenes/2.jpg"
+                                                        src=""
                                                         alt=""></div>
                                             </div>
                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                 <div class="avatar-icon"><img
-                                                        src="/imagenes/3.jpg"
+                                                        src=""
                                                         alt=""></div>
                                             </div>
                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                 <div class="avatar-icon"><img
-                                                        src="/imagenes/4.jpg"
+                                                        src=""
                                                         alt=""></div>
                                             </div>
                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                 <div class="avatar-icon"><img
-                                                        src="/imagenes/5.jpg"
+                                                        src=""
                                                         alt=""></div>
                                             </div>
                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                 <div class="avatar-icon"><img
-                                                        src="/imagenes/6.jpg"
+                                                        src=""
                                                         alt=""></div>
                                             </div>
                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                 <div class="avatar-icon"><img
-                                                        src="/imagenes/7.jpg"
+                                                        src=""
                                                         alt=""></div>
                                             </div>
                                             <div class="avatar-icon-wrapper avatar-icon-sm">
                                                 <div class="avatar-icon"><img
-                                                        src="/imagenes/8.jpg"
+                                                        src=""
                                                         alt=""></div>
                                             </div>
                                             <div class="avatar-icon-wrapper avatar-icon-sm avatar-icon-add">

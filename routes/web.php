@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Onsite\VisitaController;
 use App\Http\Controllers\googleApi\GoogleCalendarController;
+use App\Http\Controllers\Onsite\EmpresaOnsiteController;
 use App\Http\Controllers\Onsite\GarantiaOnsiteController;
 use App\Http\Controllers\Onsite\LocalidadController;
 use App\Http\Controllers\Onsite\ObraOnsiteController;
@@ -17,6 +18,8 @@ use App\Http\Controllers\Respuestos\OrdenPedidoRespuestosController;
 use App\Http\Controllers\Respuestos\PiezaRespuestosOnsiteController;
 use App\Http\Controllers\SolicitudBoucherController;
 use App\Http\Controllers\SolicitudTipoTarifaController;
+use App\Http\Controllers\Ticket\CommentTicketController;
+use App\Http\Controllers\Ticket\TicketController;
 use App\Http\Controllers\UserController;
 use App\Models\Onsite\ObraOnsite;
 use Illuminate\Support\Facades\Auth;
@@ -90,11 +93,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('filtrarReparacionOnsitePorEmpresa', [AdminController::class, 'filtrarPorEmpresa']);
     Route::get('reparacionOnsitePosnet', [ReparacionOnsiteController::class, 'indexPosnet']);
     Route::post('importarReparacionesOnsite', [ReparacionOnsiteController::class, 'importarReparacionesOnsite']);
-    
+
     Route::post('registrar_visita/{reparacion_id}', [ReparacionOnsiteController::class, 'registrar_visita'])->name('registrar_visita');
 
-    
-    
+    Route::post('reparacionOnsite', [ReparacionOnsiteController::class, 'index']);
+    Route::get('importarReparacionOnsite/', [ReparacionOnsiteController::class, 'importarReparacionOnsite']);
+    Route::post('importarReparacionOnsite', [ReparacionOnsiteController::class, 'importFileReparacionOnsite']);
+    Route::get('getRowsReparacionesProcessed', [ReparacionOnsiteController::class, 'getRowsReparacionesProcessed']);
+
+
     Route::post('agregarNota', [App\Http\Controllers\Onsite\NotaOnsiteController::class, 'agregar']);
 
     Route::get('reparacionOnsiteFacturada', [ReparacionOnsiteController::class, 'indexFacturada']);
@@ -129,8 +136,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('unidadInterior', App\Http\Controllers\Onsite\UnidadInteriorOnsiteController::class);
     Route::post('filtrarUnidadInterior', [App\Http\Controllers\Onsite\UnidadInteriorOnsiteController::class, 'filtrarUnidadInterior']);
     Route::get('filtrarUnidadInterior', [App\Http\Controllers\Onsite\UnidadInteriorOnsiteController::class, 'filtrarUnidadInterior']);
-    
-    
+
+
     Route::get('unidadInterior/{id}/editUnidadInterior', [App\Http\Controllers\Onsite\UnidadInteriorOnsiteController::class, 'editUnidadInterior']);
     Route::get('unidadInterior/{id}/createUnidadInterior', [App\Http\Controllers\Onsite\UnidadInteriorOnsiteController::class, 'createUnidadInterior']);
 
@@ -139,7 +146,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('storeUnidadInterior', [App\Http\Controllers\Onsite\UnidadInteriorOnsiteController::class, 'store']);
     Route::get('getUnidadesInterioresPorSistema/{idSistema}', [App\Http\Controllers\Onsite\UnidadInteriorOnsiteController::class, 'getUnidadesInterioresPorSistema']);
 
-        
+
 
     /* UNIDAD INTERIOR ETIQUETAS */
     Route::post('storeEtiqueta/{idUnidadInterior}', [App\Http\Controllers\Onsite\UnidadInteriorEtiquetaController::class, 'store']);
@@ -159,8 +166,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('unidadExterior', App\Http\Controllers\Onsite\UnidadExteriorOnsiteController::class);
     Route::post('filtrarUnidadExterior', [App\Http\Controllers\Onsite\UnidadExteriorOnsiteController::class, 'filtrarUnidadExterior']);
     Route::get('filtrarUnidadExterior', [App\Http\Controllers\Onsite\UnidadExteriorOnsiteController::class, 'filtrarUnidadExterior']);
-    
-    
+
+
     Route::get('unidadExterior/{id}/editUnidadExterior', [App\Http\Controllers\Onsite\UnidadExteriorOnsiteController::class, 'editUnidadExterior']);
     Route::get('unidadExterior/{id}/createUnidadExterior', [App\Http\Controllers\Onsite\UnidadExteriorOnsiteController::class, 'createUnidadExterior']);
     Route::post('storeUnidadExterior', [App\Http\Controllers\Onsite\UnidadExteriorOnsiteController::class, 'store']);
@@ -200,7 +207,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('getImagenPorModelo/{idModelo}', [ModeloRespuestosOnsiteController::class, 'getImagenPorModelo']);
 
     Route::get('tecnicos', function () {
-        
+
         return view(
             '_onsite.respuestosonsite.tecnicos',
             [
@@ -211,7 +218,7 @@ Route::group(['middleware' => 'auth'], function () {
         );
     });
 
-   
+
 
     /* GARANTIAS ONSITE */
 
@@ -292,7 +299,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('maps', function () {
         return view('usuario.maps');
     });
-   
+
 
     /* COMPRADOR ONSITE */
     Route::post('storeComprador', [App\Http\Controllers\Onsite\CompradorOnsiteController::class, 'storeComprador']);
@@ -303,73 +310,91 @@ Route::group(['middleware' => 'auth'], function () {
     //-----------------------------------------------------------//
 
     Route::resource('obrasOnsite', ObraOnsiteController::class);
-Route::get('createObra', [ObraOnsiteController::class, 'createObra']);
-Route::post('storeObra', [ObraOnsiteController::class, 'storeObra']);
-Route::post('storeCheckList', [ObraOnsiteController::class, 'storeCheckListObra']);
-Route::get('viewDashboardObra', [ObraOnsiteController::class, 'viewDashboardObra']);
-Route::get('getObrasSinObservaciones', [ObraOnsiteController::class, 'getObrasSinObservaciones']);
-Route::get('getObraConSistema/{idObra}', [ObraOnsiteController::class, 'getObraConSistema']);
+    Route::get('createObra', [ObraOnsiteController::class, 'createObra']);
+    Route::post('storeObra', [ObraOnsiteController::class, 'storeObra']);
+    Route::post('storeCheckList', [ObraOnsiteController::class, 'storeCheckListObra']);
+    Route::get('viewDashboardObra', [ObraOnsiteController::class, 'viewDashboardObra']);
+    Route::get('getObrasSinObservaciones', [ObraOnsiteController::class, 'getObrasSinObservaciones']);
+    Route::get('getObraConSistema/{idObra}', [ObraOnsiteController::class, 'getObraConSistema']);
 
-Route::get('getSolicitudesPorSistema/{idSistemas}', [SolicitudOnsiteController::class, 'getSolicitudesPorSistema']);
-Route::post('insertSolicitudPuestaMarcha', [SolicitudOnsiteController::class, 'insertSolicitudPuestaMarcha']);
+    Route::get('getSolicitudesPorSistema/{idSistemas}', [SolicitudOnsiteController::class, 'getSolicitudesPorSistema']);
+    Route::post('insertSolicitudPuestaMarcha', [SolicitudOnsiteController::class, 'insertSolicitudPuestaMarcha']);
 
-Route::get('SolicitudPuestaMarcha', [ObraOnsiteController::class, 'createSolicitudPuestaMarcha']);
-Route::get('getObraOnsite/{idObra}', [ObraOnsiteController::class, 'getObraOnsite']);
-Route::get('getObraOnsiteWithSistema/{idObra}', [ObraOnsiteController::class, 'getObraOnsiteWithSistema']);
+    Route::get('SolicitudPuestaMarcha', [ObraOnsiteController::class, 'createSolicitudPuestaMarcha']);
+    Route::get('getObraOnsite/{idObra}', [ObraOnsiteController::class, 'getObraOnsite']);
+    Route::get('getObraOnsiteWithSistema/{idObra}', [ObraOnsiteController::class, 'getObraOnsiteWithSistema']);
 
-Route::get('getTemplate/{idTemplate}', [TemplateController::class, 'getTemplate']);
-Route::get('getTemplateSolicitud/{idTemplate}', [TemplateController::class, 'getTemplateSolicitud']);
+    Route::get('getTemplate/{idTemplate}', [TemplateController::class, 'getTemplate']);
+    Route::get('getTemplateSolicitud/{idTemplate}', [TemplateController::class, 'getTemplateSolicitud']);
 
-Route::get('getLocalidades/{idProvincia}', [LocalidadController::class, 'getLocalidades']);
+    Route::get('getLocalidades/{idProvincia}', [LocalidadController::class, 'getLocalidades']);
 
-Route::post('/filtrarObraOnsite', [ObraOnsiteController::class, 'filtrarObrasOnsite']);
-Route::get('/filtrarObraOnsite', [ObraOnsiteController::class, 'filtrarObrasOnsite']);
-Route::get('/obrasOnsiteUnificado', [ObraOnsiteController::class, 'obrasOnsiteUnificado']);
-Route::get('/getObras', [ObraOnsiteController::class, 'getObrasOnsiteDashboard']);
+    Route::post('/filtrarObraOnsite', [ObraOnsiteController::class, 'filtrarObrasOnsite']);
+    Route::get('/filtrarObraOnsite', [ObraOnsiteController::class, 'filtrarObrasOnsite']);
+    Route::get('/obrasOnsiteUnificado', [ObraOnsiteController::class, 'obrasOnsiteUnificado']);
+    Route::get('/getObras', [ObraOnsiteController::class, 'getObrasOnsiteDashboard']);
 
 
-/* GOOGLE API */
-Route::get('/google-calendar/connect', [GoogleCalendarController::class, 'connect']);
-Route::get('/google-calendar/store', [GoogleCalendarController::class, 'store']);
-Route::get('/get-resource', [GoogleCalendarController::class, 'getResources']);
+    /* GOOGLE API */
+    Route::get('/google-calendar/connect', [GoogleCalendarController::class, 'connect']);
+    Route::get('/google-calendar/store', [GoogleCalendarController::class, 'store']);
+    Route::get('/get-resource', [GoogleCalendarController::class, 'getResources']);
 
-Route::resource('solicitudesOnsite', SolicitudOnsiteController::class);
-Route::get('createSolicitudInspeccion', [SolicitudOnsiteController::class, 'create']);
-Route::post('storeSolicitud', [SolicitudOnsiteController::class, 'storeSolicitud']);
+    Route::resource('solicitudesOnsite', SolicitudOnsiteController::class);
+    Route::get('createSolicitudInspeccion', [SolicitudOnsiteController::class, 'create']);
+    Route::post('storeSolicitud', [SolicitudOnsiteController::class, 'storeSolicitud']);
 
-Route::post('filtrarSolicitudesOnsite', [SolicitudOnsiteController::class, 'filtrarSolicitudesOnsite']);
-Route::get('filtrarSolicitudesOnsite', [SolicitudOnsiteController::class, 'filtrarSolicitudesOnsite']);
-Route::get('conversorReparacionOnsite/{id}', [SolicitudOnsiteController::class, 'show_conversorReparacionOnsite'])->name('solicitud.conversor');
+    Route::post('filtrarSolicitudesOnsite', [SolicitudOnsiteController::class, 'filtrarSolicitudesOnsite']);
+    Route::get('filtrarSolicitudesOnsite', [SolicitudOnsiteController::class, 'filtrarSolicitudesOnsite']);
+    Route::get('conversorReparacionOnsite/{id}', [SolicitudOnsiteController::class, 'show_conversorReparacionOnsite'])->name('solicitud.conversor');
 
-Route::post('/procesarConversorVisita/{id}', [SolicitudOnsiteController::class, 'procesarConversorVisita'])->name('solicitud.conversion');
+    Route::post('/procesarConversorVisita/{id}', [SolicitudOnsiteController::class, 'procesarConversorVisita'])->name('solicitud.conversion');
 
-Route::post('filtrarPedidoRepuestos', [OrdenPedidoRespuestosController::class, 'filtrarPedidoRepuestos']);
-Route::get('filtrarPedidoRepuestos', [OrdenPedidoRespuestosController::class, 'filtrarPedidoRepuestos']);
+    Route::post('filtrarPedidoRepuestos', [OrdenPedidoRespuestosController::class, 'filtrarPedidoRepuestos']);
+    Route::get('filtrarPedidoRepuestos', [OrdenPedidoRespuestosController::class, 'filtrarPedidoRepuestos']);
 
-//visitas
-//Route::get('visitasOnsite', [VisitaController::class, 'indexVisitas']);
+    //visitas
+    //Route::get('visitasOnsite', [VisitaController::class, 'indexVisitas']);
 
-Route::resource('visitasOnsite', VisitaController::class);
+    Route::resource('visitasOnsite', VisitaController::class);
 
-Route::post('filtrarVisitas', [VisitaController::class, 'filtrarVisitas']);
-Route::get('filtrarVisitas', [VisitaController::class, 'filtrarVisitas']);
-Route::get('export_visitas', [VisitaController::class, 'export_visitas']);
+    Route::post('filtrarVisitas', [VisitaController::class, 'filtrarVisitas']);
+    Route::get('filtrarVisitas', [VisitaController::class, 'filtrarVisitas']);
+    Route::get('export_visitas', [VisitaController::class, 'export_visitas']);
 
-Route::get('/getVisitasPorTecnico', [VisitaController::class, 'getVisitasPorTecnico']);
+    Route::get('/getVisitasPorTecnico', [VisitaController::class, 'getVisitasPorTecnico']);
 
-Route::get('comprobanteVisita/{idReparacion}', [VisitaController::class, 'comprobanteVisita']);
+    Route::get('comprobanteVisita/{idReparacion}', [VisitaController::class, 'comprobanteVisita']);
 
-Route::get('/getObrasConVisitas', [ObraOnsiteController::class, 'getObrasConVisitas']);
-/* Route::get('/getVisitasPorTecnico', [UserController::class, 'getVisitasPorTecnico']); */
+    Route::get('/getObrasConVisitas', [ObraOnsiteController::class, 'getObrasConVisitas']);
+    /* Route::get('/getVisitasPorTecnico', [UserController::class, 'getVisitasPorTecnico']); */
 
-//Route::get('createVisita', [VisitaController::class, 'createVisita']);
-Route::post('storeVisita', [VisitaController::class, 'store']);
+    //Route::get('createVisita', [VisitaController::class, 'createVisita']);
+    Route::post('storeVisita', [VisitaController::class, 'store']);
 
-Route::get('crearGarantia/{idReparacion}', [GarantiaOnsiteController::class, 'createGarantiaFromReparacion']);
+    Route::get('crearGarantia/{idReparacion}', [GarantiaOnsiteController::class, 'createGarantiaFromReparacion']);
+
+    Route::get('buscarClienteConReparaciones',[TicketController::class, 'buscarCliente']);
+// Route::get('buscarClienteConReparaciones',[TicketController::class, 'buscarCliente']);
+Route::resource('ticket',TicketController::class);
+Route::get('/ticketderiv/{derivacionid}',[TicketController::class, 'createFromDerivacion']);
+Route::get('/ticketrep/{reparacionid}',[TicketController::class, 'createFromReparacion']);
+
+Route::get('indexCerrados',  [TicketController::class, 'indexCerrados']);
+
+Route::get('findTicketsByReparacionId', [TicketController::class, 'findTicketByReparacionId']);
+Route::get('findTicketsByDerivacionId', [TicketController::class, 'findTicketByDerivacionId']);
+Route::get('findTicketById', [TicketController::class, 'findTicketById']);
+Route::post('filtrarTickets', [TicketController::class, 'filtrarTickets']);
+Route::post('filtrarTicketsCerrados', [TicketController::class, 'filtrarTicketsCerrados']);
+Route::get('exportarTickets', [TicketController::class, 'exportarTickets']);
+
+Route::resource('commentTicket', CommentTicketController::class);
+Route::get('findCommentsByTicketId', [CommentTicketController::class, 'findCommentsByTicketId']);
 });
 //Route::get('/app/', [App\Http\Controllers\FrontendReactController::class, 'index']);
 
-Route::get( env('APP_DIR_DEPLOY'), function () {
+Route::get(env('APP_DIR_DEPLOY'), function () {
     return Redirect::to(env('APP_DIR_DEPLOY_REDIRECT'));
 });
 
@@ -378,11 +403,16 @@ Route::get( env('APP_DIR_DEPLOY'), function () {
 }); */
 
 Route::get('/app', function () {
-    return Redirect::to( env('APP_URL') );
+    return Redirect::to(env('APP_URL'));
 });
 
 Route::get('/app/', function () {
-    return Redirect::to(  env('APP_URL'));
+    return Redirect::to(env('APP_URL'));
 });
 
 
+
+
+Route::get('findReparacionById/{idReparacion}', [ReparacionOnsiteController::class, 'findReparacionById']);
+Route::get('findClienteReparacionById/{id}', [EmpresaOnsiteController::class, 'getEmpresaOnsite']);
+Route::get('buscarClientes/{textoBuscar}', [EmpresaOnsiteController::class, 'getClientes']);

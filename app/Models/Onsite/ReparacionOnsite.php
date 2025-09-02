@@ -2,6 +2,7 @@
 
 namespace App\Models\Onsite;
 
+use App\Models\Ticket\Ticket;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Traits\HasSorts;
@@ -85,6 +86,11 @@ class ReparacionOnsite extends Model
 		'log'
 
 	];
+
+	public function cliente()
+	{
+		return $this->belongsTo(EmpresaOnsite::class, 'id_empresa_onsite');
+	}
 
 	// RELACIONES
 	public function estado_onsite()
@@ -227,6 +233,11 @@ class ReparacionOnsite extends Model
 	public function primer_visita(): HasOne
 	{
 		return $this->hasOne(ReparacionVisita::class, 'reparacion_id');
+	}
+
+	public function tickets()
+	{
+		return $this->hasMany(Ticket::class, 'reparacion_id');
 	}
 
 
