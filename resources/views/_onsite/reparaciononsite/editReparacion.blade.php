@@ -65,7 +65,8 @@
 <script type="text/javascript" src="{!! asset('/assets/js/_onsite/reparaciones-onsite-terminales.js') !!}"></script>
 <script type="text/javascript" src="{!! asset('/assets/js/_onsite/validar-generar-identificador.js') !!}"></script>
 <script type="text/javascript" src="{!! asset('/assets/js/_onsite/agregar-nota.js') !!}"></script>
-{!!Html::script('/assets/js/tickets/tickets.js')!!}
+<script type="text/javascript" src="{!! asset('/assets/js/tickets/tickets.js') !!}"></script>
+
 
 @endsection
 
