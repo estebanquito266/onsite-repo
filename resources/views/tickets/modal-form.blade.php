@@ -37,7 +37,8 @@
             {!!Form::close()!!}
             
             @section('scripts')	
-                {!!Html::script('/assets/js/tickets/buscar.js')!!}
+                <script type="text/javascript" src="/assets/js/tickets/buscar.js"></script>
+
             @endsection
             <div id="div_comment_section">
                 @include('tickets.comment.campos')

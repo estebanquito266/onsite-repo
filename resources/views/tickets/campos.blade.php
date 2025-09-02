@@ -316,8 +316,9 @@
 </div>
 
 @section('scripts')
-{!!Html::script('js/clientes-tickets.js')!!}
-{{-- {!!Html::script('js/derivaciones.js')!!} --}}
-{!!Html::script('js/reparaciones.js')!!}
-{!!Html::script('/assets/js/tickets/ticket-form.js')!!}
+
+<script type="text/javascript" src="/js/clientes-tickets.js"></script>
+<script type="text/javascript" src="/js/reparaciones.js"></script>
+<script type="text/javascript" src="{!! asset('/assets/js/tickets/ticket-form.js') !!}"></script>
+
 @endsection

@@ -503,10 +503,11 @@
 
 
 <!-- DataTables JavaScript -->
-{!!Html::script('vendor/datatables/js/jquery.dataTables.min.js')!!}
-{!!Html::script('vendor/datatables-plugins/dataTables.bootstrap.min.js')!!}
-{!!Html::script('vendor/datatables-responsive/dataTables.responsive.js')!!}
 
+
+<script type="text/javascript" src="/vendor/datatables/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="/vendor/datatables-responsive/dataTables.responsive.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
@@ -600,8 +601,8 @@ use Illuminate\Support\Facades\Session;
 @section('css')
 
 <!-- DataTables Responsive CSS -->
-{!!Html::style('vendor/datatables-responsive/dataTables.responsive.css')!!}
 
+<link rel="stylesheet" href="/vendor/datatables-responsive/dataTables.responsive.css">
 
 <style>
     input::-moz-placeholder,

@@ -212,7 +212,7 @@
 
 
 @section('scripts')
-{!!Html::script('js/clientes-tickets.js')!!}  
-</script>
+<script type="text/javascript" src="/js/clientes-tickets.js"></script>
+
    
 @endsection
