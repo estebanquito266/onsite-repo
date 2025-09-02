@@ -97,6 +97,16 @@ class   ReparacionOnsiteImport implements OnEachRow, WithHeadingRow, WithBatchIn
         ++$this->rows;
         try {
 
+            
+
+            foreach ($this->dataReparacion as $key => $value) {
+                if (str_starts_with($key, 'fecha') && $value) {
+                    $this->dataReparacion[$key] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value)
+                        ->format('Y-m-d');
+                }
+            }
+
+
             //Log::info($this->dataReparacion);
 
             $clave = (isset($this->dataReparacion['clave'])) ? $this->dataReparacion['clave'] : null;

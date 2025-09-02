@@ -1,6 +1,9 @@
+var mostrarToasts = true;
+
 $(function()
 {
-    
+    /* showToast('Librerías cargadas correctamente.', '', 'success'); */
+    $('input').attr('autocomplete', 'off');
 })
 
 function makeLoader(mensaje) {
@@ -29,6 +32,11 @@ function makeLoader(mensaje) {
 }
 
 function showToast(mensaje, contexto, tipo) {
+
+    if (!mostrarToasts) return; // si la bandera está en false, no hace nada
+
+    toastr.clear(); // opcional, si querés limpiar los existentes
+
     toastr.options = {
         "closeButton": false,
         "debug": false,
@@ -38,7 +46,7 @@ function showToast(mensaje, contexto, tipo) {
         "preventDuplicates": false,
         "showDuration": "300",
         "hideDuration": "1000",
-        "timeOut": "5000",
+        "timeOut": "2000",
         "extendedTimeOut": "1000",
         "showEasing": "swing",
         "hideEasing": "linear",
@@ -81,3 +89,31 @@ function blockDivByClass(clase, timeout) {
         timeout: timeout
     });
 }
+
+function unblockByClass(clase){
+    $("." + clase).unblock(); 
+}
+
+async function getSegments() {
+    return segment = $(location).attr('href').split('/');    
+
+}
+
+function disabledButton(button) {
+    $(button).prop('disabled', true);    
+    $(button).text('Procesando...');
+}
+
+function preserveDefaultValue(input) {
+    // Get the default value from the "value" attribute
+    var defaultValue = input.getAttribute("value");
+    
+    // Get the current input value
+    var currentValue = input.value;
+      
+    // If the current input value doesn't start with the default value,
+    // replace the input value with the default value followed by the current value
+    if (!currentValue.startsWith(defaultValue)) {
+      input.value = defaultValue + currentValue;
+    }
+  }

@@ -74,6 +74,8 @@ async function storeReparacionesMirgor() {
     complete:function(){
       console.log('Is complete');
       shouldContinue = false;
+      mostrarToasts = false;
+      //$(".toast-container").css('visibility', 'hidden');
     }
   }
   );
