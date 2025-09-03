@@ -978,7 +978,7 @@ class ReparacionOnsiteService
 
 		$idEmpresaOnsite = $this->getEmpresasOnsiteUsuario();
 
-		$listarSoloEstadosActivos = true;
+		$listarSoloEstadosActivos = ['activos'];
 
 		$datos['historialEstadosOnsite'] = array();
 
