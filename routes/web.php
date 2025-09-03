@@ -96,7 +96,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::post('registrar_visita/{reparacion_id}', [ReparacionOnsiteController::class, 'registrar_visita'])->name('registrar_visita');
 
-    Route::post('reparacionOnsite', [ReparacionOnsiteController::class, 'index']);
+    //Route::post('reparacionOnsite', [ReparacionOnsiteController::class, 'index']);
     Route::get('importarReparacionOnsite/', [ReparacionOnsiteController::class, 'importarReparacionOnsite']);
     Route::post('importarReparacionOnsite', [ReparacionOnsiteController::class, 'importFileReparacionOnsite']);
     Route::get('getRowsReparacionesProcessed', [ReparacionOnsiteController::class, 'getRowsReparacionesProcessed']);

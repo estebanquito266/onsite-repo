@@ -169,7 +169,7 @@ class TicketsService
         $users = User::select('users.*')
             ->join('user_group_ticket','users.id','=','user_group_ticket.user_id')
             ->whereIn('user_group_ticket.group_ticket_id',$grupos->pluck('id')->toArray())
-            ->groupBy('users.id')
+            ->distinct()
             ->get();
 
         $cliente = Array();
