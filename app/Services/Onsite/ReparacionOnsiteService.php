@@ -2388,7 +2388,15 @@ class ReparacionOnsiteService
 				->where("estados_onsite.activo", true);
 		}*/
 
-		if (isset($params['estadosActivos']) && !in_array('todos',$params['estadosActivos'])) {
+		if (isset($params['estadosActivos']) && is_bool($params['estadosActivos'])) {
+			if($params['estadosActivos']){
+				$params['estadosActivos']=['activos'];
+			}else{
+				$params['estadosActivos']=['inactivos'];
+			}
+		}
+
+		if (isset($params['estadosActivos']) && is_array($params['estadosActivos']) && !in_array('todos',$params['estadosActivos'])) {
 			if(in_array('activos',$params['estadosActivos'])){
 				$consulta = $consulta->join('estados_onsite', 'estados_onsite.id', '=', 'reparaciones_onsite.id_estado')
 				->where("estados_onsite.activo", true);
