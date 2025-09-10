@@ -51,6 +51,8 @@ class   ReparacionOnsiteImport implements OnEachRow, WithHeadingRow, WithBatchIn
         $this->reparacionesOnsiteService = $ReparacionOnsiteService;
         $this->importacionService = $ImportacionService;
         $this->lineaClaseLogs = ' - ' . get_class($this) . ' - LINE: ';
+
+        $this->importacionService->setCompanyId($this->companyId);
     }
 
 

@@ -44,7 +44,7 @@ class ImportacionService
 	private $reparacionesActualizadas = 0;
 	private $filasActualizadas;
 	public $usuarioId;
-	private $companyId;
+	public $companyId;
 	private $filasExistentes;
 
 	protected $sucursalesOnsite, $localidadesOnsite, $mailOnsiteService, $usersService, $parametrosService;
@@ -636,6 +636,11 @@ class ImportacionService
 	public function setUserId($userId)
 	{
 		$this->usuarioId = $userId;
+	}
+
+	public function setCompanyId($companyId)
+	{
+		$this->companyId = $companyId;
 	}
 
 	public function getEmpresaOnsite($empresaOnsiteId)
