@@ -103,8 +103,12 @@ class   ReparacionOnsiteImport implements OnEachRow, WithHeadingRow, WithBatchIn
 
             foreach ($this->dataReparacion as $key => $value) {
                 if (str_starts_with($key, 'fecha') && $value) {
-                    $this->dataReparacion[$key] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value)
-                        ->format('Y-m-d');
+                    $newtime = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value)->format('Y-m-d H:i:s');
+                    /*Log::info([
+                        'original'=>$value,
+                        'newtime'=>$newtime,
+                    ]);*/
+                    $this->dataReparacion[$key] = $newtime;
                 }
             }
 
