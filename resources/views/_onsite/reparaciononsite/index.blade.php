@@ -118,47 +118,63 @@
           @if( $reparacionOnsite->fecha_cerrado == '0000-00-00 00:00:00' )
 
           @if( $sysdate <= $reparacionOnsite->fecha_vencimiento || $reparacionOnsite->sla_justificado )
-            @if( round(abs( strtotime($reparacionOnsite->fecha_vencimiento) - strtotime($sysdate) ) /86400) <= 1 ) <td class="text-center ">
-              <h5><span class="badge badge-warning" data-toggle="tooltip" data-placement="bottom" title="{{ round(abs( strtotime($reparacionOnsite->fecha_vencimiento) - strtotime($sysdate) ) /86400) }} día/s"> IN </span> </h5>
+            @if( round(abs( strtotime($reparacionOnsite->fecha_vencimiento) - strtotime($sysdate) ) /86400) <= 1 ) <td
+              class="text-center ">
+              <h5><span class="badge badge-warning" data-toggle="tooltip" data-placement="bottom"
+                  title="{{ round(abs( strtotime($reparacionOnsite->fecha_vencimiento) - strtotime($sysdate) ) /86400) }} día/s">
+                  IN </span> </h5>
               </td>
               @else
               <td class="text-center ">
-                <h5><span class="badge badge-success" data-toggle="tooltip" data-placement="bottom" title="{{ round(abs( strtotime($sysdate) - strtotime($reparacionOnsite->fecha_vencimiento) ) /86400) }} día/s"> IN </span> </h5>
+                <h5><span class="badge badge-success" data-toggle="tooltip" data-placement="bottom"
+                    title="{{ round(abs( strtotime($sysdate) - strtotime($reparacionOnsite->fecha_vencimiento) ) /86400) }} día/s">
+                    IN </span> </h5>
               </td>
               @endif
               @else
               <td class="text-center ">
-                <h5><span class="badge badge-danger" data-toggle="tooltip" data-placement="bottom" title="-{{ round(abs( strtotime($reparacionOnsite->fecha_vencimiento) - strtotime($sysdate) ) /86400) }} día/s"> OUT </span> </h5>
+                <h5><span class="badge badge-danger" data-toggle="tooltip" data-placement="bottom"
+                    title="-{{ round(abs( strtotime($reparacionOnsite->fecha_vencimiento) - strtotime($sysdate) ) /86400) }} día/s">
+                    OUT </span> </h5>
               </td>
               @endif
-
+          
               @else
-
-              @if( $reparacionOnsite->fecha_cerrado <= $reparacionOnsite->fecha_vencimiento || $reparacionOnsite->sla_justificado )
+          
+              {{-- @if( $reparacionOnsite->fecha_cerrado <= $reparacionOnsite->fecha_vencimiento || $reparacionOnsite->sla_justificado) --}}
+              @if( $reparacionOnsite->sla_status == "IN" )
                 <td class="text-center ">
-                  <h5><span class="badge badge-secondary" data-toggle="tooltip" data-placement="bottom" data-html="true" title="{{ round(abs( strtotime($reparacionOnsite->fecha_cerrado) - strtotime($reparacionOnsite->fecha_vencimiento) ) /86400) }} día/s <br> {{ $reparacionOnsite->fecha_cerrado }}"> IN </span> </h5>
+                  <h5><span class="badge badge-secondary" data-toggle="tooltip" data-placement="bottom" data-html="true"
+                      title="{{ round(abs( strtotime($reparacionOnsite->fecha_cerrado) - strtotime($reparacionOnsite->fecha_vencimiento) ) /86400) }} día/s <br> {{ $reparacionOnsite->fecha_cerrado }}">
+                      IN </span> </h5>
                   <br>
                   <label class="checkbox-inline label">
-                    <input type="checkbox" value="{{ $reparacionOnsite->sla_justificado }}" id="{{ $reparacionOnsite->id }}" name="sla_justificado" {{ $reparacionOnsite->sla_justificado ? 'checked' : ''}}>
+                    <input type="checkbox" value="{{ $reparacionOnsite->sla_justificado }}" id="{{ $reparacionOnsite->id }}"
+                      name="sla_justificado" {{ $reparacionOnsite->sla_justificado ? 'checked' : ''}}>
                   </label>
                 </td>
                 @else
                 <td class="text-center ">
-                  <h5><span class="badge badge-alternate" data-toggle="tooltip" data-placement="bottom" data-html="true" title="-{{ round(abs( strtotime($reparacionOnsite->fecha_vencimiento) - strtotime($reparacionOnsite->fecha_cerrado) ) /86400) }} día/s <br> {{ $reparacionOnsite->fecha_cerrado }}"> OUT </span> </h5>
+                  <h5><span class="badge badge-alternate" data-toggle="tooltip" data-placement="bottom" data-html="true"
+                      title="-{{ round(abs( strtotime($reparacionOnsite->fecha_vencimiento) - strtotime($reparacionOnsite->fecha_cerrado) ) /86400) }} día/s <br> {{ $reparacionOnsite->fecha_cerrado }}">
+                      OUT </span> </h5>
                   <br>
                   <label class="checkbox-inline label">
-                    <input type="checkbox" value="{{ $reparacionOnsite->sla_justificado }}" id="{{ $reparacionOnsite->id }}" name="sla_justificado" {{ $reparacionOnsite->sla_justificado ? 'checked' : ''}}>
+                    <input type="checkbox" value="{{ $reparacionOnsite->sla_justificado }}" id="{{ $reparacionOnsite->id }}"
+                      name="sla_justificado" {{ $reparacionOnsite->sla_justificado ? 'checked' : ''}}>
                   </label>
                 </td>
                 @endif
-
+          
                 @endif
-
+          
                 <td>
                   {{$reparacionOnsite->prioridad}}
                 </td>
                 <td class="text-center ">
-                  <button class="btn-icon btn-icon-only btn-shadow btn-outline-2x btn btn-outline-info btn-sm" style="padding: 1px 5px;" name='agregarNota' data-toggle='modal' data-target='#modalAgregarNota' value='{{$reparacionOnsite->id}}'>
+                  <button class="btn-icon btn-icon-only btn-shadow btn-outline-2x btn btn-outline-info btn-sm"
+                    style="padding: 1px 5px;" name='agregarNota' data-toggle='modal' data-target='#modalAgregarNota'
+                    value='{{$reparacionOnsite->id}}'>
                     <i class="pe-7s-note btn-icon-wrapper" style="font-size: 20px;"> </i>
                   </button>
                 </td>
