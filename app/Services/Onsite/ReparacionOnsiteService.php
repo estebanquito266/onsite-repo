@@ -491,6 +491,19 @@ class ReparacionOnsiteService
 		$datos['sucursalOnsite'] = array();
 		$datos['companyId'] = $userCompanyId;
 
+		$motivos_consulta_ticket = MotivoConsultaTicket::select('id', 'name')->where('company_id', Session::get('userCompanyIdDefault'))->get();
+		$categorias_ticket = CategoryTicket::select('id', 'name')->where('company_id', Session::get('userCompanyIdDefault'))->get();
+		$grupos_ticket_ticket = GroupTicket::select('id', 'name')->where('company_id', Session::get('userCompanyIdDefault'))->get();
+		$priorities_ticket = PriorityTicket::select('id', 'name')->get();
+		$status_ticket = StatusTicket::select('id', 'name')->get();
+		
+		$datos['commentsTickets'] = array();
+		$datos['motivos_consulta'] = $motivos_consulta_ticket;
+		$datos['categorias'] = $categorias_ticket;
+		$datos['grupos'] = $grupos_ticket_ticket;
+		$datos['priorities'] = $priorities_ticket;
+		$datos['status'] = $status_ticket;
+
 		return $datos;
 	}
 

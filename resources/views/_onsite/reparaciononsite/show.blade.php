@@ -28,16 +28,21 @@
   </div>
 </div>
 
+@include('_onsite.reparaciononsite._cardsTickets',['tickets'=>$reparacionOnsite->tickets])
+
 @endsection
 
 @section('scripts')
   <script type="text/javascript" src="{!! asset('/assets/js/_onsite/reparaciones-onsite-terminalesreparaciones-onsite-terminales.js') !!}"></script>
   <script type="text/javascript" src="{!! asset('/assets/js/_onsite/reparaciones-onsite-terminalesreparaciones-onsite-sistemas.js') !!}"></script>
   <script type="text/javascript" src="{!! asset('/assets/js/_onsite/agregar-nota.js') !!}"></script>
+  <script type="text/javascript" src="{!! asset('/assets/js/tickets/tickets.js') !!}"></script>
+
 @endsection
 
 @section('modals')
   @include('_onsite.terminalonsite.modalpro')
   @include('_onsite.historialestadoonsite.modalpro')
   @include('_onsite.reparaciononsite.nota.modal-agregar')
+  @include('tickets.modal-form')
 @endsection
