@@ -91,22 +91,22 @@
             <a href="{{ url('reparacionOnsite/' . $reparacionOnsite->id . '/edit') }}">{{ $reparacionOnsite->clave }}</a>
           </td>
           <td>
-            {{($reparacionOnsite->empresa_onsite) ? $reparacionOnsite->empresa_onsite->nombre : ''}}
+            {{(isset($reparacionOnsite->empresa_onsite->nombre)) ? $reparacionOnsite->empresa_onsite->nombre : ''}}
           </td>
           <td>
-            {{ ($reparacionOnsite->sucursal_onsite) ? $reparacionOnsite->sucursal_onsite->razon_social : '' }}
+            {{ (isset($reparacionOnsite->sucursal_onsite->razon_social)) ? $reparacionOnsite->sucursal_onsite->razon_social : '' }}
           </td>
           <td>
-            {{ ($reparacionOnsite->terminal_onsite) ? $reparacionOnsite->terminal_onsite->nro . ' - ' . $reparacionOnsite->terminal_onsite->marca . ' - ' . $reparacionOnsite->terminal_onsite->modelo . ' - ' . $reparacionOnsite->terminal_onsite->serie . ' - ' . $reparacionOnsite->terminal_onsite->rotulo : ''}}
+            {{ (isset($reparacionOnsite->terminal_onsite)) ? $reparacionOnsite->terminal_onsite->nro . ' - ' . $reparacionOnsite->terminal_onsite->marca . ' - ' . $reparacionOnsite->terminal_onsite->modelo . ' - ' . $reparacionOnsite->terminal_onsite->serie . ' - ' . $reparacionOnsite->terminal_onsite->rotulo : ''}}
           </td>
           <td>
-            {{ ($reparacionOnsite->tipo_servicio_onsite) ? $reparacionOnsite->tipo_servicio_onsite->nombre : '' }}
+            {{ (isset($reparacionOnsite->tipo_servicio_onsite)) ? $reparacionOnsite->tipo_servicio_onsite->nombre : '' }}
           </td>
           <td class="text-left">
-            <button class="btn btn-link" name="consultarHistorialEstadoOnsite" data-toggle="modal" data-target="#modalHistorialEstadosOnsite" value="{{ $reparacionOnsite->id }}" type="button">{{ ($reparacionOnsite->estado_onsite) ? $reparacionOnsite->estado_onsite->nombre : '' }}</button>
+            <button class="btn btn-link" name="consultarHistorialEstadoOnsite" data-toggle="modal" data-target="#modalHistorialEstadosOnsite" value="{{ $reparacionOnsite->id }}" type="button">{{ (isset($reparacionOnsite->estado_onsite)) ? $reparacionOnsite->estado_onsite->nombre : '' }}</button>
           </td>
           <td>
-            {{ ($reparacionOnsite->tecnicoAsignado) ? $reparacionOnsite->tecnicoAsignado->name : '' }}
+            {{ (isset($reparacionOnsite->tecnicoAsignado)) ? $reparacionOnsite->tecnicoAsignado->name : '' }}
           </td>
           <td>
           {{$reparacionOnsite->fecha_ingreso?date('Y-m-d', strtotime($reparacionOnsite->fecha_ingreso)):' '}}
