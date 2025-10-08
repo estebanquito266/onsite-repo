@@ -347,13 +347,13 @@
                         (!empty($ticket->derivacion_id) ? ': <a style="color:black;" target=" _blank"
                             href="/derivacion/'.$ticket->derivacion_id.'"><b>'.$ticket->derivacion_id.'</b></a>': '')
                         !!}</td>
-                    <td>{{isset($ticket->cliente) ? $ticket->cliente->nombre : (isset($ticket->cliente_derivacion) ?
+                    <td>{{isset($ticket->cliente->nombre) ? $ticket->cliente->nombre : (isset($ticket->cliente_derivacion->nombre) ?
                         $ticket->cliente_derivacion->nombre : "Sin Cliente")}}
                         @if(isset($ticket->reparacion->sucursal_onsite->razon_social))
                         {{ " - ".$ticket->reparacion->sucursal_onsite->razon_social ?? ''}} @endif</td>
-                    <td>{{isset($ticket->user_owner) ? $ticket->user_owner->name : '-'}}</td>
-                    <td>{{isset($ticket->user_receiver) ? $ticket->user_receiver->name : '-'}}<br>
-                        {{isset($ticket->group_user_receiver) ? $ticket->group_user_receiver->name : '-'}}
+                    <td>{{isset($ticket->user_owner->name) ? $ticket->user_owner->name : '-'}}</td>
+                    <td>{{isset($ticket->user_receiver->name) ? $ticket->user_receiver->name : '-'}}<br>
+                        {{isset($ticket->group_user_receiver->name) ? $ticket->group_user_receiver->name : '-'}}
                     </td>
                     <td>{{$ticket->category_ticket?$ticket->category_ticket->name:'-'}} / {{$ticket->motivo_consulta?
                         $ticket->motivo_consulta->name : '-'}}</td>
@@ -413,12 +413,12 @@
                     </td>
                     <td>{{$ticket->getTypeName()}}</td>
                     <td>{{$ticket->reparacion_id?$ticket->reparacion_id:$ticket->derivacion_id}}</td>
-                    <td>{{isset($ticket->cliente) ? $ticket->cliente->nombre : (isset($ticket->cliente_derivacion) ? $ticket->cliente_derivacion->nombre : '')}}</td>
-                    <td>{{isset($ticket->user_owner) ? $ticket->user_owner->name : '-'}}</td>
-                    <td>{{isset($ticket->user_receiver) ? $ticket->user_receiver->name : '-'}}<br>
-                        {{isset($ticket->group_user_receiver) ? $ticket->group_user_receiver->name : '-'}}
+                    <td>{{isset($ticket->cliente->nombre) ? $ticket->cliente->nombre : (isset($ticket->cliente_derivacion->nombre) ? $ticket->cliente_derivacion->nombre : '')}}</td>
+                    <td>{{isset($ticket->user_owner->name) ? $ticket->user_owner->name : '-'}}</td>
+                    <td>{{isset($ticket->user_receiver->name) ? $ticket->user_receiver->name : '-'}}<br>
+                        {{isset($ticket->group_user_receiver->name) ? $ticket->group_user_receiver->name : '-'}}
                     </td>
-                    <td>{{$ticket->category_ticket?$ticket->category_ticket->name:'-'}} / {{$ticket->motivo_consulta?
+                    <td>{{$ticket->category_ticket->name?$ticket->category_ticket->name:'-'}} / {{$ticket->motivo_consulta?
                         $ticket->motivo_consulta->name : '-'}}</td>
                     <td>{{$ticket->expiration_date?date('d/m/Y', strtotime($ticket->expiration_date)):' '}} -
                         @if($ticket->expiration_date)
