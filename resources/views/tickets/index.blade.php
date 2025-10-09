@@ -316,7 +316,7 @@
                     <td class="text-center">
 
                         @php
-                        $priority_ticket = $ticket->priority_ticket ? strtolower(trim($ticket->priority_ticket->name)) :
+                        $priority_ticket = $ticket->priority_ticket->name ? strtolower(trim($ticket->priority_ticket->name)) :
                         "";
                         @endphp
                         @if ($priority_ticket === 'alta')
@@ -335,8 +335,8 @@
 
                         @else
                         <span class="mb-2 mr-2 badge badge-lg"
-                            style='background-color:{{$ticket->priority_ticket?$ticket->priority_ticket->color:""}}; color:white; font-size: 10px; padding: 8px;'>
-                            {{$ticket->priority_ticket?$ticket->priority_ticket->name:""}}
+                            style='background-color:{{$ticket->priority_ticket->color?$ticket->priority_ticket->color:""}}; color:white; font-size: 10px; padding: 8px;'>
+                            {{$ticket->priority_ticket->name?$ticket->priority_ticket->name:""}}
                         </span>
                         @endif
 
@@ -355,7 +355,7 @@
                     <td>{{isset($ticket->user_receiver->name) ? $ticket->user_receiver->name : '-'}}<br>
                         {{isset($ticket->group_user_receiver->name) ? $ticket->group_user_receiver->name : '-'}}
                     </td>
-                    <td>{{$ticket->category_ticket?$ticket->category_ticket->name:'-'}} / {{$ticket->motivo_consulta?
+                    <td>{{isset($ticket->category_ticket->name)?$ticket->category_ticket->name:'-'}} / {{isset($ticket->motivo_consulta->name)?
                         $ticket->motivo_consulta->name : '-'}}</td>
                     <td>{{$ticket->expiration_date?date('d/m/Y', strtotime($ticket->expiration_date)):' '}} -
 
@@ -365,7 +365,7 @@
                             title="{{$ticket->semaforo}}">semaforo</span>
                         @endif
                     </td>
-                    <td>{{($ticket->status_ticket) ? $ticket->status_ticket->name : ''}}</td>
+                    <td>{{(isset($ticket->status_ticket->name)) ? $ticket->status_ticket->name : ''}}</td>
                     <td class="text-center">
                         <div class="btn-actions-pane-right actions-icon-btn">
                             <div class="grupo_actions btn-group dropdown">
@@ -418,7 +418,7 @@
                     <td>{{isset($ticket->user_receiver->name) ? $ticket->user_receiver->name : '-'}}<br>
                         {{isset($ticket->group_user_receiver->name) ? $ticket->group_user_receiver->name : '-'}}
                     </td>
-                    <td>{{$ticket->category_ticket->name?$ticket->category_ticket->name:'-'}} / {{$ticket->motivo_consulta?
+                    <td>{{$ticket->category_ticket->name?$ticket->category_ticket->name:'-'}} / {{isset($ticket->motivo_consulta->name)?
                         $ticket->motivo_consulta->name : '-'}}</td>
                     <td>{{$ticket->expiration_date?date('d/m/Y', strtotime($ticket->expiration_date)):' '}} -
                         @if($ticket->expiration_date)
@@ -427,7 +427,7 @@
                         @endif
 
                     </td>
-                    <td>{{($ticket->status_ticket) ? $ticket->status_ticket->name : ''}}</td>
+                    <td>{{(isset($ticket->status_ticket->name)) ? $ticket->status_ticket->name : ''}}</td>
                     <td class="text-center">
                         <div class="btn-actions-pane-right actions-icon-btn">
                             <div class="grupo_actions btn-group dropdown">
