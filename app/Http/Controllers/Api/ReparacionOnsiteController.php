@@ -481,6 +481,15 @@ class ReparacionOnsiteController extends Controller
     return ReparacionOnsiteCollection::make($reparaciones_onsite);
   }
 
+    /**
+   * Devuelve las reparaciones que vencen hoy del usuario
+   *
+   * @return void
+   */
+  public function simulateupload()
+  {
+    return "ok";
+  }
   /**
    * SE TIENE QUE BORRAR SOLO LA TENGO DE EJEMPLO
    *
