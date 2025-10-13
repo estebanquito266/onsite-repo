@@ -261,7 +261,12 @@ Route::group(['middleware' => ['auth:api', 'cors'], 'prefix' => 'api'], function
   /* crear reparacion */
   Route::post('reparacion/create/{company_id}', [ReparacionOnsiteController::class, 'storeReparacionApi']);
 
-  
+  Route::post('simulateupload', function(Request $re){
+        return response()->json([
+          'data' => 'ok',
+        ], 200);
+    });
+    
 });
 
 Route::post('login', [ApiAuthController::class, 'login'])
