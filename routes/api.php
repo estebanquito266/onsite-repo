@@ -65,6 +65,9 @@ Route::middleware(['auth:api', 'cors'])->group(function () {
   Route::get('reparaciones_onsite/a_tiempo', [ReparacionOnsiteController::class, 'aTiempo'])
     ->name('api.v1.reparaciones_onsite.a_tiempo');
 
+  Route::post('reparaciones_onsite/simulateupload', [ReparacionOnsiteController::class, 'simulateupload'])
+    ->name('api.v1.reparaciones_onsite.simulateupload');
+
   Route::get('reparaciones_onsite/{reparacion_onsite}', [ReparacionOnsiteController::class, 'show'])
     ->name('api.v1.reparaciones_onsite.show');
 
