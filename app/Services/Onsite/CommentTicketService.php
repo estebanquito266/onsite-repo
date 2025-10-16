@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services\Onsite;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
@@ -31,7 +32,7 @@ class CommentTicketService
 {
     protected $mailService;
     protected $ticketsService;
-    
+
     public function __construct(
         MailService $mailService,
         TicketsService $ticketsService
@@ -43,7 +44,7 @@ class CommentTicketService
     public function listado($id)
     {
         $company_id = Session::get('userCompanyIdDefault');
-        $commentTickets = CommentTicket::where([['company_id', $company_id],['ticket_id',$id]])->orderBy('id','Desc')->get();
+        $commentTickets = CommentTicket::where([['company_id', $company_id], ['ticket_id', $id]])->orderBy('id', 'Desc')->get();
         return $commentTickets;
     }
 
@@ -54,26 +55,26 @@ class CommentTicketService
         $statusNameOld = $ticket->status_ticket->name;
         $statusOld = $ticket->status_ticket_id;
         $name = "";
-        if($request['status_id']){
-            if( $request['status_id']==5&&$ticket->user_owner_id != Auth::user()->id){
+        if ($request['status_id']) {
+            if ($request['status_id'] == 5 && $ticket->user_owner_id != Auth::user()->id) {
                 return 'No tienes permisos para cerrar el Ticket seleccionado';
-                
-            }elseif (
-                !(Auth::user()->group_ticket->contains($ticket->group_user_receiver_id) ||
-                Auth::user()->id == $ticket->user_owner_id ||
-                Auth::user()->id == $ticket->user_receiver_id)
+            } elseif (
+                !(
+                    Auth::user()->group_ticket->pluck('id')->contains($ticket->group_user_receiver_id)
+                    || Auth::id() === $ticket->user_owner_id
+                    || Auth::id() === $ticket->user_receiver_id
+                )
             ) {
                 return 'No tienes permisos para editar el Ticket seleccionado';
-            }
-            else{
-                $this->ticketsService->updateStatus($request['status_id'],$ticket->id);
+            } else {
+                $this->ticketsService->updateStatus($request['status_id'], $ticket->id);
             }
         }
         try {
-            if($request->hasFile('file')){
+            if ($request->hasFile('file')) {
                 $file = $request->file('file');
-                $name = time()."_".$file->getClientOriginalName();
-                $file->move(public_path().DIRECTORY_SEPARATOR."files".DIRECTORY_SEPARATOR,$name);
+                $name = time() . "_" . $file->getClientOriginalName();
+                $file->move(public_path() . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR, $name);
             }
 
             $commentTicket = new CommentTicket();
@@ -88,25 +89,26 @@ class CommentTicketService
             $commentTicket->save();
 
             $users = ModelsUser::join('user_group_ticket', 'users.id', '=', 'user_group_ticket.user_id')
-            ->where('user_group_ticket.group_ticket_id', $ticket->group_user_receiver_id)
-            ->get();
+                ->where('user_group_ticket.group_ticket_id', $ticket->group_user_receiver_id)
+                ->get();
 
             $user = ModelsUser::find($commentTicket->user_receiver_id);
             $userOwner = ModelsUser::find($ticket->user_owner_id);
 
             //Chequea si el usuario receptor y el usuario propietario ya existe en el grupo, para no notificar 2 veces
-            if(isset($user)){
+            if (isset($user)) {
                 $existeObjeto = $users->contains(function ($u) use ($user) {
                     return $u->id === $user->id;
                 });
-                if(!$existeObjeto){
+                if (!$existeObjeto) {
                     $users->push($user);
                 }
-            }if(isset($userOwner)){
+            }
+            if (isset($userOwner)) {
                 $existeObjeto = $users->contains(function ($u) use ($userOwner) {
                     return $u->id === $userOwner->id;
                 });
-                if(!$existeObjeto){
+                if (!$existeObjeto) {
                     $users->push($userOwner);
                 }
             }
@@ -114,17 +116,16 @@ class CommentTicketService
             $ticket = Ticket::findOrFail($request->ticket_id);
             $statusNameNew = $ticket->status_ticket->name;
             $comentarioHistorial = "Se agrega comentario";
-            if($statusNameOld !== $statusNameNew){
+            if ($statusNameOld !== $statusNameNew) {
                 $comentarioHistorial  .= " y actualiza estado de $statusNameOld a $statusNameNew";
             }
             $comentarioHistorial .= ". Ticket";
 
-            if(!empty($ticket->reparacion_id)){
+            if (!empty($ticket->reparacion_id)) {
                 $reparacion = ReparacionOnsite::find($ticket->reparacion_id);
-                if($reparacion){
-                    $this->ticketsService->registerHistorialEstadoReparacion($ticket, $reparacion,$comentarioHistorial);
+                if ($reparacion) {
+                    $this->ticketsService->registerHistorialEstadoReparacion($ticket, $reparacion, $comentarioHistorial);
                 }
-                
             }
 
             // if(!empty($ticket->derivacion_id)){
@@ -132,19 +133,19 @@ class CommentTicketService
             //     if($derivacion){
             //         $this->ticketsService->registerHistorialEstadoDerivacion($ticket, $derivacion,$comentarioHistorial);
             //     }
-                
+
             // }
-            
-        
+
+
             //Conformo el mensaje para la notificacion
-            $notifMsg ='Ticket ['.$ticket->id.'] actualizado por '.Auth::user()->name.':<br>';
-            $notifMsg .= "<ul><li><small>Nuevo Comentario: <b>".$commentTicket->comment."</b></small> </li> </ul>";
-            $users = $users->where('id', '<>' ,Auth::user()->id)->all();
-            foreach($users as $user){
+            $notifMsg = 'Ticket [' . $ticket->id . '] actualizado por ' . Auth::user()->name . ':<br>';
+            $notifMsg .= "<ul><li><small>Nuevo Comentario: <b>" . $commentTicket->comment . "</b></small> </li> </ul>";
+            $users = $users->where('id', '<>', Auth::user()->id)->all();
+            foreach ($users as $user) {
                 //Notificacion de usuarios
-                $data = [         
+                $data = [
                     'ticket_id' => $ticket->id,
-                    'email_to'=> $user->email,
+                    'email_to' => $user->email,
                 ];
                 //@todo: activar cuando este habilitado el envio de mails pero revisar paramcompany que no existe en onsite
                 // try {
@@ -152,25 +153,24 @@ class CommentTicketService
                 // } catch (Throwable  $e) {
                 //     Log::alert('No se pudo enviar el mail speedup. ERROR: ' . $e->getMessage());
                 //     Log::info($e->getFile() . '(' . $e->getLine() . ')');
-    
+
                 //     $envio_email = 'No se pudo enviar el mail speedup. ERROR: ' . $e->getMessage();
                 //     Log::alert($envio_email);
                 // }                
 
-            } 
+            }
 
             return $commentTicket;
         } catch (\Throwable $th) {
             return null;
         }
-        
     }
 
     public function destroy($id)
     {
         $comment = CommentTicket::findOrFail($id);
         try {
-            unlink(public_path().DIRECTORY_SEPARATOR."files".DIRECTORY_SEPARATOR.$comment->file);
+            unlink(public_path() . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . $comment->file);
             $id = $comment->id;
             $comment->delete();
         } catch (\Throwable $th) {
@@ -179,11 +179,12 @@ class CommentTicketService
         return true;
     }
 
-    public function findCommentsByTicketId($id){
+    public function findCommentsByTicketId($id)
+    {
         return CommentTicket::select('comment_tickets.*', 'users.name')
-        ->join('users', 'comment_tickets.user_comment_id', '=', 'users.id')
-        ->where('comment_tickets.ticket_id', $id)
-        ->orderBy('comment_tickets.id', 'DESC')
-        ->get();
+            ->join('users', 'comment_tickets.user_comment_id', '=', 'users.id')
+            ->where('comment_tickets.ticket_id', $id)
+            ->orderBy('comment_tickets.id', 'DESC')
+            ->get();
     }
 }

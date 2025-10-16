@@ -22,7 +22,7 @@
                     <button type="submit" class="btn btn-primary btn-pill mt-2" name="crearComentario" value="1">Crear</button>
                 
                 <div class="dropdown d-inline-block">
-                <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" class="dropdown-toggle btn btn-primary btn-pill mt-2" name="botonGuardarEstado" value="1" id="button-cambiar">Crear y Cambiar Estado</button>
+                <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" class="dropdown-toggle btn btn-primary btn-pill mt-2" name="botonGuardarEstado" value="1" id="button-cambiar">Guardar y avanzar</button>
                 <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu-rounded dropdown-menu">
                     @if(isset($status))
                     @foreach($status as $st)

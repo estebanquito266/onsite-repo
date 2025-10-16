@@ -239,15 +239,18 @@ class TicketsService
 
         $commentsTickets = CommentTicket::where('ticket_id',$id)->orderBy('id','DESC')->get();
         $priorities = PriorityTicket::select('id','name')->get();
-        $status = StatusTicket::select('id','name')->get();
+        $statusQuery = StatusTicket::select('id', 'name')
+            ->where('company_id', $company_id);
+
+        $status = $statusQuery->get();
         $tipos = [];
         foreach (TicketType::getValues() as $value) {
             $tipos[$value] = TicketType::getKey($value);
         }
-
-      
-        if(isset($ticket->user_owner_id) && $ticket->user_owner_id != Auth::user()->id){
-            $status = StatusTicket::select('id','name')->where('id','<>',5)->get();
+        if (isset($ticket->user_owner_id) && $ticket->user_owner_id != Auth::user()->id) {
+            $status = (clone $statusQuery)
+                ->where('id', '<>', 5) // ejemplo: no permitir cerrar si no sos owner (lógica existente)
+                ->get();
         }
         // dd([
         //     'cliente' => $cliente,
