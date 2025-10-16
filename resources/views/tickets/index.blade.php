@@ -311,7 +311,8 @@
                         {!! link_to_route('ticket.edit', $title = $ticket->id, $parameters = $ticket->id, $attributes =
                         null)!!}
                     </td>
-                    <td>@if(isset($ticket->reparacion)) {{$ticket->reparacion->clave}} @else "" @endif</td>
+                    <td>{{ optional($ticket->reparacion)->clave ?? '' }}</td>
+
                     <td>{{date('d/m/Y', strtotime($ticket->created_at))}}</td>
                     <td class="text-center">
 
@@ -335,8 +336,13 @@
 
                         @else
                         <span class="mb-2 mr-2 badge badge-lg"
+<<<<<<< HEAD
                             style='background-color:{{$ticket->priority_ticket->color?$ticket->priority_ticket->color:""}}; color:white; font-size: 10px; padding: 8px;'>
                             {{isset($ticket->priority_ticket->name)?$ticket->priority_ticket->name:""}}
+=======
+                            style='background-color:{{optional($ticket->priority_ticket)->color ?? ""}}; color:white; font-size: 10px; padding: 8px;'>
+                            {{optional($ticket->priority_ticket)->name ?? ""}}
+>>>>>>> be3efdfa062450d2c9f1a0042550b7054ea78780
                         </span>
                         @endif
 
@@ -346,17 +352,24 @@
                             href="/reparacion/'.$ticket->reparacion_id.'"><b>'.$ticket->reparacion_id.'</b></a>' :
                         (!empty($ticket->derivacion_id) ? ': <a style="color:black;" target=" _blank"
                             href="/derivacion/'.$ticket->derivacion_id.'"><b>'.$ticket->derivacion_id.'</b></a>': '')
-                        !!}</td>
-                    <td>{{isset($ticket->cliente->nombre) ? $ticket->cliente->nombre : (isset($ticket->cliente_derivacion->nombre) ?
-                        $ticket->cliente_derivacion->nombre : "Sin Cliente")}}
-                        @if(isset($ticket->reparacion->sucursal_onsite->razon_social))
-                        {{ " - ".$ticket->reparacion->sucursal_onsite->razon_social ?? ''}} @endif</td>
-                    <td>{{isset($ticket->user_owner->name) ? $ticket->user_owner->name : '-'}}</td>
-                    <td>{{isset($ticket->user_receiver->name) ? $ticket->user_receiver->name : '-'}}<br>
-                        {{isset($ticket->group_user_receiver->name) ? $ticket->group_user_receiver->name : '-'}}
+                        !!}
                     </td>
-                    <td>{{isset($ticket->category_ticket->name)?$ticket->category_ticket->name:'-'}} / {{isset($ticket->motivo_consulta->name)?
-                        $ticket->motivo_consulta->name : '-'}}</td>
+                    <td>
+                        {{optional($ticket->cliente)->nombre ?? (optional($ticket->cliente_derivacion)->nombre ?? "Sin Cliente")}}
+                    
+                        @if($ticket->reparacion && $ticket->reparacion->sucursal_onsite)
+                            {{ " - ".$ticket->reparacion->sucursal_onsite->razon_social ?? ''}} 
+                        
+                        @endif
+                    </td>
+                    <td>{{optional($ticket->user_owner)->name ?? '-'}}</td>
+                    <td>{{optional($ticket->user_receiver)->name ?? '-'}}<br>
+                        {{optional($ticket->group_user_receiver)->name ?? '-'}}
+                    </td>
+                    <td>
+                        {{optional($ticket->category_ticket)->name ?? '-'}} / {{optional($ticket->motivo_consulta)->name ?? '-'}}
+                    </td>
+
                     <td>{{$ticket->expiration_date?date('d/m/Y', strtotime($ticket->expiration_date)):' '}} -
 
                         @if($ticket->expiration_date)
@@ -365,7 +378,9 @@
                             title="{{$ticket->semaforo}}">semaforo</span>
                         @endif
                     </td>
-                    <td>{{(isset($ticket->status_ticket->name)) ? $ticket->status_ticket->name : ''}}</td>
+                    <td>
+                        {{optional($ticket->status_ticket)->name ?? ''}}
+                    </td>
                     <td class="text-center">
                         <div class="btn-actions-pane-right actions-icon-btn">
                             <div class="grupo_actions btn-group dropdown">
@@ -407,19 +422,31 @@
                     <td>{{date('d/m/Y', strtotime($ticket->created_at))}}</td>
                     <td>
                         <span class="mb-2 mr-2 badge badge-lg"
-                            style='background-color:{{isset($ticket->priority_ticket->color)?$ticket->priority_ticket->color:""}}; color:white; font-size: 10px; padding: 8px;'>
-                            {{isset($ticket->priority_ticket->name)?$ticket->priority_ticket->name:""}}
+                            style='background-color:{{optional($ticket->priority_ticket)->color ?? ""}}; color:white; font-size: 10px; padding: 8px;'>
+                            {{optional($ticket->priority_ticket)->name ?? ""}}
                         </span>
                     </td>
+                    
                     <td>{{$ticket->getTypeName()}}</td>
-                    <td>{{$ticket->reparacion_id?$ticket->reparacion_id:$ticket->derivacion_id}}</td>
-                    <td>{{isset($ticket->cliente->nombre) ? $ticket->cliente->nombre : (isset($ticket->cliente_derivacion->nombre) ? $ticket->cliente_derivacion->nombre : '')}}</td>
-                    <td>{{isset($ticket->user_owner->name) ? $ticket->user_owner->name : '-'}}</td>
-                    <td>{{isset($ticket->user_receiver->name) ? $ticket->user_receiver->name : '-'}}<br>
-                        {{isset($ticket->group_user_receiver->name) ? $ticket->group_user_receiver->name : '-'}}
+
+                    <td>{{$ticket->reparacion_id ? $ticket->reparacion_id : $ticket->derivacion_id}}</td>
+                    
+                    <td>{{optional($ticket->cliente)->nombre ?? (optional($ticket->cliente_derivacion)->nombre ?? '')}}</td>
+
+                    
+                    <td>{{optional($ticket->user_owner)->name ?? '-'}}</td>
+                    <td>{{optional($ticket->user_receiver)->name ?? '-'}}<br>
+                        {{optional($ticket->group_user_receiver)->name ?? '-'}}
                     </td>
+                    <td>
+                        {{ optional($ticket->category_ticket)->name ?? '-' }} /
+                        {{ optional($ticket->motivo_consulta)->name ?? '-' }}
+                    </td>
+<<<<<<< HEAD
                     <td>{{isset($ticket->category_ticket->name)?$ticket->category_ticket->name:'-'}} / {{isset($ticket->motivo_consulta->name)?
                         $ticket->motivo_consulta->name : '-'}}</td>
+=======
+>>>>>>> be3efdfa062450d2c9f1a0042550b7054ea78780
                     <td>{{$ticket->expiration_date?date('d/m/Y', strtotime($ticket->expiration_date)):' '}} -
                         @if($ticket->expiration_date)
                         <span class="badge badge-dot badge-dot-lg {{$ticket->semaforoclass}}" data-toggle="tooltip"
@@ -427,7 +454,7 @@
                         @endif
 
                     </td>
-                    <td>{{(isset($ticket->status_ticket->name)) ? $ticket->status_ticket->name : ''}}</td>
+                    <td>{{optional($ticket->status_ticket)->name ?? ''}}</td>
                     <td class="text-center">
                         <div class="btn-actions-pane-right actions-icon-btn">
                             <div class="grupo_actions btn-group dropdown">

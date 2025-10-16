@@ -3,7 +3,7 @@
 
         @if(Session::has('reparacionOnsite') )
         <li>
-          <a href="{!! URL::to('/reparacionOnsite') !!}" @if( Request::segment(1)=='reparacionOnsite' || Request::segment(1)=='filtrarReparacionOnsite' ) class="mm-active" @endif>
+          <a href="{!! URL::to('/reparacionOnsiteIndex') !!}" @if( Request::segment(1)=='reparacionOnsiteIndex' || Request::segment(1)=='filtrarReparacionOnsite' ) class="mm-active" @endif>
             <i class="metismenu-icon pe-7s-tools"></i>Reparaciones
           </a>
         </li>

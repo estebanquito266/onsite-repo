@@ -87,9 +87,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('reparacionOnsiteAgregarImagenOnsite', [ReparacionOnsiteController::class, 'agregarImagenOnsite']);
     Route::post('reparacionOnsiteAgregarVisita', [ReparacionOnsiteController::class, 'agregarVisita']);
     Route::delete('reparacionOnsiteEliminarImagenOnsite/{id}', [ReparacionOnsiteController::class, 'eliminarImagenOnsite']);
-    Route::post('filtrarReparacionOnsite', [ReparacionOnsiteController::class, 'filtrarReparacionOnsite']);
-    Route::get('filtrarReparacionOnsite', [ReparacionOnsiteController::class, 'filtrarReparacionOnsite']);
 
+    Route::post('filtrarReparacionOnsite', [ReparacionOnsiteController::class, 'filtrarReparacionOnsite']);
+    Route::get('reparacionOnsiteIndex', [ReparacionOnsiteController::class, 'index'])->name('reparacionOnsite.newindex');
+    Route::post('reparacionOnsiteIndex', [ReparacionOnsiteController::class, 'index'])->name('reparacionOnsite.newindexpost');
+    
     Route::post('filtrarReparacionOnsitePorEmpresa', [AdminController::class, 'filtrarPorEmpresa']);
     Route::get('reparacionOnsitePosnet', [ReparacionOnsiteController::class, 'indexPosnet']);
     Route::post('importarReparacionesOnsite', [ReparacionOnsiteController::class, 'importarReparacionesOnsite']);

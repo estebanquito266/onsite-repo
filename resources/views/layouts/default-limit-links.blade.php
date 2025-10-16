@@ -1,7 +1,6 @@
 <?php
 // config
 $link_limit = (isset($custom_link_limit)) ? $custom_link_limit : 10;
-$class_loader = (isset($class_loader)) ? $class_loader : '';
 ?>
 
 @if ($paginator->count() && isset($showmessage))
@@ -28,13 +27,13 @@ $class_loader = (isset($class_loader)) ? $class_loader : '';
             }
             ?>
             @if ($from < $i && $i < $to)
-                <li class="page-item {{ ($paginator->currentPage() == $i) ? ' active' : '' }}">
-                    <a href="{{ $paginator->url($i) }}{{ $filters }}" data-frmsubmit="{{!empty($frmsubmit) ? $frmsubmit : ''}}" class="page-link mypage-link {{$class_loader}}">{{ $i }}</a>
+                <li class="page-item clickoverlay {{ ($paginator->currentPage() == $i) ? ' active' : '' }}">
+                    <a href="{{ $paginator->url($i) }}{{ $filters }}" data-frmsubmit="{{!empty($frmsubmit) ? $frmsubmit : ''}}" class="page-link mypage-link">{{ $i }}</a>
                 </li>
             @endif
         @endfor
-        <li class="page-item {{ ($paginator->currentPage() == $paginator->lastPage()) ? ' disabled' : '' }}">
-            <a href="{{ $paginator->url($paginator->lastPage()) }}{{ $filters }}" data-frmsubmit="{{!empty($frmsubmit) ? $frmsubmit : ''}}" class="page-link mypage-link {{$class_loader}}" > <span aria-hidden="true">»»</span><span class="sr-only">Último</span> </a>
+        <li class="page-item clickoverlay {{ ($paginator->currentPage() == $paginator->lastPage()) ? ' disabled' : '' }}">
+            <a href="{{ $paginator->url($paginator->lastPage()) }}{{ $filters }}" data-frmsubmit="{{!empty($frmsubmit) ? $frmsubmit : ''}}" class="page-link mypage-link" > <span aria-hidden="true">»»</span><span class="sr-only">Último</span> </a>
         </li>
     </ul>
 </nav>
