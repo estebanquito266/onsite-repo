@@ -135,7 +135,7 @@
                                 </div>
 
                                 <div class="col-md-2">
-                                    <a href="/reparacionOnsite" class="btn btn-danger btn-block pull-right mt-1 clickoverlay" id="btn-limpiar">Limpiar</a>
+                                    <a href="/reparacionOnsiteIndex" class="btn btn-danger btn-block pull-right mt-1 clickoverlay" id="btn-limpiar">Limpiar</a>
 
                                 </div>
 
