@@ -820,15 +820,9 @@ class ReparacionOnsiteController extends Controller
     try {
 
       $mje = $this->reparacion_onsite_service->getVisitasPorReparacionId($company_id, $id_reparacion);
-      if ($mje) {
-        return response()->json([
+      return response()->json([
           'data' => $mje,
         ], 200);
-      } else
-        return response()->json([
-          'error' => 'Error de conexión al servidor',
-          'message' => 'Server Error'
-        ], 500);
     } catch (\Exception $e) {
       Log::error('getVisitasPorReparacionId: ' . json_encode($id_reparacion) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
 
