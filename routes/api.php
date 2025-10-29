@@ -267,6 +267,10 @@ Route::group(['middleware' => ['auth:api', 'cors'], 'prefix' => 'api'], function
   /* visitas por reparacion_id */
   Route::get('reparacion/visita/{company_id}/{id_reparacion}', [ReparacionOnsiteController::class, 'getVisitasPorReparacionId']);
 
+  /* crear reparacion visita */
+  Route::post('reparacion/visita/create/{company_id}/{id_reparacion}', [ReparacionOnsiteController::class, 'storeVisitaApi']);
+
+
 });
 
 Route::post('login', [ApiAuthController::class, 'login'])

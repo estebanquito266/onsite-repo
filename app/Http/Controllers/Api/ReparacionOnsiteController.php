@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Onsite\UpdateReparacionRequest;
+use App\Http\Requests\Onsite\VisitaRequest;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use App\Models\Onsite\ReparacionOnsite;
@@ -825,6 +826,33 @@ class ReparacionOnsiteController extends Controller
         ], 200);
     } catch (\Exception $e) {
       Log::error('getVisitasPorReparacionId: ' . json_encode($id_reparacion) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
+
+      return response()->json([
+        'error' => $e->getMessage(),
+        'message' => 'Server Error'
+      ], 500);
+    }
+  }
+
+  public function storeVisitaApi(VisitaRequest $request, $company_id, $id_reparacion)
+  {
+    try {
+
+
+      $mje = $this->reparacion_onsite_service->registrarVisitaApi($request,$company_id, $id_reparacion);
+			
+
+      if ($mje) {
+        return response()->json([
+          'data' => $mje,
+        ], 200);
+      } else
+        return response()->json([
+          'error' => 'Error al crear la visita',
+          'message' => 'Server Error'
+        ], 500);
+    } catch (\Exception $e) {
+      Log::error('update_reparacion_api: ' . json_encode($request) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
 
       return response()->json([
         'error' => $e->getMessage(),

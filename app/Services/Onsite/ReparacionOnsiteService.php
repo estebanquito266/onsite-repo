@@ -2666,6 +2666,41 @@ class ReparacionOnsiteService
 		return $reparacion_visita;
 	}
 
+	function registrarVisitaApi(Request $request, $company_id, $id_reparacion)
+	{
+
+		$reparacion_onsite = ReparacionOnsite::where('id',$id_reparacion)->where('company_id',$company_id)->first();
+
+		if (!$reparacion_onsite) {
+			Log::alert("NO EXISTE UNA REPARACION ONSITE CON ID {$id_reparacion} EN LA COMPANY {$company_id}");
+			return false;
+		}
+
+		$visita_anterior = ReparacionVisita::where('reparacion_id', $id_reparacion)
+								->where('company_id',$company_id)
+								->orderBy('id', 'desc')
+								->first();
+
+		
+		if ($visita_anterior) {
+			$request['orden'] = $visita_anterior->orden  + 1;
+		} else
+			$request['orden'] = 1;
+
+		$request['reparacion_id'] = $id_reparacion;
+		$request['company_id'] = $company_id;
+
+		$reparacion_visita = ReparacionVisita::create(
+			$request->all()
+		);
+
+		$reparacion_onsite->fecha_vencimiento = $request['fecha_nuevo_vencimiento'];
+		$reparacion_onsite->fecha_1_vencimiento = $request['fecha_vencimiento'];
+		$reparacion_onsite->fecha_1_visita = $request['fecha'];
+		$reparacion_onsite->save();
+
+		return $reparacion_visita;
+	}
 
 
 
