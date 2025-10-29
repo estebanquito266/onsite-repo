@@ -2610,6 +2610,21 @@ class ReparacionOnsiteService
 		return $reparaciones_onsite_data;
 	}
 
+	public function getVisitasPorReparacionId($company_id, $id_reparacion)
+	{
+
+		return ReparacionVisita::where('reparacion_id', $id_reparacion)
+								->where('company_id', $company_id)
+                                ->select('reparacion_id as id_reparacion','id as id_visita', 'fecha','fecha_nuevo_vencimiento as nuevo_vencimiento','motivo')
+								->get()
+								->toArray();
+
+        
+
+
+
+	}
+
 	public function findReparacionDetalle($id)
 	{
 		$reparacionDetalle = ReparacionDetalle::where('reparacion_id', $id)->first();

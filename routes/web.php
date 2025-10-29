@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Api\ReparacionOnsiteController as ApiReparacionOnsiteController;
 use App\Http\Controllers\Onsite\VisitaController;
 use App\Http\Controllers\googleApi\GoogleCalendarController;
 use App\Http\Controllers\Onsite\EmpresaOnsiteController;
@@ -36,6 +37,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+
+Route::get('reparacion/visita/{company_id}/{id_reparacion}', [ApiReparacionOnsiteController::class, 'getVisitasPorReparacionId']);
 
 Route::domain('https://bghecosmart.speedup.com.ar')->group(function () {
 
