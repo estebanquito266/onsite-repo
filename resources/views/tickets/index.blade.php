@@ -336,14 +336,10 @@
 
                         @else
                         <span class="mb-2 mr-2 badge badge-lg"
-<<<<<<< HEAD
-                            style='background-color:{{$ticket->priority_ticket->color?$ticket->priority_ticket->color:""}}; color:white; font-size: 10px; padding: 8px;'>
-                            {{isset($ticket->priority_ticket->name)?$ticket->priority_ticket->name:""}}
-=======
-                            style='background-color:{{optional($ticket->priority_ticket)->color ?? ""}}; color:white; font-size: 10px; padding: 8px;'>
+                            style="background-color: {{optional($ticket->priority_ticket)->color ?? ''}}; color:white; font-size: 10px; padding: 8px;">
                             {{optional($ticket->priority_ticket)->name ?? ""}}
->>>>>>> be3efdfa062450d2c9f1a0042550b7054ea78780
                         </span>
+
                         @endif
 
                     </td>
@@ -422,7 +418,7 @@
                     <td>{{date('d/m/Y', strtotime($ticket->created_at))}}</td>
                     <td>
                         <span class="mb-2 mr-2 badge badge-lg"
-                            style='background-color:{{optional($ticket->priority_ticket)->color ?? ""}}; color:white; font-size: 10px; padding: 8px;'>
+                            style="background-color: {{optional($ticket->priority_ticket)->color ?? ''}}; color:white; font-size: 10px; padding: 8px;">
                             {{optional($ticket->priority_ticket)->name ?? ""}}
                         </span>
                     </td>
@@ -442,18 +438,14 @@
                         {{ optional($ticket->category_ticket)->name ?? '-' }} /
                         {{ optional($ticket->motivo_consulta)->name ?? '-' }}
                     </td>
-<<<<<<< HEAD
-                    <td>{{isset($ticket->category_ticket->name)?$ticket->category_ticket->name:'-'}} / {{isset($ticket->motivo_consulta->name)?
-                        $ticket->motivo_consulta->name : '-'}}</td>
-=======
->>>>>>> be3efdfa062450d2c9f1a0042550b7054ea78780
-                    <td>{{$ticket->expiration_date?date('d/m/Y', strtotime($ticket->expiration_date)):' '}} -
+                    <td>
+                        {{ $ticket->expiration_date ? date('d/m/Y', strtotime($ticket->expiration_date)) : ' ' }} -
                         @if($ticket->expiration_date)
-                        <span class="badge badge-dot badge-dot-lg {{$ticket->semaforoclass}}" data-toggle="tooltip"
-                            title="{{$ticket->semaforo}}">semaforo</span>
+                            <span class="badge badge-dot badge-dot-lg {{ $ticket->semaforoclass }}" data-toggle="tooltip"
+                                title="{{ $ticket->semaforo }}">semaforo</span>
                         @endif
-
                     </td>
+
                     <td>{{optional($ticket->status_ticket)->name ?? ''}}</td>
                     <td class="text-center">
                         <div class="btn-actions-pane-right actions-icon-btn">
