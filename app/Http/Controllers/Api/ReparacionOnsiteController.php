@@ -747,7 +747,19 @@ class ReparacionOnsiteController extends Controller
   {
     try {
 
+      if(!is_numeric($company_id) or !is_numeric($id_reparacion)){
+          return response()->json([
+            'error' => "company_id or id_reparacion are not numeric.",
+            'message' => 'Server Error'
+          ], 401);
+      }
+      
+			Session::put('userCompanyIdDefault',$company_id);
+			Session::put('userCompaniesId',[$company_id]);
+
       $mje = $this->reparacion_onsite_service->getDataEdit($id_reparacion, $company_id);
+
+      Session::forget(['userCompanyIdDefault', 'userCompaniesId']);
 
       if ($mje) {
         return response()->json([
