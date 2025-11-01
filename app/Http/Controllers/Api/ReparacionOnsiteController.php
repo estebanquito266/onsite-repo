@@ -754,12 +754,19 @@ class ReparacionOnsiteController extends Controller
           ], 401);
       }
       
-			Session::put('userCompanyIdDefault',$company_id);
-			Session::put('userCompaniesId',[$company_id]);
-
+			$sessionExists=true;
+      if (!Session::has('userCompanyIdDefault')) {
+          Session::put('userCompanyIdDefault', $company_id);
+          Session::put('userCompaniesId',[$company_id]);
+          $sessionExists=false;
+      }
+     
       $mje = $this->reparacion_onsite_service->getDataEdit($id_reparacion, $company_id);
 
-      Session::forget(['userCompanyIdDefault', 'userCompaniesId']);
+      if(!$sessionExists){
+        //Si las habia seteado por api las borro por seguridad
+        Session::forget(['userCompanyIdDefault', 'userCompaniesId']);
+      }
 
       if ($mje) {
         return response()->json([
@@ -784,7 +791,30 @@ class ReparacionOnsiteController extends Controller
   {
     try {
 
+      if(!is_numeric($company_id)){
+          return response()->json([
+            'error' => "company_id is not numeric.",
+            'message' => 'Server Error'
+          ], 401);
+      }
+      
+      $sessionExists=true;
+      if (!Session::has('userCompanyIdDefault')) {
+          Session::put('userCompanyIdDefault', $company_id);
+          Session::put('userCompaniesId',[$company_id]);
+          $sessionExists=false;
+      }
+    
+
       $mje = $this->reparacion_onsite_service->getDataEditByClave($company_id, $clave);
+
+      if(!$sessionExists){
+        //Si las habia seteado por api las borro por seguridad
+        Session::forget(['userCompanyIdDefault', 'userCompaniesId']);
+      }
+      
+
+      
       if ($mje) {
         return response()->json([
           'data' => $mje,
