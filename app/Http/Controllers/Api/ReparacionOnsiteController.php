@@ -11,7 +11,7 @@ use App\Http\Requests\Onsite\VisitaRequest;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use App\Models\Onsite\ReparacionOnsite;
-use App\Models\Onsite\ImagenOnsite;
+
 use App\Repositories\Onsite\EstadoOnsiteRepository;
 use App\Repositories\Onsite\ReparacionOnsiteRepository;
 use App\Repositories\Onsite\ImagenOnsiteRepository;
@@ -754,13 +754,20 @@ class ReparacionOnsiteController extends Controller
           ], 401);
       }
       
+      
+      
 			$sessionExists=true;
-      if (!Session::has('userCompanyIdDefault')) {
+      if (Session::get('userCompanyIdDefault') === null) {
           Session::put('userCompanyIdDefault', $company_id);
-          Session::put('userCompaniesId',[$company_id]);
-          $sessionExists=false;
+          Session::put('userCompaniesId', [$company_id]);
+          $sessionExists = false;
+      } else {
+          Session::forget(['userCompanyIdDefault', 'userCompaniesId']);
+           return response()->json([
+            'data' => "Reintente una vez mas",
+          ], 200); 
       }
-     
+          
       $mje = $this->reparacion_onsite_service->getDataEdit($id_reparacion, $company_id);
 
       if(!$sessionExists){
@@ -803,6 +810,11 @@ class ReparacionOnsiteController extends Controller
           Session::put('userCompanyIdDefault', $company_id);
           Session::put('userCompaniesId',[$company_id]);
           $sessionExists=false;
+      }else {
+          Session::forget(['userCompanyIdDefault', 'userCompaniesId']);
+           return response()->json([
+            'data' => "Reintente una vez mas",
+          ], 200); 
       }
     
 

@@ -21,15 +21,24 @@ class ImagenObraOnsiteService
     ) {
         $this->tipoImagenService = $tipoImagenService;
 
-        if (!Session::has('userCompanyIdDefault')) {
-            Session::put('userCompanyIdDefault', env('BGH_COMPANY_ID', 2));
+        
+        
+    }
+
+    public function setCompanyID(){
+
+        if(!is_numeric($this->company_id)){
+            if (!Session::has('userCompanyIdDefault')) {
+                Session::put('userCompanyIdDefault', env('BGH_COMPANY_ID', 2));
+            }
+            $this->company_id = Session::get('userCompanyIdDefault');
         }
-        $this->company_id = Session::get('userCompanyIdDefault');
     }
 
     public function getData(Request $request = null)
     {
 
+        $this->setCompanyID();
         $data = [
             'tipos_imagenes' => $this->tipoImagenService->getTiposImagenOnsiteAll(),
             'obra_onsite_id' => ($request != null ? $request['obra_onsite_id'] : null),
@@ -40,6 +49,7 @@ class ImagenObraOnsiteService
 
     public function getDataItem($id)
     {
+        $this->setCompanyID();
         $imagenObraOnsite = $this->findImagenObraOnsite($id);
 
         if ($imagenObraOnsite) {
@@ -56,6 +66,7 @@ class ImagenObraOnsiteService
 
     public function store(Request $request)
     {
+        $this->setCompanyID();
         $request['company_id'] =  $this->company_id;
 
         $nombreArchivo = $this->storageDiskImagenObra($request);
@@ -69,6 +80,7 @@ class ImagenObraOnsiteService
 
     public function storageDiskImagenObra(Request $request)
     {
+        $this->setCompanyID();
         $file = $request['file'];
 
         if ($request['nombre'])
@@ -94,6 +106,7 @@ class ImagenObraOnsiteService
     public function listImagenesObraOnsitePorObra($id)
     {
 
+        $this->setCompanyID();
         $imagenesObraOnsite = ImagenObraOnsite::where('company_id', $this->company_id)
             ->where('obra_onsite_id', $id)
             ->get();
@@ -104,6 +117,7 @@ class ImagenObraOnsiteService
     public function update(Request $request, $id)
     {
 
+        $this->setCompanyID();
         $nombreArchivo = $this->storageDiskImagenObra($request);
 
         $request['archivo'] = $nombreArchivo;
@@ -123,6 +137,7 @@ class ImagenObraOnsiteService
 
     public function deleteStorageDiskImagenObra($id)
     {
+        $this->setCompanyID();
         $imagenObraOnsite = $this->findImagenObraOnsite($id);
 
         try {
@@ -138,6 +153,7 @@ class ImagenObraOnsiteService
 
     public function findImagenObraOnsite($id)
     {
+        $this->setCompanyID();
         $imagenObraOnsite = ImagenObraOnsite::where('company_id', $this->company_id)
             ->find($id);
 
@@ -146,6 +162,7 @@ class ImagenObraOnsiteService
 
     public function destroy($id)
     {
+        $this->setCompanyID();
         $imagenObraOnsite = $this->deleteStorageDiskImagenObra($id);
 
         if ($imagenObraOnsite) {
