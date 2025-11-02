@@ -89,6 +89,20 @@ class TicketController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function createByGroup()
+    {
+        if( !Session::has('createticketbygroup'))
+                    return redirect()->route('ticket.index')->with(['message'=>'<b class="text-danger">Sin privilegios</b>']);
+        $data = $this->ticketsService->create();
+
+        return view('tickets.create_by_group',$data);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request

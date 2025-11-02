@@ -382,7 +382,10 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('buscarClienteConReparaciones',[TicketController::class, 'buscarCliente']);
 // Route::get('buscarClienteConReparaciones',[TicketController::class, 'buscarCliente']);
+Route::get('/ticket/createbygroup',[TicketController::class, 'createByGroup']);
+
 Route::resource('ticket',TicketController::class);
+
 Route::get('/ticketderiv/{derivacionid}',[TicketController::class, 'createFromDerivacion']);
 Route::get('/ticketrep/{reparacionid}',[TicketController::class, 'createFromReparacion']);
 

@@ -10,6 +10,13 @@
             </div>
         </div>
         <div class="page-title-actions">
+            @if( Session::has('createticketbygroup'))
+            
+            <a href="{!! URL::to('/ticket/createbygroup/') !!}" data-toggle="tooltip" title="Crear Ticket por grupo" data-placement="bottom" class="btn-shadow mr-3 btn btn-dark">
+                <i class="fa fa-users"></i>
+            </a>
+
+            @endif
             <a href="{!! URL::to('/ticket/create/') !!}" data-toggle="tooltip" title="Crear Ticket" data-placement="bottom" class="btn-shadow mr-3 btn btn-dark">
                 <i class="fa fa-plus"></i>
             </a>

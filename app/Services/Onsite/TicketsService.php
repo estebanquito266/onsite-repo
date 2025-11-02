@@ -161,7 +161,7 @@ class TicketsService
     {
         $ticket = null;
         $company_id = Session::get('userCompanyIdDefault');
-        $motivos_consulta = MotivoConsultaTicket::select('id', 'name')->where('company_id', $company_id)->get();
+        $motivos_consulta = MotivoConsultaTicket::where('company_id', $company_id)->get();
         $grupos = GroupTicket::select('id','name')->where('company_id', $company_id)->get();
 
         //Como los id de grupos solo son de grupos de la company actual, por ende no es necesario filtrar por user company_id
@@ -179,7 +179,7 @@ class TicketsService
         // $derivaciones = Derivacion::select('id')->where('company_id', $company_id)->get();
         $categorias = CategoryTicket::select('id','name')->where('company_id', $company_id)->get();
         
-        $priorities = PriorityTicket::select('id','name')->where('company_id', $company_id)->get();
+        $priorities = PriorityTicket::where('company_id', $company_id)->get();
         
         $status = StatusTicket::select('id','name')->where('company_id', $company_id)->get();
         $tipos = [];
