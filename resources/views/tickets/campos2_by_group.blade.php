@@ -131,6 +131,8 @@
 
                 </div>
 
+                <input type="hidden" name="group_user_receiver_id" id="group_user_receiver_tmp" value="">
+
                 <div class="form-row mt-3 select_usuario_grupo" id="radio_grupo">
 
 
@@ -138,7 +140,7 @@
                         <div class="col-sm-12">
                             <div class="form-group" id="ticket_group_user_receiver_id_create">
                                 <label for="group_user_receiver_id">Grupo Usuario Destino:</label>
-                                <select name="group_user_receiver_id" id="group_user_receiver_id" class="form-control" readonly>
+                                <select name="group_user_receiver" id="group_user_receiver_id" class="form-control" disabled>
                                     <option value="null">-- Seleccione un Grupo --</option>
                                     @if(isset($grupos) && count($grupos) > 0)
                                     @if(isset( $ticket))
@@ -343,8 +345,10 @@
 
             if(groupId) {
                 $('#group_user_receiver_id').val(groupId);
+                $('#group_user_receiver_tmp').val(groupId);
             }else{
                 $('#group_user_receiver_id').val("null");
+                $('#group_user_receiver_tmp').val('');
             }
         });
 
