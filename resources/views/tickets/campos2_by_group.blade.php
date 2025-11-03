@@ -8,6 +8,10 @@
                     {!!Form::hidden('user_owner_id', Auth()->user()->id,['id'=>'user_owner_id'])!!}
                     <input type="hidden" id="ticket_id" value="{{isset($ticket)?$ticket->id:''}}">
                     <input type="hidden" id="type" name="type">
+                    <input type="hidden" name="group_user_receiver_id" id="group_user_receiver_tmp" value="">
+
+
+
                     <label for="tipo_ticket">Tipo:</label>
                     <select name="tipo_ticket" id="tipo_ticket" class="form-control" {{(isset($ticket_tipo))?'disabled':''}} {{(isset($ticket))?'disabled':''}}>
 
@@ -16,7 +20,11 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group col-md-12" id="ticket_reparacion_id_create">
+              
+            </div>
+
+            <div class="col-md-6">
+                  <div class="form-group col-md-12" id="ticket_reparacion_id_create">
                     <label for="reparacion_id">Reparación:</label>
                     @if(isset($rep_id))
                     {!!Form::text('reparacion_id',$rep_id, ['class'=>'form-control','placeholder'=>'Ingrese ID de Reparación a buscar...','id'=>'reparacion_id', 'readonly'])!!}
@@ -88,77 +96,6 @@
                         <option value="{{($ticket->type==1?$ticket->cliente->id:$ticket->cliente_derivacion->id)}}" selected>{{($ticket->type==1?$ticket->cliente->nombre:$ticket->cliente_derivacion->nombre)}} - {{$ticket->type==1?$ticket->cliente->dni_cuit:""}}</option>
                         @endif
                     </select>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-
-                <label>Destinatarios:</label><br>
-
-
-                <div class="mb-2 btn-group">
-                    <div class="btn btn-shadow btn-outline-2x btn-outline-primary ">
-                        USUARIO
-                    </div>
-                    <div class="btn btn-shadow btn-outline-2x btn-outline-primary active">
-                        GRUPO
-                    </div>
-                </div>
-
-
-
-                <div class="form-row mt-3 select_usuario_grupo" id="radio_usuario">
-                    <div class="row" style="width: 100%;">
-                        <div class="col-sm-12">
-                            <div class="form-group" id="ticket_user_receiver_id_create">
-                                <label for="user_id">Usuario Destino:</label>
-                                <select name="user_receiver_id" id="user_id" class="form-control">
-                                    <option value="">-- Seleccione Usuario --</option>
-                                    @if(isset($ticket))
-                                    @foreach($users as $user)
-                                    <option value="{{$user->id}}" {{$user->id == $ticket->user_receiver_id ? 'selected' : '' }}>{{'['.$user->id.'] '.$user->name}}</option>
-                                    @endforeach
-                                    @else
-                                    @foreach($users as $user)
-                                    <option value="{{$user->id}}">{{'['.$user->id.'] '.$user->name}}</option>
-                                    @endforeach
-                                    @endif
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
-
-                <input type="hidden" name="group_user_receiver_id" id="group_user_receiver_tmp" value="">
-
-                <div class="form-row mt-3 select_usuario_grupo" id="radio_grupo">
-
-
-                    <div class="row" style="width: 100%;">
-                        <div class="col-sm-12">
-                            <div class="form-group" id="ticket_group_user_receiver_id_create">
-                                <label for="group_user_receiver_id">Grupo Usuario Destino:</label>
-                                <select name="group_user_receiver" id="group_user_receiver_id" class="form-control" disabled>
-                                    <option value="null">-- Seleccione un Grupo --</option>
-                                    @if(isset($grupos) && count($grupos) > 0)
-                                    @if(isset( $ticket))
-                                    @foreach($grupos as $grupo)
-                                    <option value="{{$grupo->id}}" {{ $grupo->id == $ticket->group_user_receiver_id ? 'selected' : '' }}>{{'['.$grupo->id.'] '.$grupo->name}}</option>
-                                    @endforeach
-                                    @else
-                                    @foreach($grupos as $grupo)
-                                    <option value="{{$grupo->id}}">{{'['.$grupo->id.'] '.$grupo->name}}</option>
-                                    @endforeach
-                                    @endif
-                                    @endif
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-
                 </div>
             </div>
         </div>
@@ -344,10 +281,8 @@
             var groupId = $(this).find(':selected').data('groupid');
 
             if(groupId) {
-                $('#group_user_receiver_id').val(groupId);
                 $('#group_user_receiver_tmp').val(groupId);
             }else{
-                $('#group_user_receiver_id').val("null");
                 $('#group_user_receiver_tmp').val('');
             }
         });

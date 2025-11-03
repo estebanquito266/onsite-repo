@@ -71,9 +71,48 @@ class TicketController extends Controller
         $data['rep_id'] =  $reparacionid;
         $data['cliente_reparacion'] =  $reparacion->cliente;
         $data['reparacion'] =  $reparacion;
+        $bygroup = $request->query('bygroup') == 1;
+
+        $createticketbygroup = Session::has('createticketbygroup');
+        $createticket = Session::has('createticket');
+        
+        //Si no tiene ninguno de los permisos seteados considero que es el metodo antiguo
+        //Aunque el usuario puede acceder directamente por la URL a pesar de no tener seteado el permiso ticket
+        //Pero como asi funciona ahora asi quedara. Mas adelante averiguar si no tiene el permiso ticket si puede crear igual
+    
+        if(!$createticketbygroup && !$createticket && !$bygroup){
+            //CASO ACTUAL, ES DECIR NO TIENE NINGUNO DE LOS DOS PERMISOS SETEADOS
+            return view('tickets.create',$data); 
+            
+        }
+
+        if(!$createticketbygroup && !$createticket && $bygroup){
+            //PIDE CREAR POR GRUPO Y NO TIENE NINGUNO DE LOS DOS PERMISOS SETEADOS
+            $url = url()->current(); // LO REDIRIJO A LA URL SIN GRUPO
+            return redirect($url);
+        }
+        
+
+        //CASO QUIERE CREAR TICKET GRUPAL Y NO TIENE PERMISO DE CREAR TICKET POR GRUPO
+        if($bygroup && !$createticketbygroup){
+            return redirect()->route('ticket.index')->with(['message'=>'<b class="text-danger">Sin privilegios</b>']); 
+            
+        }
+
+        //SI ES POR GRUPO SI O SI TIENE createticketbygroup EN TRUE, SINO NO LLEGA ACA
+        if($bygroup){
+            return view('tickets.create_by_group',$data); 
+        }
+
+        //SI ESTA ACA ES PORQUE EL TICKET ES ESTANDAR
+        if($createticketbygroup  && !$createticket){
+            //Tiene seteado el permiso por grupo y NO el estandar fuerzo a por grupo
+            return view('tickets.create_by_group',$data); 
+        }
+
+        return view('tickets.create',$data); 
 
 
-        return view('tickets.create',$data);
     }
 
     /**
@@ -83,6 +122,14 @@ class TicketController extends Controller
      */
     public function create()
     {
+
+        $createticketbygroup = Session::has('createticketbygroup');
+        $createticket = Session::has('createticket');
+        
+        if($createticketbygroup && !$createticket){
+            return redirect()->route('ticket.createbygroup');
+        }
+              
         $data = $this->ticketsService->create();
 
         return view('tickets.create',$data);

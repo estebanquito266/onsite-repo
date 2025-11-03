@@ -10,21 +10,34 @@
             </div>
         </div>
         <div class="page-title-actions">
-            @if( Session::has('createticketbygroup'))
+            @php 
+                $createticketbygroup = Session::has('createticketbygroup');
+                $createticket = Session::has('createticket');
+            @endphp
             
-            <a href="{!! URL::to('/ticket/createbygroup/') !!}" data-toggle="tooltip" title="Crear Ticket por grupo" data-placement="bottom" class="btn-shadow mr-3 btn btn-dark">
-                <i class="fa fa-users"></i>
-            </a>
+            @if($createticketbygroup)
+            
+                <a href="{!! URL::to('/ticket/createbygroup/') !!}" data-toggle="tooltip" title="Crear Ticket por grupo" data-placement="bottom" class="btn-shadow mr-3 btn btn-dark">
+                    <i class="fa fa-users"></i>
+                </a>
 
+                @if($createticket)
+                    <a href="{!! URL::to('/ticket/create/') !!}" data-toggle="tooltip" title="Crear Ticket" data-placement="bottom" class="btn-shadow mr-3 btn btn-dark">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                @endif
+
+            
+            @else 
+
+                <a href="{!! URL::to('/ticket/create/') !!}" data-toggle="tooltip" title="Crear Ticket" data-placement="bottom" class="btn-shadow mr-3 btn btn-dark">
+                        <i class="fa fa-plus"></i>
+                </a>
             @endif
-            <a href="{!! URL::to('/ticket/create/') !!}" data-toggle="tooltip" title="Crear Ticket" data-placement="bottom" class="btn-shadow mr-3 btn btn-dark">
-                <i class="fa fa-plus"></i>
-            </a>
+            
             <a href="{!! URL::to('/ticket/') !!}" data-toggle="tooltip" title="Listado de Tickets" data-placement="bottom" class="btn-shadow mr-3 btn btn-alternate">
                 <i class="fa fa-list-ol"></i>
             </a>
-
-
 
         </div>
     </div>

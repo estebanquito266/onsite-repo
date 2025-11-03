@@ -2,10 +2,37 @@
 <div class="main-card mb-3 card ">
     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
         <span>Ticket</span>
-        
-        <a data-toggle="tooltip" data-placement="left" title="Nuevo ticket" href="/ticketrep/{{ $reparacionOnsite->id }}" target="_BLANK" type="button" class="btn btn-success aprobar_index_btn btn-find-ticket1"><i class="fas fa-plus"></i></a>
 
+        <div class="d-flex gap-2">
+            @php 
+                $createticketbygroup = Session::has('createticketbygroup');
+                $createticket = Session::has('createticket');
+            @endphp
+
+            @if($createticketbygroup)
+                <a data-toggle="tooltip" title="Nuevo ticket por grupo" 
+                    href="/ticketrep/{{ $reparacionOnsite->id }}?bygroup=1" 
+                    target="_blank" class="btn btn-success btn-find-ticket1">
+                        <i class="fas fa-users"></i>
+                </a>
+
+                @if($createticket)
+                    <a data-toggle="tooltip" title="Nuevo ticket" 
+                        href="/ticketrep/{{ $reparacionOnsite->id }}" 
+                        target="_blank" class="btn btn-success btn-find-ticket1 ml-2">
+                            <i class="fas fa-plus"></i>
+                    </a>
+                @endif
+            @else 
+                <a data-toggle="tooltip" title="Nuevo ticket" 
+                    href="/ticketrep/{{ $reparacionOnsite->id }}" 
+                    target="_blank" class="btn btn-success btn-find-ticket1">
+                        <i class="fas fa-plus"></i>
+                </a>
+            @endif
+        </div>
     </div>
+
     <div class="card-body">
 
     <table style="width: 100%;" id="example" class="table table-hover table-striped table-bordered ">
