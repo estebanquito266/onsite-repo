@@ -919,7 +919,33 @@ class ReparacionOnsiteController extends Controller
   {
     try {
 
+      if(!is_numeric($company_id)){
+          return response()->json([
+            'error' => "company_id is not numeric.",
+            'message' => 'Server Error'
+          ], 401);
+      }
+      
+      $sessionExists=true;
+      if (!Session::has('userCompanyIdDefault')) {
+          Session::put('userCompanyIdDefault', $company_id);
+          Session::put('userCompaniesId',[$company_id]);
+          $sessionExists=false;
+      }else {
+          Session::forget(['userCompanyIdDefault', 'userCompaniesId']);
+           return response()->json([
+            'data' => "Reintente una vez mas",
+          ], 200); 
+      }
+    
+
       $mje = $this->importacionService->storeReparacionApi($request, $company_id, Auth::user()->id);
+
+      if(!$sessionExists){
+        //Si las habia seteado por api las borro por seguridad
+        Session::forget(['userCompanyIdDefault', 'userCompaniesId']);
+      }
+      
       if ($mje) {
         return response()->json([
           'data' => $mje,
