@@ -2656,7 +2656,14 @@ class ReparacionOnsiteService
             $query = $query->where('id_estado', $request['id_estado']);
         }
     
-		if (isset($request['monto']) && is_array($request['monto']) && count($request['monto']) > 0) {
+		if (isset($request['monto']) && is_array($request['monto']) && in_array('empty',$request['monto']) ) {
+			$montos = array_filter($request['monto'], 'is_numeric');
+			$query = $query->where(function ($q) use ($montos) { 
+							$q->whereNull('monto')->orWhereIn('monto', $montos); 
+						});
+		}elseif (isset($request['monto']) && $request['monto'] === 'empty') {
+            $query = $query->whereNull('monto');
+        }elseif (isset($request['monto']) && is_array($request['monto']) && count($request['monto']) > 0) {
             $query = $query->whereIn('monto', $request['monto']);
         }elseif (isset($request['monto']) && is_numeric($request['monto'])) {
             $query = $query->where('monto', $request['monto']);

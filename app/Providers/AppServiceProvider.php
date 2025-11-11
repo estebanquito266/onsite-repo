@@ -7,7 +7,8 @@ use Laravel\Passport\Passport;
 use App\Observers\HistorialEstadoOnsiteObserver;
 use App\Models\Onsite\HistorialEstadoOnsite;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -27,6 +28,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+      //USAR SOLO LOCAL PARA PRUEBAS
+      /*DB::listen(function ($query) {
+            Log::info($query->sql);    
+            Log::info($query->time);  
+        });*/
+
       Passport::routes();
       HistorialEstadoOnsite::observe(HistorialEstadoOnsiteObserver::class);
       Schema::defaultStringLength(150);
