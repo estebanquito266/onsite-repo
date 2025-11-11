@@ -2610,6 +2610,162 @@ class ReparacionOnsiteService
 		return $reparaciones_onsite_data;
 	}
 
+
+	public function getDataRepByCase(Request $OriginalRequest, $company_id,$case){
+
+
+		$request = $OriginalRequest->all();
+
+		/*$view_reparaciones_onsite = config('queries.view_reparaciones_onsite');
+
+        $query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"))
+                                        ->orderBy('id','desc');*/
+
+        $query = DB::table('view_reparaciones_onsite_filter_case')->orderBy('id', 'desc');
+		
+        /*$query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"))
+                                        ->orderBy('id','desc');*/
+		
+
+		//return $request;
+		$query = $query->where('company_id', $company_id);
+
+        if (isset($request['id_empresa']) && is_array($request['id_empresa']) && count($request['id_empresa']) > 0) {
+            $query = $query->whereIn('id_empresa_onsite', $request['id_empresa']);
+        }elseif (isset($request['id_empresa']) && is_numeric($request['id_empresa'])) {
+            $query = $query->where('id_empresa_onsite', $request['id_empresa']);
+        } else {
+            $query = $query->where('id_empresa_onsite', 1095);
+        }
+
+        if (isset($request['estados_activo']) && $request['estados_activo'] === 'on') {
+            $query = $query->where('estado_activo', true);
+        }
+
+        if (isset($request['fecha_creacion_desde']) && !is_null($request['fecha_creacion_desde']) && !is_null($request['fecha_creacion_hasta'])) {
+            $query = $query->whereBetween('created_at', [$request['fecha_creacion_desde'], $request['fecha_creacion_hasta']]);
+        }
+
+        if (isset($request['fecha_ingreso_desde']) && !is_null($request['fecha_ingreso_desde']) && !is_null($request['fecha_ingreso_hasta'])) {
+            $query = $query->whereBetween('fecha_ingreso', [$request['fecha_ingreso_desde'], $request['fecha_ingreso_hasta']]);
+        }
+
+        if (isset($request['id_estado']) && is_array($request['id_estado']) && count($request['id_estado']) > 0) {
+            $query = $query->whereIn('id_estado', $request['id_estado']);
+        }elseif (isset($request['id_estado']) && is_numeric($request['id_estado'])) {
+            $query = $query->where('id_estado', $request['id_estado']);
+        }
+    
+		if (isset($request['monto']) && is_array($request['monto']) && count($request['monto']) > 0) {
+            $query = $query->whereIn('monto', $request['monto']);
+        }elseif (isset($request['monto']) && is_numeric($request['monto'])) {
+            $query = $query->where('monto', $request['monto']);
+        }
+		
+        //$query = $query->limit(100)->get(); // Use lazy() to fetch data in chunks
+
+		$page  = (int) ($request['page'] ?? 1);
+		$per_page = (int) ($request['per_page'] ?? 100);
+		$offset = ($page - 1) * $per_page;
+
+		$query = $query->skip($offset)->take($per_page)->get();
+
+        $reparacionIds = $query->pluck('id')->all();
+
+        $imagenes = DB::table('imagenes_onsite')
+                            ->select('reparacion_onsite_id', 'archivo')
+                            ->whereIn('reparacion_onsite_id', $reparacionIds)
+                            ->orderBy('reparacion_onsite_id')
+                            ->orderBy('id')
+                            ->get()
+                            ->groupBy('reparacion_onsite_id');
+    
+
+
+        
+		//SE PUEDEN TOMAR MAS COLUMNAS DE ExportarReparacionesJob
+        switch ($case) {
+
+         	case 1:
+
+                $header = [
+                    'ID',
+                    'CLAVE',
+                    'FECHA_CERRADO',
+                    'ACTIVO_RETIRADO_1',
+                    'FIRMA_TECNICO',
+                    'CODIGO_ACTIVO_DESCRIPCION1',
+                    'TECNICO_ASIGNADO',
+
+                ];
+
+                $columns = [
+                    'id',
+                    'clave',
+                    'r_fecha_cerrado',
+                    'rd_codigo_activo_retirado1',
+                    'r_firma_tecnico',
+                    'rd_codigo_activo_descripcion1',
+                    'ts_nombre',
+
+                ];
+                break;
+
+        }
+
+        for ($i = 1; $i <= 5; $i++) {
+            $header[] = 'EVIDENCIA ' . $i;
+        }
+        
+        $header[] = 'Log';
+        
+
+		$rowFromValues = [];
+
+        $URL_IMG = config('app.URL_IMG');
+
+        $query->chunk(500)->each(function ($chunk) use (&$rowFromValues, $columns,$header,$imagenes,$URL_IMG) {
+            $chunk->each(function ($reparacion) use (&$rowFromValues, $columns,$header,$imagenes,$URL_IMG) {
+
+                $data = [];
+                foreach ($columns as $index_attr_name => $column) {
+					$attr_name = $header[$index_attr_name] ?? 'NO_NAME_'.$index_attr_name;
+                    $data[$attr_name] = $reparacion->$column ?? null;
+                }
+
+                $imgs = $imagenes->get($reparacion->id, collect())->take(5);
+
+                for ($i = 0; $i < 5; $i++) {
+					
+                    $archivo = '';
+                    if(isset($imgs[$i]) && $imgs[$i]->archivo){
+                        $archivo = "{$URL_IMG}/".$imgs[$i]->archivo;
+                        //$archivo = '=HYPERLINK("' . $archivo . '", "'.$archivo.'")';
+                    }
+
+					$attr_name = 'EVIDENCIA'.$i;
+
+                    $data[$attr_name] = $archivo;
+                }
+
+
+                $rowFromValues[]= $data;
+
+            });
+        });
+
+
+		return [
+			'page'  => $page,
+			'per_page' => $per_page,
+			'items'  => $rowFromValues,
+		];
+
+      
+    
+	}
+
+
 	public function getVisitasPorReparacionId($company_id, $id_reparacion)
 	{
 

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Onsite\ReparacionFilterCaseRequest;
 use App\Http\Requests\Onsite\UpdateReparacionRequest;
 use App\Http\Requests\Onsite\VisitaRequest;
 use Illuminate\Database\Eloquent\Collection;
@@ -862,6 +863,66 @@ class ReparacionOnsiteController extends Controller
         ], 500);
     } catch (\Exception $e) {
       Log::error('getReparacionIdPorEstado: ' . json_encode($id_estado) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
+
+      return response()->json([
+        'error' => $e->getMessage(),
+        'message' => 'Server Error'
+      ], 500);
+    }
+  }
+
+  public function getReparacionFilterCase(ReparacionFilterCaseRequest $request, $company_id,$case)
+  {
+    try {
+
+      //Aca ir agregando los casos disponibles en ReparacionOnsiteService getDataRepByCase
+      $cases = [1];
+
+      if(!is_numeric($company_id) or !is_numeric($case)){
+          return response()->json([
+            'error' => "company_id or case is not numeric.",
+            'message' => 'Server Error'
+          ], 401);
+      }
+
+      if(!in_array($case,$cases)){
+          return response()->json([
+            'error' => "case not availabled.",
+            'message' => 'Server Error'
+          ], 401);
+      }
+      
+      $sessionExists=true;
+      if (!Session::has('userCompanyIdDefault')) {
+          Session::put('userCompanyIdDefault', $company_id);
+          Session::put('userCompaniesId',[$company_id]);
+          $sessionExists=false;
+      }else {
+          Session::forget(['userCompanyIdDefault', 'userCompaniesId']);
+           return response()->json([
+            'data' => "Reintente una vez mas",
+          ], 200); 
+      }
+    
+
+      $mje = $this->reparacion_onsite_service->getDataRepByCase($request,$company_id,$case);
+
+      if(!$sessionExists){
+        //Si las habia seteado por api las borro por seguridad
+        Session::forget(['userCompanyIdDefault', 'userCompaniesId']);
+      }
+
+      if (is_array($mje)) {
+        return response()->json([
+          'data' => $mje,
+        ], 200);
+      } else
+        return response()->json([
+          'error' => 'Error de conexión al servidor',
+          'message' => 'Server Error'
+        ], 500);
+    } catch (\Exception $e) {
+      Log::error('getReparacionFilterCase: ' . json_encode($request->all()) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
 
       return response()->json([
         'error' => $e->getMessage(),

@@ -261,6 +261,10 @@ Route::group(['middleware' => ['auth:api', 'cors'], 'prefix' => 'api'], function
   /* reparaciones id por estado_id */
   Route::get('reparacion/estado/{company_id}/{id_estado}', [ReparacionOnsiteController::class, 'getReparacionIdPorEstado']);
 
+  /* reparaciones con multiples filtros */
+
+  Route::get('reparacion/filter/{company_id}/{case}', [ReparacionOnsiteController::class, 'getReparacionFilterCase']);
+  
   /* crear reparacion */
   Route::post('reparacion/create/{company_id}', [ReparacionOnsiteController::class, 'storeReparacionApi']);
 
