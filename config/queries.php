@@ -4,8 +4,6 @@ return [
     'view_reparaciones_onsite'=>"SELECT
 	`r`.`id` AS `id`,
 	min(`r`.`company_id`) AS `company_id`,
-	min(`r`.`justificacion`) AS `justificacion`,
-	min(`r`.`log`) AS `log`,
 	min(`r`.`clave`) AS `clave`,
 	min(`r`.`id_empresa_onsite`) AS `id_empresa_onsite`,
 	min(`e`.`nombre`) AS `empresa_nombre`,
@@ -40,35 +38,35 @@ return [
 	min(`r`.`fecha_ingreso`) AS `fecha_ingreso`,
 	min(
 		`r`.`observacion_ubicacion`
-	) AS `MIN(``r``.``observacion_ubicacion``)`,
+	) AS `r_observacion_ubicacion`,
 	min(`r`.`id_tecnico_asignado`) AS `id_tecnico_asignado`,
 	min(`tec`.`name`) AS `tecnico`,
-	min(`r`.`informe_tecnico`) AS `MIN(``r``.``informe_tecnico``)`,
-	min(`r`.`fecha_coordinada`) AS `MIN(``r``.``fecha_coordinada``)`,
+	min(`r`.`informe_tecnico`) AS `r_informe_tecnico`,
+	min(`r`.`fecha_coordinada`) AS `r_fecha_coordinada`,
 	min(
 		`r`.`ventana_horaria_coordinada`
-	) AS `MIN(``r``.``ventana_horaria_coordinada``)`,
+	) AS `r_ventana_horaria_coordinada`,
 	min(
 		`r`.`fecha_registracion_coordinacion`
-	) AS `MIN(``r``.``fecha_registracion_coordinacion``)`,
-	min(`r`.`fecha_notificado`) AS `MIN(``r``.``fecha_notificado``)`,
+	) AS `r_fecha_registracion_coordinacion`,
+	min(`r`.`fecha_notificado`) AS `r_fecha_notificado`,
 	min(`rv`.`fecha`) AS `primer_visita`,
 	min(`rv`.`fecha_vencimiento`) AS `fecha_vencimiento`,
 	min(`r`.`fecha_vencimiento`) AS `vencimiento`,
-	min(`r`.`fecha_cerrado`) AS `MIN(``r``.``fecha_cerrado``)`,
-	min(`r`.`sla_status`) AS `MIN(``r``.``sla_status``)`,
-	min(`r`.`sla_justificado`) AS `MIN(``r``.``sla_justificado``)`,
-	min(`r`.`monto`) AS `MIN(``r``.``monto``)`,
-	min(`r`.`monto_extra`) AS `MIN(``r``.``monto_extra``)`,
-	min(`r`.`liquidado_proveedor`) AS `MIN(``r``.``liquidado_proveedor``)`,
+	min(`r`.`fecha_cerrado`) AS `r_fecha_cerrado`,
+	min(`r`.`sla_status`) AS `r_sla_status`,
+	min(`r`.`sla_justificado`) AS `r_sla_justificado`,
+	min(`r`.`monto`) AS `r_monto`,
+	min(`r`.`monto_extra`) AS `r_monto_extra`,
+	min(`r`.`liquidado_proveedor`) AS `r_liquidado_proveedor`,
 	min(
 		`r`.`nro_factura_proveedor`
-	) AS `MIN(``r``.``nro_factura_proveedor``)`,
-	min(`rd`.`tipo_conexion_local`) AS `MIN(``rd``.``tipo_conexion_local``)`,
+	) AS `r_nro_factura_proveedor`,
+	min(`rd`.`tipo_conexion_local`) AS `rd_tipo_conexion_local`,
 	min(
 		`rd`.`tipo_conexion_proveedor`
 	) AS `MIN(``rd``.``tipo_conexion_proveedor``)`,
-	min(`rd`.`cableado`) AS `MIN(``rd``.``cableado``)`,
+	min(`rd`.`cableado`) AS `rd_cableado`,
 	min(
 		`rd`.`cableado_cantidad_metros`
 	) AS `MIN(``rd``.``cableado_cantidad_metros``)`,
@@ -91,10 +89,10 @@ return [
 	) AS `MIN(``rd``.``codigo_activo_nuevo1``)`,
 	min(
 		`rd`.`codigo_activo_retirado1`
-	) AS `MIN(``rd``.``codigo_activo_retirado1``)`,
+	) AS `rd_codigo_activo_retirado1`,
 	min(
 		`rd`.`codigo_activo_descripcion1`
-	) AS `MIN(``rd``.``codigo_activo_descripcion1``)`,
+	) AS `rd_codigo_activo_descripcion1`,
 	min(
 		`rd`.`codigo_activo_nuevo2`
 	) AS `MIN(``rd``.``codigo_activo_nuevo2``)`,
@@ -182,11 +180,13 @@ return [
 	min(
 		`rd`.`modem_3g_4g_sim_retirado`
 	) AS `MIN(``rd``.``modem_3g_4g_sim_retirado``)`,
-	min(`r`.`firma_cliente`) AS `MIN(``r``.``firma_cliente``)`,
-	min(`r`.`aclaracion_cliente`) AS `MIN(``r``.``aclaracion_cliente``)`,
-	min(`r`.`firma_tecnico`) AS `MIN(``r``.``firma_tecnico``)`,
-	min(`r`.`aclaracion_tecnico`) AS `MIN(``r``.``aclaracion_tecnico``)`,
-	min(`r`.`created_at`) AS `created_at`
+	min(`r`.`firma_cliente`) AS `r_firma_cliente`,
+	min(`r`.`aclaracion_cliente`) AS `r_aclaracion_cliente`,
+	min(`r`.`firma_tecnico`) AS `r_firma_tecnico`,
+	min(`r`.`aclaracion_tecnico`) AS `r_aclaracion_tecnico`,
+	min(`r`.`created_at`) AS `created_at`,
+	min(`r`.`monto`) AS `monto`,
+	min(`r`.`monto_extra`) AS `monto_extra`
 FROM
 	(
 		(
@@ -269,6 +269,5 @@ FROM
 	)
 GROUP BY
 	`r`.`id`
-
 "
 ];

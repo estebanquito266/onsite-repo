@@ -2616,12 +2616,12 @@ class ReparacionOnsiteService
 
 		$request = $OriginalRequest->all();
 
-		/*$view_reparaciones_onsite = config('queries.view_reparaciones_onsite');
+		$view_reparaciones_onsite = config('queries.view_reparaciones_onsite');
 
         $query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"))
-                                        ->orderBy('id','desc');*/
+                                        ->orderBy('id','desc');
 
-        $query = DB::table('view_reparaciones_onsite_filter_case')->orderBy('id', 'desc');
+        //$query = DB::table('view_reparaciones_onsite_filter_case')->orderBy('id', 'desc');
 		
         /*$query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"))
                                         ->orderBy('id','desc');*/
