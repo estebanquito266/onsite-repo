@@ -5,13 +5,11 @@ namespace App\Services\Onsite;
 use App\Enums\Prioridad;
 use App\Enums\PuestaMarchaSatisfactoriaEnum;
 use App\Exports\GenericExport;
-use App\Exports\ReparacionesOnsiteExport;
 use App\Http\Requests\Onsite\HistorialEstadoOnsiteRequest;
 use App\Models\Company;
 use App\Models\Notificacion;
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
@@ -23,9 +21,6 @@ use App\Repositories\Onsite\EstadoOnsiteRepository;
 
 //use App\Models\Onsite\EmpresaOnsite;
 use App\Models\Onsite\EstadoOnsite;
-use App\Models\Onsite\HistorialEstadoOnsite;
-use App\Models\Onsite\ImagenOnsite;
-use App\Models\Onsite\NivelOnsite;
 use App\Models\Onsite\ReparacionOnsite;
 use App\Models\Onsite\TipoServicioOnsite;
 use App\Models\Onsite\TipoImagenOnsite;
@@ -33,18 +28,13 @@ use App\Models\Onsite\ReparacionChecklistOnsite;
 use App\Models\Onsite\ReparacionDetalle;
 use App\Models\Onsite\ReparacionVisita;
 use App\Models\Onsite\TerminalOnsite;
-use App\Models\Parametro;
-use App\Models\Provincia;
-use App\Models\TemplateComprobante;
 use App\Models\User;
-use App\Models\ViewTecnicosReparacionesResultados;
+
 use App\Services\Onsite\LocalidadOnsiteService;
 use App\Services\Onsite\EmpresaOnsiteService;
 use App\Services\Onsite\SucursalOnsiteService;
 use App\Services\Onsite\TerminalOnsiteService;
 use App\Services\Onsite\SistemaOnsiteService;
-use Riparazione\Services\TicketsService;
-use Riparazione\Services\CommentTicketService;
 
 
 use App\Models\MotivoConsultaTicket;
@@ -57,10 +47,9 @@ use App\Models\Ticket\StatusTicket;
 use Carbon\Carbon;
 use DateTime;
 use DB;
-use Exception;
-use Illuminate\Database\Eloquent\JsonEncodingException;
 use Log;
-use Maatwebsite\Excel\Facades\Excel;
+
+use Illuminate\Support\Facades\Cache;
 
 class ReparacionOnsiteService
 {
@@ -2615,61 +2604,86 @@ class ReparacionOnsiteService
 
 
 		$request = $OriginalRequest->all();
+		$requestAux = $OriginalRequest->all();
 
-		/*$view_reparaciones_onsite = config('queries.view_reparaciones_onsite');
+		if(isset($requestAux['page'])){
+			unset($requestAux['page']);
+		}
 
-        $query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"))
-                                        ->orderBy('id','desc');*/
+		if(isset($requestAux['per_page'])){
+			unset($requestAux['per_page']);
+		}
 
-        //$query = DB::table('view_reparaciones_onsite_filter_case')->orderBy('id', 'desc');
+		$cacheKey = 'reparaciones_ids_' . md5(json_encode($requestAux));
+
+		$repIds = [];
+
+		if(Cache::has($cacheKey)){
+			$repIds = Cache::get($cacheKey);
+			Log::info("SIIIII Usa la cache");
+		}else{
+
+			/*$view_reparaciones_onsite = config('queries.view_reparaciones_onsite');
+
+			$query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"))
+											->orderBy('id','desc');*/
+
+			//$query = DB::table('view_reparaciones_onsite_filter_case')->orderBy('id', 'desc');
+			
+			$query = ReparacionOnsite::where('company_id', $company_id);
+
+
+			if (isset($request['id_empresa']) && is_array($request['id_empresa']) && count($request['id_empresa']) > 0) {
+				$query->whereIn('id_empresa_onsite', $request['id_empresa']);
+			}elseif (isset($request['id_empresa']) && is_numeric($request['id_empresa'])) {
+				$query->where('id_empresa_onsite', $request['id_empresa']);
+			} else {
+				$query->where('id_empresa_onsite', 1095);
+			}
+
+			if (isset($request['estados_activo']) && $request['estados_activo'] === 'on') {
+				$query->where('estado_activo', true);
+			}
+
+			if (isset($request['fecha_creacion_desde']) && !is_null($request['fecha_creacion_desde']) && !is_null($request['fecha_creacion_hasta'])) {
+				$query->whereBetween('created_at', [$request['fecha_creacion_desde'], $request['fecha_creacion_hasta']]);
+			}
+
+			if (isset($request['fecha_ingreso_desde']) && !is_null($request['fecha_ingreso_desde']) && !is_null($request['fecha_ingreso_hasta'])) {
+				$query->whereBetween('fecha_ingreso', [$request['fecha_ingreso_desde'], $request['fecha_ingreso_hasta']]);
+			}
+
+			if (isset($request['id_estado']) && is_array($request['id_estado']) && count($request['id_estado']) > 0) {
+				$query->whereIn('id_estado', $request['id_estado']);
+			}elseif (isset($request['id_estado']) && is_numeric($request['id_estado'])) {
+				$query->where('id_estado', $request['id_estado']);
+			}
 		
-		$query = DB::table('reparaciones_onsite')->where('company_id', $company_id);
+			if (isset($request['monto']) && is_array($request['monto']) && in_array('empty',$request['monto']) ) {
+				$montos = array_filter($request['monto'], 'is_numeric');
+				$query->where(function ($q) use ($montos) { 
+								$q->whereNull('monto')->orWhereIn('monto', $montos); 
+							});
+			}elseif (isset($request['monto']) && $request['monto'] === 'empty') {
+				$query->whereNull('monto');
+			}elseif (isset($request['monto']) && is_array($request['monto']) && count($request['monto']) > 0) {
+				$query->whereIn('monto', $request['monto']);
+			}elseif (isset($request['monto']) && is_numeric($request['monto'])) {
+				$query->where('monto', $request['monto']);
+			}
+			
+			$repIds = $query->get()->pluck('id')->toArray();
 
+			$repIds = array_values(array_unique($repIds));
 
-        if (isset($request['id_empresa']) && is_array($request['id_empresa']) && count($request['id_empresa']) > 0) {
-            $query = $query->whereIn('id_empresa_onsite', $request['id_empresa']);
-        }elseif (isset($request['id_empresa']) && is_numeric($request['id_empresa'])) {
-            $query = $query->where('id_empresa_onsite', $request['id_empresa']);
-        } else {
-            $query = $query->where('id_empresa_onsite', 1095);
-        }
+			Log::info("NOOOOOOOOOOO Usa la cache");
 
-        if (isset($request['estados_activo']) && $request['estados_activo'] === 'on') {
-            $query = $query->where('estado_activo', true);
-        }
-
-        if (isset($request['fecha_creacion_desde']) && !is_null($request['fecha_creacion_desde']) && !is_null($request['fecha_creacion_hasta'])) {
-            $query = $query->whereBetween('created_at', [$request['fecha_creacion_desde'], $request['fecha_creacion_hasta']]);
-        }
-
-        if (isset($request['fecha_ingreso_desde']) && !is_null($request['fecha_ingreso_desde']) && !is_null($request['fecha_ingreso_hasta'])) {
-            $query = $query->whereBetween('fecha_ingreso', [$request['fecha_ingreso_desde'], $request['fecha_ingreso_hasta']]);
-        }
-
-        if (isset($request['id_estado']) && is_array($request['id_estado']) && count($request['id_estado']) > 0) {
-            $query = $query->whereIn('id_estado', $request['id_estado']);
-        }elseif (isset($request['id_estado']) && is_numeric($request['id_estado'])) {
-            $query = $query->where('id_estado', $request['id_estado']);
-        }
-    
-		if (isset($request['monto']) && is_array($request['monto']) && in_array('empty',$request['monto']) ) {
-			$montos = array_filter($request['monto'], 'is_numeric');
-			$query = $query->where(function ($q) use ($montos) { 
-							$q->whereNull('monto')->orWhereIn('monto', $montos); 
-						});
-		}elseif (isset($request['monto']) && $request['monto'] === 'empty') {
-            $query = $query->whereNull('monto');
-        }elseif (isset($request['monto']) && is_array($request['monto']) && count($request['monto']) > 0) {
-            $query = $query->whereIn('monto', $request['monto']);
-        }elseif (isset($request['monto']) && is_numeric($request['monto'])) {
-            $query = $query->where('monto', $request['monto']);
-        }
+		}
 		
-		$repIds = $query->select('id')->get()->pluck('id')->all();
-		$repIds = array_values(array_unique($repIds));
-
 		if(count($repIds) < 1){
 			$repIds = [0];
+		}else{
+			Cache::put($cacheKey, $repIds, now()->addMinutes(5));
 		}
 		
 		$page  = (int) ($request['page'] ?? 1);
@@ -2683,22 +2697,19 @@ class ReparacionOnsiteService
 		$view_reparaciones_onsite = str_replace('%per_page%', $per_page, $view_reparaciones_onsite);*/
 
 		$view_reparaciones_onsite = str_replace(
-										['%repIds%', '%offset%', '%per_page%'],
-										[implode(',', $repIds), $offset, $per_page],
+										['%repIds%', '%offset%', '%per_page%','%company_id%'],
+										[implode(',', $repIds), $offset, $per_page,$company_id],
 										$view_reparaciones_onsite
 									);
 
 
-		Log::info($view_reparaciones_onsite);
+		//Log::info($view_reparaciones_onsite);
 		
-        $query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"));
+        $resultQuery = DB::table(DB::raw("({$view_reparaciones_onsite}) as new_filter_reparaciones_onsite"))->get();
 
-        
+        $reparacionIds = $resultQuery->pluck('id')->toArray();
 
-		$query = $query->get();
-
-        $reparacionIds = $query->pluck('id')->all();
-
+		//Log::info($reparacionIds);
         $imagenes = DB::table('imagenes_onsite')
                             ->select('reparacion_onsite_id', 'archivo')
                             ->whereIn('reparacion_onsite_id', $reparacionIds)
@@ -2751,36 +2762,35 @@ class ReparacionOnsiteService
 
         $URL_IMG = config('app.URL_IMG');
 
-        $query->chunk(500)->each(function ($chunk) use (&$rowFromValues, $columns,$header,$imagenes,$URL_IMG) {
-            $chunk->each(function ($reparacion) use (&$rowFromValues, $columns,$header,$imagenes,$URL_IMG) {
 
-                $data = [];
-                foreach ($columns as $index_attr_name => $column) {
-					$attr_name = $header[$index_attr_name] ?? 'NO_NAME_'.$index_attr_name;
-                    $data[$attr_name] = $reparacion->$column ?? null;
-                }
+		foreach($resultQuery as $reparacion){
 
-                $imgs = $imagenes->get($reparacion->id, collect())->take(5);
+			$data = [];
+			foreach ($columns as $index_attr_name => $column) {
+				$attr_name = $header[$index_attr_name] ?? 'NO_NAME_'.$index_attr_name;
+				$data[$attr_name] = $reparacion->$column ?? null;
+			}
 
-                for ($i = 0; $i < 5; $i++) {
-					
-                    $archivo = '';
-                    if(isset($imgs[$i]) && $imgs[$i]->archivo){
-                        $archivo = "{$URL_IMG}/".$imgs[$i]->archivo;
-                        //$archivo = '=HYPERLINK("' . $archivo . '", "'.$archivo.'")';
-                    }
+			$imgs = $imagenes->get($reparacion->id, collect())->take(5);
 
-					$attr_name = 'EVIDENCIA'.$i;
+			for ($i = 0; $i < 5; $i++) {
+				
+				$archivo = '';
+				if(isset($imgs[$i]) && $imgs[$i]->archivo){
+					$archivo = "{$URL_IMG}/".$imgs[$i]->archivo;
+					//$archivo = '=HYPERLINK("' . $archivo . '", "'.$archivo.'")';
+				}
 
-                    $data[$attr_name] = $archivo;
-                }
+				$attr_name = 'EVIDENCIA'.$i;
+
+				$data[$attr_name] = $archivo;
+			}
 
 
-                $rowFromValues[]= $data;
+			$rowFromValues[]= $data;
 
-            });
-        });
-
+		}
+        
 
 		return [
 			'page'  => $page,

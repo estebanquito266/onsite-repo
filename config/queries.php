@@ -184,9 +184,7 @@ return [
 	min(`r`.`aclaracion_cliente`) AS `r_aclaracion_cliente`,
 	min(`r`.`firma_tecnico`) AS `r_firma_tecnico`,
 	min(`r`.`aclaracion_tecnico`) AS `r_aclaracion_tecnico`,
-	min(`r`.`created_at`) AS `created_at`,
-	min(`r`.`monto`) AS `monto`,
-	min(`r`.`monto_extra`) AS `monto_extra`
+	min(`r`.`created_at`) AS `created_at`
 FROM
 	(
 		(
@@ -267,7 +265,7 @@ FROM
 			)
 		)
 	)
-WHERE `r`.`id` IN (%repIds%)
+WHERE `r`.`id` IN (%repIds%) AND `r`.`company_id` = %company_id%
 GROUP BY
 	`r`.`id`
 ORDER BY `r`.`id` DESC
