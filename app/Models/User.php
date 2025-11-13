@@ -5,6 +5,7 @@ namespace App\Models;
 use App\GroupTicket;
 use App\Models\EmpresaInstaladora\EmpresaInstaladoraOnsite;
 use App\Models\Onsite\ReparacionOnsite;
+use App\Models\Ticket\UserGroupTicket;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -218,7 +219,7 @@ class User extends Authenticatable
 
 	public function groups_ticket()
 	{
-		return $this->hasMany('Riparazione\UserGroupTicket', 'user_id');
+		return $this->hasMany(UserGroupTicket::class, 'user_id');
 	}
 	
 	public function group_ticket()

@@ -228,6 +228,19 @@
                                     </div>
                                 </div>
 
+                                @if(isset($statuses))
+                                    <div class="form-group  col-lg-3 col-md-3">
+                                        <label for="user_id">Status</label>
+                                        <select name="ticket_status" id="ticket_status" class="form-control">
+                                            <option value="all" {{(old('ticket_status') && in_array('all',[old('ticket_status')]) ) ? 'selected' : ''}}>-- Seleccione Status --</option>
+                                            
+                                            @foreach($statuses as $status_item)
+                                            <option value="{{$status_item->id}}"  {{ ((old('ticket_status') && in_array($status_item->id,[old('ticket_status')]) ) or (!old('ticket_status') && $status_item->name === 'Nuevo')) ? 'selected' : '' }}>{{'['.$status_item->id.'] '.$status_item->name}}</option>
+                                            @endforeach
+                                            
+                                        </select>
+                                    </div>
+                                @endif
                             </div>
 
 
@@ -265,21 +278,28 @@
                     data-toggle="tooltip" title="Tickets creados por este usuario.">
                     <input type="checkbox" name="filtroagilradio" value="creadospormi" id="creadospormi"
                         autocomplete="off" {{in_array('creadospormi',$checkeds) ? 'checked' : '' }}>
-                    Míos
+                    Creados por mi
                 </label>
                 <label
-                    class="btn btn-shadow btn-primary ml-1 mr-1 {{in_array('asignadosami',$checkeds) ? 'active' : ''}} mycheck"
+                    class="btn btn-shadow btn-primary ml-1 {{in_array('asignadosami',$checkeds) ? 'active' : ''}} mycheck"
                     data-toggle="tooltip" title="Tickets asignados a este usuario.">
                     <input type="checkbox" name="filtroagilradio" value="asignadosami" id="asignadosami"
                         autocomplete="off" {{in_array('asignadosami',$checkeds) ? 'checked' : '' }}>
-                    Asignados
+                    Asignados a mi
                 </label>
                 <label
-                    class="btn btn-shadow btn-primary {{in_array('asignadosamigrupo',$checkeds) ? 'active' : ''}} mycheck"
+                    class="btn btn-shadow btn-primary ml-1 mr-1 {{in_array('asignadosamigrupo',$checkeds) ? 'active' : ''}} mycheck"
                     data-toggle="tooltip" title="Tickets asignados a este Grupo de usuarios.">
                     <input type="checkbox" name="filtroagilradio" value="asignadosamigrupo" id="asignadosamigrupo"
                         autocomplete="off" {{in_array('asignadosamigrupo',$checkeds) ? 'checked' : '' }}>
-                    Grupo
+                    Asignados a mi grupo
+                </label>
+                <label
+                    class="btn btn-shadow btn-primary {{in_array('creadospormigrupo',$checkeds) ? 'active' : ''}} mycheck"
+                    data-toggle="tooltip" title="Tickets creados por mi Grupo.">
+                    <input type="checkbox" name="filtroagilradio" value="creadospormigrupo" id="creadospormigrupo"
+                        autocomplete="off" {{in_array('creadospormigrupo',$checkeds) ? 'checked' : '' }}>
+                    Creados por mi grupo
                 </label>
             </div>
         </div>
@@ -295,7 +315,7 @@
                     <th>Prioridad</th>
                     <th>Operación</th>
                     <th>Cliente</th>
-                    <th>Responsable</th>
+                    <th>Creado por</th>
                     <th>Dest. / Grupo</th>
                     <th>Categoría / Motivo</th>
                     <th>Expira</th>

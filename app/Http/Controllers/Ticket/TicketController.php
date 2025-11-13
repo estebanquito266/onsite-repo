@@ -242,6 +242,7 @@ class TicketController extends Controller
 
     public function filtrarTickets(Request $request)
     {
+        $request->flash();
         $data = $this->ticketsService->filtrarTicket($request);
         return view('tickets.index',$data);
     }

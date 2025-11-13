@@ -103,7 +103,8 @@ class TicketsService
     public function listado()
     {
         $company_id = Session::get('userCompanyIdDefault');
-        $status = StatusTicket::whereNotIn('id', [5])->pluck('id')->toArray();
+        //$status = StatusTicket::whereNotIn('id', [5])->pluck('id')->toArray();
+        $status = StatusTicket::where('name','Nuevo')->where('company_id',$company_id)->pluck('id')->toArray();
         $priorities = PriorityTicket::select('id','name')->get();
         $tickets = $this->getPaginatedListbyLoggedUser($status);
         $motivos_consulta = MotivoConsultaTicket::select('id', 'name')->where('company_id', $company_id)->get();
@@ -117,6 +118,8 @@ class TicketsService
             $tipos[$value] = TicketType::getKey($value);
         }
 
+        $statuses = StatusTicket::select('id','name')->where('company_id', $company_id)->get();
+
         return [
             'tickets' => $tickets,
             'motivos_consulta' => $motivos_consulta,
@@ -125,7 +128,8 @@ class TicketsService
             'grupos' => $grupos,
             'tipos' => $tipos,
             'priorities'=>$priorities,
-            'checkeds' => []
+            'checkeds' => [],
+            'statuses'=>$statuses
         ];
     }
 
@@ -702,11 +706,22 @@ class TicketsService
                 $request->merge(['group_user_receiver_id'=>implode(",", Auth::user()->group_ticket->pluck('id')->toArray())]);
                 array_push($checkeds,"asignadosamigrupo");
                 break;
+            case 'creadospormigrupo':
+                $mis_grupos_ids = Auth::user()->group_ticket->pluck('id')->toArray();
+                $usuarios_de_mis_grupos = \App\Models\User::whereHas('group_ticket', function($q) use ($mis_grupos_ids) {
+                                                            $q->whereIn('group_tickets.id', $mis_grupos_ids);
+                                                        })->pluck('id')->toArray();
+                $request->merge(['user_owner_id'=>implode(',',$usuarios_de_mis_grupos)]);
+                if(count($usuarios_de_mis_grupos)<1){
+                    $request->merge(['user_owner_id'=>'99999999999']);
+                }
+                array_push($checkeds,"creadospormigrupo");
+                break;
             
         }
 
         
- 
+        //dd($request->all());
 
         $company_id = Session::get('userCompanyIdDefault');
         $texto = $request->input('texto');
@@ -722,9 +737,9 @@ class TicketsService
         $fecha_hasta = $request->input('fecha_hasta');
         $expiration_date_desde = $request->input('fecha_vto_desde');
         $expiration_date_hasta = $request->input('fecha_vto_hasta');
-
+        $ticket_status = $request->input('ticket_status');
         $idUser = Auth::user()->id;
-        $tickets = $this->queryExec($texto, $type, $status, $reason_ticket_id, $category_ticket_id, $user_receiver_id, $user_owner_id, $group_user_receiver_id, $fecha, $fecha_desde, $fecha_hasta,$priorities,$expiration_date_desde, $expiration_date_hasta ,$idUser);
+        $tickets = $this->queryExec($texto, $type, $status, $reason_ticket_id, $category_ticket_id, $user_receiver_id, $user_owner_id, $group_user_receiver_id, $fecha, $fecha_desde, $fecha_hasta,$priorities,$expiration_date_desde, $expiration_date_hasta ,$idUser,null, null, null,$ticket_status);
                 
         $motivos_consulta = MotivoConsultaTicket::select('id', 'name')->where('company_id', $company_id)->get();
         $users = User::select('users.*')
@@ -739,6 +754,8 @@ class TicketsService
             $tipos[$value] = TicketType::getKey($value);
         }
 
+        $statuses = StatusTicket::select('id','name')->where('company_id', $company_id)->get();
+
         return [
             'tickets' => $tickets,
             'motivos_consulta' => $motivos_consulta,
@@ -747,6 +764,7 @@ class TicketsService
             'grupos' => $grupos,
             'priorities' => $priorities_ticket,
             'status' => $status_ticket,
+            'statuses'=>$statuses,
             'tipos' => $tipos,
             'checkeds' =>$checkeds,
             'filtroagil' =>$filtroagil,
@@ -813,7 +831,7 @@ class TicketsService
 
 
 
-    private function queryExec($texto = null,$type = null, $status = null, $reason_ticket_id = null, $category_ticket_id = null, $user_receiver_id = null, $user_owner_id = null, $group_user_receiver_id = null, $fecha = null, $fecha_desde = null, $fecha_hasta = null, $priority = null , $expiration_date_desde= null, $expiration_date_hasta= null,  $idUser, $userCompanyId=null, $tomar=null, $saltear=null) {
+    private function queryExec($texto = null,$type = null, $status = null, $reason_ticket_id = null, $category_ticket_id = null, $user_receiver_id = null, $user_owner_id = null, $group_user_receiver_id = null, $fecha = null, $fecha_desde = null, $fecha_hasta = null, $priority = null , $expiration_date_desde= null, $expiration_date_hasta= null,  $idUser, $userCompanyId=null, $tomar=null, $saltear=null,$ticket_status=null) {
        
         if(!$userCompanyId){
             $userCompanyId  =  Session::get('userCompanyIdDefault') ? Session::get('userCompanyIdDefault') : Company::DEFAULT;
@@ -841,6 +859,15 @@ class TicketsService
         if($status){
             $query = $query->whereRaw('tickets.status_ticket_id IN (' . $status . ')');
         }
+
+        if($ticket_status){
+
+            if($ticket_status !== 'all'){
+                $query = $query->whereRaw('tickets.status_ticket_id IN (' . $ticket_status . ')');
+            }
+            
+        }
+
         if($reason_ticket_id){
             $query = $query->whereRaw('tickets.reason_ticket_id IN (' . $reason_ticket_id . ')');
         }
