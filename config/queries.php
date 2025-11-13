@@ -267,7 +267,10 @@ FROM
 			)
 		)
 	)
+WHERE `r`.`id` IN (%repIds%)
 GROUP BY
 	`r`.`id`
+ORDER BY `r`.`id` DESC
+LIMIT %offset%,%per_page%
 "
 ];

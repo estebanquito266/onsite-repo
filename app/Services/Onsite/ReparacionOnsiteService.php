@@ -2616,19 +2616,15 @@ class ReparacionOnsiteService
 
 		$request = $OriginalRequest->all();
 
-		$view_reparaciones_onsite = config('queries.view_reparaciones_onsite');
+		/*$view_reparaciones_onsite = config('queries.view_reparaciones_onsite');
 
         $query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"))
-                                        ->orderBy('id','desc');
+                                        ->orderBy('id','desc');*/
 
         //$query = DB::table('view_reparaciones_onsite_filter_case')->orderBy('id', 'desc');
 		
-        /*$query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"))
-                                        ->orderBy('id','desc');*/
-		
+		$query = DB::table('reparaciones_onsite')->where('company_id', $company_id);
 
-		//return $request;
-		$query = $query->where('company_id', $company_id);
 
         if (isset($request['id_empresa']) && is_array($request['id_empresa']) && count($request['id_empresa']) > 0) {
             $query = $query->whereIn('id_empresa_onsite', $request['id_empresa']);
@@ -2669,13 +2665,37 @@ class ReparacionOnsiteService
             $query = $query->where('monto', $request['monto']);
         }
 		
-        //$query = $query->limit(100)->get(); // Use lazy() to fetch data in chunks
+		$repIds = $query->select('id')->get()->pluck('id')->all();
+		$repIds = array_values(array_unique($repIds));
 
+		if(count($repIds) < 1){
+			$repIds = [0];
+		}
+		
 		$page  = (int) ($request['page'] ?? 1);
 		$per_page = (int) ($request['per_page'] ?? 100);
 		$offset = ($page - 1) * $per_page;
 
-		$query = $query->skip($offset)->take($per_page)->get();
+		$view_reparaciones_onsite = config('queries.view_reparaciones_onsite');
+
+		/*$view_reparaciones_onsite = str_replace('%repIds%', implode(',', $repIds), $view_reparaciones_onsite);
+		$view_reparaciones_onsite = str_replace('%offset%', $offset, $view_reparaciones_onsite);
+		$view_reparaciones_onsite = str_replace('%per_page%', $per_page, $view_reparaciones_onsite);*/
+
+		$view_reparaciones_onsite = str_replace(
+										['%repIds%', '%offset%', '%per_page%'],
+										[implode(',', $repIds), $offset, $per_page],
+										$view_reparaciones_onsite
+									);
+
+
+		Log::info($view_reparaciones_onsite);
+		
+        $query = DB::table(DB::raw("({$view_reparaciones_onsite}) as view_reparaciones_onsite"));
+
+        
+
+		$query = $query->get();
 
         $reparacionIds = $query->pluck('id')->all();
 

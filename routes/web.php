@@ -38,6 +38,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('reparacion/filter/{company_id}/{case}', [ApiReparacionOnsiteController::class, 'getReparacionFilterCase']);
 
 Route::get('reparacion/visita/{company_id}/{id_reparacion}', [ApiReparacionOnsiteController::class, 'getVisitasPorReparacionId']);
 

@@ -892,25 +892,8 @@ class ReparacionOnsiteController extends Controller
           ], 401);
       }
       
-      $sessionExists=true;
-      if (!Session::has('userCompanyIdDefault')) {
-          Session::put('userCompanyIdDefault', $company_id);
-          Session::put('userCompaniesId',[$company_id]);
-          $sessionExists=false;
-      }else {
-          Session::forget(['userCompanyIdDefault', 'userCompaniesId']);
-           return response()->json([
-            'data' => "Reintente una vez mas",
-          ], 200); 
-      }
-    
-
+      //ACA NO HACE FALTA EL TEMA DE LA COMPANY EN SESION PORQUE ES MYSQL PURO
       $mje = $this->reparacion_onsite_service->getDataRepByCase($request,$company_id,$case);
-
-      if(!$sessionExists){
-        //Si las habia seteado por api las borro por seguridad
-        Session::forget(['userCompanyIdDefault', 'userCompaniesId']);
-      }
 
       if (is_array($mje)) {
         return response()->json([
