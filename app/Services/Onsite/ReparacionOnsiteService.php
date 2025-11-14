@@ -496,6 +496,19 @@ class ReparacionOnsiteService
 		return $datos;
 	}
 
+	public function updateImages(Request $request, $idReparacionOnsite, $company_id)
+	{
+		$reparacionOnsite = $this->findReparacion($idReparacionOnsite, $company_id);
+
+		if($reparacionOnsite){
+			$this->actualizarImagenes($reparacionOnsite, $request->all());
+		}
+		
+		$reparacionOnsite = $this->getReparacionByIdWithRel($idReparacionOnsite, ['imagenesOnsite']);
+
+		return $reparacionOnsite;
+	}
+
 	public function update($request, $idReparacionOnsite, $company_id = null, $user_id = null)
 	{
 
@@ -2476,6 +2489,7 @@ class ReparacionOnsiteService
 
 	public function agregarImagenOnsite(Request $request)
 	{
+		
 		$company_id = Session::get('userCompanyIdDefault');
 
 		$datos['tipoImagenOnsite'] = $this->tiposImagenOnsiteService->findTipoImagenOnsite($request['imagen_onsite_tipo_id']);
@@ -2555,6 +2569,15 @@ class ReparacionOnsiteService
 		$reparacionOnsite = ReparacionOnsite::where('id', $id)->first();
 
 		return $reparacionOnsite;
+	}
+
+	public function getReparacionByIdWithRel($id,$with=null)
+	{
+
+		if($with){
+			return ReparacionOnsite::with($with)->where('id', $id)->first();
+		}
+		return ReparacionOnsite::where('id', $id)->first();
 	}
 
 	public function getReparacionByClave($clave)
@@ -2961,15 +2984,16 @@ class ReparacionOnsiteService
 				if (isset($registro['IMAGEN_ONSITE_' . $i]) && !empty($registro['IMAGEN_ONSITE_' . $i])) {
 
 
-					if (isset($registro['TIPO_IMAGEN_ONSITE_' . $i]))
+					$tipo = TipoImagenOnsite::NINGUNO;
+					if (isset($registro['TIPO_IMAGEN_ONSITE_' . $i])){
 						$tipo = intval($registro['TIPO_IMAGEN_ONSITE_' . $i]);
-					else $tipo = false;
+					}
 
 					$imagenOnsite = [
 						'company_id' => $reparacionOnsite->company_id,
 						'reparacion_onsite_id' => $reparacionOnsite->id,
 						'archivo' => $registro['IMAGEN_ONSITE_' . $i],
-						'tipo_imagen_onsite_id' => $tipo ?? TipoImagenOnsite::NINGUNO,
+						'tipo_imagen_onsite_id' => $tipo,
 						'descripcion' => 'Imagen importada',
 					];
 					$this->imagenOnsiteService->updateOrstore($imagenOnsite);

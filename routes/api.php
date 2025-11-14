@@ -250,7 +250,12 @@ Route::group(['middleware' => ['auth:api', 'cors'], 'prefix' => 'api'], function
   Route::post('importarReparacionesOnsite', [ReparacionOnsiteController::class, 'importarReparacionesOnsite']);
 
   /* update reparación */
+  
   Route::post('updateReparacionOnsite/{company_id}/{id_reparacion}', [ReparacionOnsiteController::class, 'updateReparacionOnsite']);
+
+  /* files reparación */
+  
+  Route::post('updateImgReparacionOnsite/{company_id}/{id_reparacion}', [ReparacionOnsiteController::class, 'updateImgReparacionOnsite']);
 
   /* update reparación */
   Route::get('reparacion/{company_id}/{id_reparacion}', [ReparacionOnsiteController::class, 'getReparacion']);

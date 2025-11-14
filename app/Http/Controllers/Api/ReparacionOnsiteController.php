@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Onsite\ReparacionFilterCaseRequest;
 use App\Http\Requests\Onsite\UpdateReparacionRequest;
+use App\Http\Requests\Onsite\UpdateImgReparacionRequest;
 use App\Http\Requests\Onsite\VisitaRequest;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -718,6 +719,49 @@ class ReparacionOnsiteController extends Controller
   {
     try {
       $mje = $this->reparacion_onsite_service->update($request, $id_reparacion, $company_id);
+
+      if ($mje) {
+        return response()->json([
+          'data' => $mje,
+        ], 200);
+      } else
+        return response()->json([
+          'error' => 'Error de conexión al servidor',
+          'message' => 'Server Error'
+        ], 500);
+    } catch (\Exception $e) {
+      Log::error('update_reparacion_api: ' . json_encode($request) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
+
+      return response()->json([
+        'error' => $e->getMessage(),
+        'message' => 'Server Error'
+      ], 500);
+    }
+  }
+
+  /**
+   *
+   * @lrd:start
+   * Actualiza imagenes de reparacion
+   * @lrd:end
+   * @LRDparam company_id required|numeric	 
+   * @LRDparam id_reparacion required|numeric		 
+
+   * @param UpdateImgReparacionRequest $request
+   * @return \Illuminate\Http\JsonResponse
+   */
+  public function updateImgReparacionOnsite(UpdateImgReparacionRequest $request, $company_id,  $id_reparacion): JsonResponse
+  {
+    try {
+
+      if(!is_numeric($company_id) or !is_numeric($id_reparacion)){
+          return response()->json([
+            'error' => "company_id or id_reparacion are not numeric.",
+            'message' => 'Server Error'
+          ], 401);
+      }
+      
+      $mje = $this->reparacion_onsite_service->updateImages($request, $id_reparacion, $company_id);
 
       if ($mje) {
         return response()->json([
