@@ -238,6 +238,9 @@ Route::group(['middleware' => ['auth:api', 'cors'], 'prefix' => 'api'], function
   // usuarios api
   Route::get('users/{company_id}', [UserController::class, 'getUsers']);
 
+  // perfil de un usuario
+  Route::get('users/{user_id}/profile', [UserController::class, 'getUserProfile']);
+
   // tecnicos api
   Route::get('tecnicos/{company_id}', [TecnicoController::class, 'getTecnicos']);
 

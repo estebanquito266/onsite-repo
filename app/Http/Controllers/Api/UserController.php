@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Onsite\UserGetProfileRequest;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +25,42 @@ class UserController extends Controller
   public function __construct(UserService $userService) {
       $this->bgh_company_id = 2;
       $this->userService = $userService;
+  }
+
+    /**
+   * Obtener perfil por id de usuario
+   *
+   * @param int $user_id
+   * @return \Illuminate\Http\JsonResponse
+   */
+  public function getUserProfile(UserGetProfileRequest $request, $user_id)
+  {
+      Log::info('getUserProfile     ==============');
+      Log::info('user_id '.$user_id);
+
+      try {
+
+        $mje = $this->userService->getUserProfile($user_id);
+
+        if (is_array($mje))  {
+          return response()->json([
+            'data' => $mje,
+          ], 200);
+        } else
+          return response()->json([
+            'error' => 'Error al obtener el perfil',
+            'message' => 'Server Error'
+          ], 500);
+
+
+      } catch (\Exception $e) {
+        Log::error('Api UserController getUserProfile: ' . json_encode($request->all()) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
+
+        return response()->json([
+          'error' => 'Server Error',
+          'message' => 'Server Error'
+        ], 500);
+      }
   }
 
   /**
