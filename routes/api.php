@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\EstadoController;
 use App\Http\Controllers\Api\TecnicoController;
 use App\Http\Controllers\Api\SucursalController;
 use App\Http\Controllers\Api\CompradorController;
+use App\Http\Controllers\Api\LocalidadController;
 use App\Http\Controllers\Api\PuestaMarchaSatisfactoriaController;
 use App\Http\Controllers\Auth\ApiAuthController;
 use App\Http\Controllers\Onsite\ReparacionOnsiteController as OnsiteReparacionOnsiteController;
@@ -278,6 +279,12 @@ Route::group(['middleware' => ['auth:api', 'cors'], 'prefix' => 'api'], function
 
   /* crear reparacion visita */
   Route::post('reparacion/visita/create/{company_id}/{id_reparacion}', [ReparacionOnsiteController::class, 'storeVisitaApi']);
+
+  /* listar localidad onsite */
+  Route::get('localidad-onsite/{company_id}', [LocalidadController::class, 'getLocalidades']);
+
+  /* actualizar técnico de una localidad onsite */
+  Route::put('localidad-onsite/{localidad_id}/tecnico', [LocalidadController::class, 'updateTecnico']);
 
 
 });
