@@ -2767,7 +2767,7 @@ class ReparacionOnsiteService
                     'rd_codigo_activo_retirado1',
                     'r_firma_tecnico',
                     'rd_codigo_activo_descripcion1',
-                    'ts_nombre',
+                    'id_tecnico_asignado',
 
                 ];
                 break;

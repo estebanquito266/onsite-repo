@@ -918,26 +918,13 @@ class ReparacionOnsiteController extends Controller
   public function getReparacionFilterCase(ReparacionFilterCaseRequest $request, $company_id,$case)
   {
     try {
-
-      //Aca ir agregando los casos disponibles en ReparacionOnsiteService getDataRepByCase
-      $cases = [1];
-
-      if(!is_numeric($company_id) or !is_numeric($case)){
-          return response()->json([
-            'error' => "company_id or case is not numeric.",
-            'message' => 'Server Error'
-          ], 401);
-      }
-
-      if(!in_array($case,$cases)){
-          return response()->json([
-            'error' => "case not availabled.",
-            'message' => 'Server Error'
-          ], 401);
-      }
       
       //ACA NO HACE FALTA EL TEMA DE LA COMPANY EN SESION PORQUE ES MYSQL PURO
-      $mje = $this->reparacion_onsite_service->getDataRepByCase($request,$company_id,$case);
+      $mje = $this->reparacion_onsite_service->getDataRepByCase(
+                $request, 
+                $company_id, 
+                $case
+            );
 
       if (is_array($mje)) {
         return response()->json([
