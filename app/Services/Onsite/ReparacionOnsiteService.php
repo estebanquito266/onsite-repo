@@ -48,7 +48,7 @@ use Carbon\Carbon;
 use DateTime;
 use DB;
 use Log;
-
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
 
 class ReparacionOnsiteService
@@ -2798,9 +2798,20 @@ class ReparacionOnsiteService
 
 			for ($i = 0; $i < 5; $i++) {
 				
+
 				$archivo = '';
+				
 				if(isset($imgs[$i]) && $imgs[$i]->archivo){
-					$archivo = "{$URL_IMG}/".$imgs[$i]->archivo;
+
+					$archivo = $imgs[$i]->archivo;
+
+					$esUrl = Str::startsWith($archivo, ['http://', 'https://']);
+
+					if (!$esUrl) {
+						$archivo = "{$URL_IMG}/".$imgs[$i]->archivo;
+					} 
+
+					
 					//$archivo = '=HYPERLINK("' . $archivo . '", "'.$archivo.'")';
 				}
 
