@@ -182,3 +182,16 @@
         </div>
     </div>
 </div>
+
+<div class="main-card mb-3 card ">
+    <div class="card-header bg-alternate">
+    </div>
+    <div class="card-body">
+        <div class="form-row mt-3">
+            <div class="form-group col-lg-12 col-md-12">
+                <label>Firma técnico </label>
+                <input type="text" class="form-control"  name="tttttttttree" value="{{ (isset($reparacionOnsite)) ? $reparacionOnsite->firma_tecnico : '' }}" readonly>
+            </div>
+        </div>
+    </div>
+</div>
