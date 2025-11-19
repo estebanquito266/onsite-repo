@@ -5,6 +5,7 @@ namespace App\Models\Onsite;
 use App\Models\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class ImagenOnsite extends Model
 {
@@ -44,4 +45,19 @@ class ImagenOnsite extends Model
   {
     return $this->belongsTo(TipoImagenOnsite::class, 'tipo_imagen_onsite_id');
   }
+
+  public function getRealUrlAttribute()
+	{
+		  $URL_IMG = config('app.URL_IMG','');
+
+      $esUrl = Str::startsWith($this->archivo, ['http://', 'https://']);
+
+      if (!$esUrl) {
+        return "{$URL_IMG}/".$this->archivo;
+      } 
+
+      return $this->archivo;
+	}
+
+  protected $appends = ['real_url'];
 }

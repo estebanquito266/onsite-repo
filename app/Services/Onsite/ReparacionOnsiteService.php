@@ -2557,7 +2557,7 @@ class ReparacionOnsiteService
 		if (is_null($company_id))
 			$company_id = Session::get('userCompanyIdDefault');
 
-		$reparacionOnsite = ReparacionOnsite::with('reparacion_checklist_onsite')
+		$reparacionOnsite = ReparacionOnsite::with(['reparacion_checklist_onsite','imagenes'])
 			->where('company_id', $company_id)->find($id);
 
 		return $reparacionOnsite;
