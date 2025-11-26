@@ -49,10 +49,12 @@ class TicketsService
     protected $mailService;
 
     public function __construct(
-        HistorialEstadosService $historialEstadosService
+        HistorialEstadosService $historialEstadosService,
+        MailService $mailService
         
     ) {
         $this->historialEstadosService = $historialEstadosService;
+        $this->mailService = $mailService;
     }
     
     public function getPaginatedListbyLoggedUser(Array $status = null){
@@ -399,7 +401,7 @@ class TicketsService
         $ticketUpdate = Ticket::findOrFail($id);
 
         //$statusOld = $ticketUpdate->status_ticket_id;
-        if( $request['status_ticket_id']==5&&$ticketUpdate->user_owner_id != Auth::user()->id){
+        if( $request['status_ticket_id']==5 && $ticketUpdate->user_owner_id != Auth::user()->id){
             return 'No tienes permisos para cerrar el Ticket seleccionado';
         }
         $company_id = Session::get('userCompanyIdDefault');

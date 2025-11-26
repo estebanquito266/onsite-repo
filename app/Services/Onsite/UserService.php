@@ -9,6 +9,7 @@ use App\Models\PerfilUsuario;
 use App\Models\RolPerfil;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Log;
 
@@ -140,7 +141,7 @@ class UserService
     public function getUserProfile($idUser)
     {
 
-        $userModel = User::findOrFail($idUser);
+        $userModel = User::where('id',$idUser)->firstOrFail();
         
         $toReturn = [];
         $userCompaniesId = array();
@@ -208,4 +209,32 @@ class UserService
 
         return $toReturn;
     }
+
+
+    public function setSessionUserProfile()
+    {
+        $user_id = Auth::user()->id;
+
+        $userInfo = $this->getUserProfile($user_id);
+        
+        $this->setArrayToSession($userInfo);
+
+        return session()->all();
+    }
+
+    public function setArrayToSession($array)
+    {
+        foreach ($array as $sessionKey => $value) {
+
+            if($sessionKey==='rutas'){
+                foreach ($value as $ruta) {
+                    session()->put($ruta, '');
+                }
+            }else{
+                session()->put($sessionKey, $value);
+            }
+           
+        }
+    }
+
 }
