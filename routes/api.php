@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\SucursalController;
 use App\Http\Controllers\Api\CompradorController;
 use App\Http\Controllers\Api\LocalidadController;
 use App\Http\Controllers\Api\PuestaMarchaSatisfactoriaController;
+use App\Http\Controllers\Api\ReparacionOnsiteNewController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Auth\ApiAuthController;
 use App\Http\Controllers\Onsite\ReparacionOnsiteController as OnsiteReparacionOnsiteController;
@@ -296,6 +297,13 @@ Route::group(['middleware' => ['auth:api', 'cors'], 'prefix' => 'api'], function
   Route::put('ticket/{ticket_id}', [TicketController::class, 'update']);
   Route::get('ticket/{ticket_id}', [TicketController::class, 'show']);
   Route::delete('ticket/{ticket_id}', [TicketController::class, 'destroy']);
+
+
+  ///////////////////// REPARACIONES ///////////////////////////
+
+  Route::post('filtrarReparacionOnsite', [ReparacionOnsiteNewController::class, 'filtrarReparacionOnsite']);
+  Route::get('reparacionOnsiteIndex', [ReparacionOnsiteNewController::class, 'index']);
+  Route::post('reparacionOnsiteIndex', [ReparacionOnsiteNewController::class, 'index']);
 
 });
 
