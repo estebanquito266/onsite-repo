@@ -304,6 +304,8 @@ Route::group(['middleware' => ['auth:api', 'cors'], 'prefix' => 'api'], function
   Route::post('filtrarReparacionOnsite', [ReparacionOnsiteNewController::class, 'filtrarReparacionOnsite']);
   Route::get('reparacionOnsiteIndex', [ReparacionOnsiteNewController::class, 'index']);
   Route::post('reparacionOnsiteIndex', [ReparacionOnsiteNewController::class, 'index']);
+  Route::get('reparacionOnsite/{reparacion_id}', [ReparacionOnsiteNewController::class, 'show']);
+
 
 });
 

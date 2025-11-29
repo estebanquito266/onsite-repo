@@ -442,14 +442,33 @@ class ReparacionOnsiteService
 		}
 	}
 
-	public function getDataShow($id)
+	public function getDataShow($id,$isAjax = false)
 	{
-		$reparacionOnsite = ReparacionOnsite::find($id);
+		$reparacionOnsite = ReparacionOnsite::with([
+			'cliente',
+			'empresa_onsite',
+			'user',
+			'tecnicoAsignado',
+			'reparacion_detalle',
+			'reparacion_detalle',
+			'sucursal_onsite.localidad_onsite.provincia',
+			'estado_onsite',
+			'historial_estados_onsite',
+			'tipo_servicio_onsite',
+			'imagenesOnsite',
+			'tickets',
+			'visitas'
+			])
+			->where('id',$id)->firstOrFail();
+			
 		$userCompanyId = Session::get('userCompanyIdDefault');
 		$localidad = null;
 
 		// Validar que el usuario sea de la misma compañia que la terminal
 		if (!in_array($reparacionOnsite->company_id, Session::get('userCompaniesId'))) {
+			if($isAjax){
+				return false;
+			}
 			Session::flash('message-error', 'Sin Privilegios');
 			return redirect('/terminalOnsite');
 		}

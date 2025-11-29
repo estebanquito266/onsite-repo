@@ -200,6 +200,42 @@ class ReparacionOnsiteNewController extends Controller
         }
 	}
 
+
+	public function show(Request $request,$reparacion_id)
+	{
+		try {
+
+			$setSessionUserProfile = $this->userService->setSessionUserProfile();
+			
+			$toReturn = $this->reparacionOnsiteService->getDataShow($reparacion_id,true);
+
+			Session::flush();
+
+			if ($toReturn) {
+                return response()->json([
+                    'data' => $toReturn,
+                ], 200);
+            } else
+                return response()->json([
+                    'error' => 'ReparacionOnsite no encontrada',
+                    'message' => 'Server Error'
+                ], 404);
+
+			return response()->json(['data'=>$datos], 200);
+
+		} catch (\Exception $e) {
+
+            Session::flush();
+            Log::error('ReparacionOnsiteNewController show: ' . json_encode($request) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
+
+            return response()->json([
+                'error' => $e->getMessage(),
+                'message' => 'Server Error'
+            ], 500);
+        }
+
+	}
+
 	public function indexPosnet()
 	{
 		$request['excludeEmpresa'] = null;
@@ -261,12 +297,7 @@ class ReparacionOnsiteNewController extends Controller
 		}
 	}
 
-	public function show($reparacionOnsite)
-	{
-		$datos = $this->reparacionOnsiteService->getDataShow($reparacionOnsite);
-
-		return view('_onsite.reparaciononsite.show', $datos);
-	}
+	
 
 	public function update(Request $request, $idReparacionOnsite)
 	{
