@@ -40,6 +40,7 @@ use App\Services\Onsite\SistemaOnsiteService;
 use App\Models\MotivoConsultaTicket;
 use App\CategoryTicket;
 use App\GroupTicket;
+use App\Jobs\ExportarReparacionesJob;
 use App\Models\Ticket\PriorityTicket;
 use App\Models\Ticket\StatusTicket;
 
@@ -3030,5 +3031,29 @@ class ReparacionOnsiteService
 				}
 			}
 		}
+	}
+
+	public function generarReporteReparacionOnsiteApi(Request $request)
+	{
+
+		$userCompanyId = Session::get('userCompanyIdDefault');	
+		$filename ="reparaciones_";
+		$filename .= uniqid();
+        $filename .= '.xlsx';
+
+		ExportarReparacionesJob::dispatch($request->toArray(), $userCompanyId,true,$filename);
+		
+
+		return $filename;
+	}
+
+	public function urlReporteReparacion($filename)
+	{
+
+		$uploader = new \App\Services\Onsite\AzureBlobUploader();
+
+		return $uploader->exists($filename);
+
+		
 	}
 }

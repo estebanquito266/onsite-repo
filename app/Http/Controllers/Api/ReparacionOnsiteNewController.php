@@ -236,6 +236,80 @@ class ReparacionOnsiteNewController extends Controller
 
 	}
 
+	public function generarReporteReparacion(Request $request)
+	{
+	
+		try {
+
+			$setSessionUserProfile = $this->userService->setSessionUserProfile();
+			
+			$toReturn = $this->reparacionOnsiteService->generarReporteReparacionOnsiteApi($request);
+
+			Session::flush();
+
+			if ($toReturn) {
+                return response()->json([
+                    'data' => $toReturn,
+                ], 200);
+            } else
+                return response()->json([
+                    'error' => 'ReparacionOnsite Reportee error',
+                    'message' => 'Server Error'
+                ], 404);
+
+			return response()->json(['data'=>$datos], 200);
+
+		} catch (\Exception $e) {
+
+            Session::flush();
+            Log::error('ReparacionOnsiteNewController generarReporteReparacion: ' . json_encode($request) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
+
+            return response()->json([
+                'error' => $e->getMessage(),
+                'message' => 'Server Error'
+            ], 500);
+        }
+
+	
+	}
+
+	public function urlReporteReparacion(Request $request,$filename)
+	{
+	
+		try {
+
+			$setSessionUserProfile = $this->userService->setSessionUserProfile();
+			
+			$toReturn = $this->reparacionOnsiteService->urlReporteReparacion($filename);
+
+			Session::flush();
+
+			if ($toReturn) {
+                return response()->json([
+                    'data' => $toReturn,
+                ], 200);
+            } else
+                return response()->json([
+                    'error' => 'ReparacionOnsite Reportee error',
+                    'message' => 'Server Error'
+                ], 404);
+
+			return response()->json(['data'=>$datos], 200);
+
+		} catch (\Exception $e) {
+
+            Session::flush();
+            Log::error('ReparacionOnsiteNewController generarReporteReparacion: ' . json_encode($request) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
+
+            return response()->json([
+                'error' => $e->getMessage(),
+                'message' => 'Server Error'
+            ], 500);
+        }
+
+	
+	}
+
 	public function indexPosnet()
 	{
 		$request['excludeEmpresa'] = null;
@@ -452,17 +526,7 @@ class ReparacionOnsiteNewController extends Controller
 		return view('_onsite.reparaciononsite.reporte', $datos);
 	}
 
-	public function generarReporteReparacionOnsite(Request $request)
-	{
 
-		$userCompanyId = Session::get('userCompanyIdDefault');	
-
-
-		ExportarReparacionesJob::dispatch($request->toArray(), $userCompanyId);
-		
-
-		return redirect()->route('reporteReparacionOnsite', [$request['exitoso']])->with('message', 'Generación de reporte en proceso.');
-	}
 
 	/**
 	 *

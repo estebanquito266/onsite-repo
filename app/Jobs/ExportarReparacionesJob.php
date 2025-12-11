@@ -25,6 +25,7 @@ use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
 use OpenSpout\Writer\Common\Creator\Style\StyleBuilder;
 use OpenSpout\Common\Entity\Style\CellAlignment;
 use OpenSpout\Common\Entity\Style\Color;
+use App\Services\Onsite\AzureBlobUploader;
 
 class ExportarReparacionesJob implements ShouldQueue
 {
@@ -32,15 +33,19 @@ class ExportarReparacionesJob implements ShouldQueue
 
     public $request;
     public $userCompanyId;
+    public $fileName;
+    public $azureStorage;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(array $request, $userCompanyId)
+    public function __construct(array $request, $userCompanyId,$azureStorage=false,$fileName="")
     {
         $this->request = $request;
         $this->userCompanyId = $userCompanyId;
+        $this->fileName = $fileName;
+        $this->azureStorage = $azureStorage;
         Log::alert('EXITOSO CONSTRUCT: ' . $this->request['exitoso']);
     }
 
@@ -131,8 +136,12 @@ class ExportarReparacionesJob implements ShouldQueue
             }
         }
         $filename .= uniqid();
-
         $filename .= '.xlsx';
+        if(!empty($this->fileName)){
+            $filename = $this->fileName;
+        }
+
+        
 
 
         $query = $query->get(); // Use lazy() to fetch data in chunks
@@ -695,11 +704,30 @@ class ExportarReparacionesJob implements ShouldQueue
 
         Log::info('Memory usage after export: ' . memory_get_usage());
 
-        Notificacion::create([
-            'notificacion' => $filename,
-            'tipo' => $tipo,
-            'empresa_id' => $empresa_id
-        ]);
+        if($this->azureStorage){
+            
+            $uploader = new AzureBlobUploader();
+
+            $url = $uploader->upload($filePath);
+            Log::info($url);
+            if ($url === false) {
+                $url= "Error al subir archivo";
+            }
+
+            Notificacion::create([
+                'notificacion' => $url,
+                'tipo' => $tipo,
+                'empresa_id' => $empresa_id
+            ]);
+
+        }else{
+            Notificacion::create([
+                'notificacion' => $filename,
+                'tipo' => $tipo,
+                'empresa_id' => $empresa_id
+            ]);
+        }
+        
         Log::alert('finaliza exportación');
 
 
