@@ -740,8 +740,30 @@ class TicketsService
         $expiration_date_desde = $request->input('fecha_vto_desde');
         $expiration_date_hasta = $request->input('fecha_vto_hasta');
         $ticket_status = $request->input('ticket_status');
+        $reparacion_id = $request->input('reparacion_id');
         $idUser = Auth::user()->id;
-        $tickets = $this->queryExec($texto, $type, $status, $reason_ticket_id, $category_ticket_id, $user_receiver_id, $user_owner_id, $group_user_receiver_id, $fecha, $fecha_desde, $fecha_hasta,$priorities,$expiration_date_desde, $expiration_date_hasta ,$idUser,null, null, null,$ticket_status);
+        $tickets = $this->queryExec(
+            $texto, 
+            $type, 
+            $status, 
+            $reason_ticket_id, 
+            $category_ticket_id, 
+            $user_receiver_id,
+            $user_owner_id, 
+            $group_user_receiver_id, 
+            $fecha, 
+            $fecha_desde, 
+            $fecha_hasta,
+            $priorities,
+            $expiration_date_desde, 
+            $expiration_date_hasta ,
+            $idUser,
+            null, 
+            null, 
+            null,
+            $ticket_status,
+            $reparacion_id
+        );
                 
         $motivos_consulta = MotivoConsultaTicket::select('id', 'name')->where('company_id', $company_id)->get();
         $users = User::select('users.*')
@@ -826,14 +848,35 @@ class TicketsService
         $expiration_date_hasta = $request->input('fecha_vto_hasta');
 
         $idUser = $auth_user->id;
-        return $this->queryExec($texto, $type, $status, $reason_ticket_id, $category_ticket_id, $user_receiver_id, $user_owner_id, $group_user_receiver_id, $fecha, $fecha_desde, $fecha_hasta,$priorities,$expiration_date_desde, $expiration_date_hasta ,$idUser,$company_id, $tomar, $saltear);
+        return $this->queryExec($texto, $type, $status, $reason_ticket_id, $category_ticket_id, $user_receiver_id, $user_owner_id, $group_user_receiver_id, $fecha, $fecha_desde, $fecha_hasta,$priorities,$expiration_date_desde, $expiration_date_hasta ,$idUser,$company_id, $tomar, $saltear,null);
        
     }
 
 
 
 
-    private function queryExec($texto = null,$type = null, $status = null, $reason_ticket_id = null, $category_ticket_id = null, $user_receiver_id = null, $user_owner_id = null, $group_user_receiver_id = null, $fecha = null, $fecha_desde = null, $fecha_hasta = null, $priority = null , $expiration_date_desde= null, $expiration_date_hasta= null,  $idUser, $userCompanyId=null, $tomar=null, $saltear=null,$ticket_status=null) {
+    private function queryExec(
+        $texto = null,
+        $type = null,
+        $status = null, 
+        $reason_ticket_id = null, 
+        $category_ticket_id = null, 
+        $user_receiver_id = null, 
+        $user_owner_id = null, 
+        $group_user_receiver_id = null, 
+        $fecha = null, 
+        $fecha_desde = null, 
+        $fecha_hasta = null, 
+        $priority = null , 
+        $expiration_date_desde= null, 
+        $expiration_date_hasta= null,  
+        $idUser, 
+        $userCompanyId=null, 
+        $tomar=null, 
+        $saltear=null,
+        $ticket_status=null,
+        $reparacion_id = null
+        ) {
        
         if(!$userCompanyId){
             $userCompanyId  =  Session::get('userCompanyIdDefault') ? Session::get('userCompanyIdDefault') : Company::DEFAULT;
@@ -908,6 +951,10 @@ class TicketsService
 
         if (!empty($priority)) {
             $query = $query->whereRaw('tickets.priority_ticket_id IN (' . $priority . ')');
+        }
+
+        if (!empty($reparacion_id)) {
+            $query = $query->whereRaw('tickets.reparacion_id IN (' . $reparacion_id . ')');
         }
 
         if (!empty($expiration_date_desde)) {

@@ -141,7 +141,7 @@ class UserService
     public function getUserProfile($idUser)
     {
 
-        $userModel = User::where('id',$idUser)->firstOrFail();
+        $userModel = User::with(['empresas_onsite','perfiles'])->where('id',$idUser)->firstOrFail();
         
         $toReturn = [];
         $userCompaniesId = array();
@@ -205,7 +205,8 @@ class UserService
             $perfilAdminOnsite = true;
         }
 
-        $toReturn['perfilAdminOnsite']=$perfilAdminOnsite;
+        $toReturn['empresasOnsite']=$userModel->empresas_onsite->pluck('id')->toArray();
+        $toReturn['perfilesIds']=$userModel->perfiles->pluck('id')->toArray();
 
         return $toReturn;
     }

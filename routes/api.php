@@ -292,7 +292,8 @@ Route::group(['middleware' => ['auth:api', 'cors'], 'prefix' => 'api'], function
   Route::put('localidad-onsite/{localidad_id}/tecnico', [LocalidadController::class, 'updateTecnico']);
 
     ////////////////////// TICKET //////////////////////////////
-
+  Route::get('ticket', [TicketController::class, 'index']);
+  Route::post('filtrarTickets', [TicketController::class, 'filtrarTickets']);
   Route::post('ticket', [TicketController::class, 'store']);
   Route::put('ticket/{ticket_id}', [TicketController::class, 'update']);
   Route::get('ticket/{ticket_id}', [TicketController::class, 'show']);

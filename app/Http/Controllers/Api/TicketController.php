@@ -12,6 +12,7 @@ use App\Http\Requests\Onsite\UpdateTecLocalidadOnsiteRequest;
 use App\Services\Onsite\LocalidadService;
 use App\Services\Onsite\TicketsService;
 use App\Services\Onsite\UserService;
+use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
@@ -29,6 +30,72 @@ class TicketController extends Controller
         $this->ticketsService = $TicketsService;
     }
 
+
+    public function index(Request $request)
+	{
+		
+		try {
+
+			$setSessionUserProfile = $this->userService->setSessionUserProfile();
+			
+       
+
+			$listado=$this->ticketsService->listado();
+
+            $response = [
+                'data'=> $listado['tickets'] ? $listado['tickets'] : []
+            ];
+
+
+			Session::flush();
+
+			return response()->json($response['data'], 200);
+
+        } catch (\Exception $e) {
+
+            Session::flush();
+            Log::error('TicketController index: ' . json_encode($request) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
+
+            return response()->json([
+                'error' => $e->getMessage(),
+                'message' => 'Server Error'
+            ], 500);
+        }
+
+	}
+
+    public function filtrarTickets(HttpRequest $request)
+	{
+		
+		try {
+
+			return $this->userService->setSessionUserProfile();
+           
+
+			$listado = $this->ticketsService->filtrarTicket($request);
+
+            $response = [
+                'data'=> $listado['tickets'] ? $listado['tickets'] : []
+            ];
+       
+            
+			Session::flush();
+
+			return response()->json($response, 200);
+
+        } catch (\Exception $e) {
+
+            Session::flush();
+            Log::error('TicketController filtrarTickets: ' . json_encode($request) . ' - Error: ' . $e->getMessage() . ' - File:' . $e->getFile() . ' - Line:' . $e->getLine());
+
+            return response()->json([
+                'error' => $e->getMessage(),
+                'message' => 'Server Error'
+            ], 500);
+        }
+
+	}
+    
     public function destroy(Request $request, $ticket_id)
     {
         $ticket = $this->ticketsService->destroy($ticket_id);
