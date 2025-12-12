@@ -69,7 +69,7 @@ class TicketController extends Controller
 		
 		try {
 
-			return $this->userService->setSessionUserProfile();
+			$setSessionUserProfile = $this->userService->setSessionUserProfile();
            
 
 			$listado = $this->ticketsService->filtrarTicket($request);
