@@ -22,7 +22,7 @@ class AzureBlobUploader
             return false;
         }
 
-        $fileName = $fileName ?? basename($localPath);
+        $fileName = $fileName ? $fileName : basename($localPath);
 
         $url = "{$this->containerUrl}/{$fileName}?{$this->sasToken}";
 
@@ -44,7 +44,7 @@ class AzureBlobUploader
         return $url;
     }
 
-    public function exists(string $fileName): string|false
+    public function exists($fileName)
     {
         $url = "{$this->containerUrl}/{$fileName}?{$this->sasToken}";
 
