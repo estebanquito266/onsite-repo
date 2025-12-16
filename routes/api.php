@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CommentTicketController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ReparacionOnsiteController;
 use App\Http\Controllers\Api\EstadoOnsiteController;
@@ -299,6 +300,9 @@ Route::group(['middleware' => ['auth:api', 'cors'], 'prefix' => 'api'], function
   Route::get('ticket/{ticket_id}', [TicketController::class, 'show']);
   Route::delete('ticket/{ticket_id}', [TicketController::class, 'destroy']);
 
+  ////////////////////// COMENTARIOS TICKET //////////////////////////////
+  Route::post('commentTicket', [CommentTicketController::class, 'store']);
+  Route::get('commentTicket/{ticket_id}', [CommentTicketController::class, 'findCommentsByTicketId']);
 
   ///////////////////// REPARACIONES ///////////////////////////
 
