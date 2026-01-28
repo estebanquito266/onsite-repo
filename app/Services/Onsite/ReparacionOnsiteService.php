@@ -2642,6 +2642,347 @@ class ReparacionOnsiteService
 		return $reparaciones_onsite_data;
 	}
 
+	public function dashInfo(Request $OriginalRequest, $company_id){
+
+		$request = $OriginalRequest->all();
+		$requestAux = $OriginalRequest->all();
+
+		$cases = [
+			"totales_sla_cerradas",
+			"servicios_activos_por_distancia",
+			"servicios_activos_por_aging",
+			"servicios_realizados_por_estado",
+			"motivos_no_exitoso",
+			"casos_abiertos_por_estado",
+			"casos_especiales_resumen",
+		];
+
+		$toReturn = [
+			'filtros'=>[],
+			"totales_sla_cerradas"=>[],
+			"servicios_activos_por_distancia"=>[],
+			"servicios_activos_por_aging"=>[],
+			"servicios_realizados_por_estado"=>[],
+			"motivos_no_exitoso"=>[],
+			"casos_abiertos_por_estado"=>[],
+			"casos_especiales_resumen"=>[],
+		];
+
+		$toReturn['filtros']=[
+			"empresa_id" => $request["empresa_onsite_id"] ?? $company_id,
+			"desde"=> $request["fecha_cerrado_desde"] ?? '',
+			"hasta"=> $request["fecha_cerrado_hasta"] ?? '',
+		];
+
+		foreach ($toReturn as $caseItem => $tmp){
+
+			if($caseItem == 'filtros'){
+				continue;
+			}
+			
+			switch ($caseItem) {
+				case 'totales_sla_cerradas':
+					$detalle = $this->totalesSlaCerradas($request["fecha_cerrado_desde"],$request["fecha_cerrado_hasta"],$company_id);
+					break;
+				
+				case 'servicios_activos_por_distancia':
+					$detalle = $this->serviciosActivosPorDistancia([45, 46, 47, 51, 60],$company_id);
+					break;
+				case 'servicios_activos_por_aging':
+					$detalle = $this->serviciosActivosPorAging([45, 46, 47, 51, 60],$company_id);
+					break;
+				case 'servicios_realizados_por_estado':
+					$detalle = $this->serviciosRealizadosPorEstado($request["fecha_cerrado_desde"],$request["fecha_cerrado_hasta"],$company_id);
+					break;
+				case 'motivos_no_exitoso':
+					$detalle = $this->motivosNoExitoso($request["fecha_cerrado_desde"],$request["fecha_cerrado_hasta"],$company_id);
+					break;
+				case 'casos_abiertos_por_estado':
+					$detalle = $this->casosAbiertosPorEstado($company_id);
+					break;
+				case 'casos_especiales_resumen':
+					$detalle = $this->casosEspecialesResumen($company_id);
+					break;
+				default:
+					$item = [
+						'total'=>0,
+						'detalle'=>[]
+					];
+					break;
+			}
+
+
+			$toReturn[$caseItem]=$detalle;
+		}
+
+		return $toReturn;
+	}
+
+	public function casosEspecialesResumen($company_id)
+	{
+		$fechaLimite = DB::raw("
+			DATE_SUB(NOW(), INTERVAL (CASE 
+				WHEN DAYOFWEEK(NOW()) IN (2,3) THEN 4 
+				ELSE 2 
+			END) DAY)
+		");
+
+		$total = ReparacionOnsite::where('company_id', $company_id)
+			->whereIn('id_estado', [48,49,52,53])
+			->count();
+
+		$mayor48 = ReparacionOnsite::where('company_id', $company_id)
+			->whereIn('id_estado', [48,49,52,53])
+			->where('fecha_cerrado', '<', $fechaLimite)
+			->count();
+
+		$menor48 = $total - $mayor48;
+
+		$detalle = [
+			'mayor_48hs' => [
+				'cantidad' => $mayor48,
+				'porcentaje' => $total ? round($mayor48 * 100 / $total, 2) : 0
+			],
+			'menor_48hs' => [
+				'cantidad' => $menor48,
+				'porcentaje' => $total ? round($menor48 * 100 / $total, 2) : 0
+			]
+		];
+
+		return [
+			'detalle' => $detalle,
+			'total' => $total
+		];
+	}
+
+	public function casosAbiertosPorEstado($company_id)
+	{
+		$rows = ReparacionOnsite::selectRaw("id_estado, COUNT(*) as cantidad")
+			->where('company_id', $company_id)
+			->whereNull('fecha_cerrado')
+			->groupBy('id_estado')
+			->get();
+
+		$total = $rows->sum('cantidad');
+
+		$detalle = $rows->map(function ($r) use ($total) {
+			return [
+				'id_estado' => $r->id_estado,
+				'cantidad' => $r->cantidad,
+				'porcentaje' => $total ? round($r->cantidad * 100 / $total, 2) : 0
+			];
+		});
+
+		return [
+			'detalle' => $detalle,
+			'total' => $total
+		];
+	}
+
+	public function motivosNoExitoso($desde, $hasta, $company_id)
+	{
+		$rows = ReparacionOnsite::selectRaw("
+			COALESCE(informe_tecnico,'Sin motivo especificado') as motivo,
+			COUNT(*) as cantidad
+		")
+		->where('company_id', $company_id)
+		->whereBetween('fecha_cerrado', [$desde, $hasta])
+		->where('id_estado', 46)
+		->groupBy('motivo')
+		->orderByDesc('cantidad')
+		->get();
+
+		$total = $rows->sum('cantidad');
+
+		$detalle = $rows->map(function ($r) use ($total) {
+			return [
+				'motivo' => $r->motivo,
+				'cantidad' => $r->cantidad,
+				'porcentaje' => $total ? round($r->cantidad * 100 / $total, 2) : 0
+			];
+		});
+
+		return [
+			'detalle' => $detalle,
+			'total' => $total
+		];
+	}
+
+	public function serviciosRealizadosPorEstado($desde, $hasta, $company_id)
+	{
+		$rows = ReparacionOnsite::selectRaw("
+			CASE
+				WHEN id_estado = 45 THEN 'EXITOSO'
+				WHEN id_estado = 46 THEN 'NO EXITOSO'
+				WHEN id_estado IN (47,51,60) THEN 'NO EXITOSO (TELEFONICO)'
+				ELSE 'OTROS'
+			END as grupo,
+			COUNT(*) as cantidad
+		")
+		->where('company_id', $company_id)
+		->whereBetween('fecha_cerrado', [$desde, $hasta])
+		->whereIn('id_estado', [45,46,47,51,60])
+		->groupBy('grupo')
+		->get();
+
+		$total = $rows->sum('cantidad');
+
+		$detalle = $rows->map(fn($r)=>[
+			'grupo'=>$r->grupo,
+			'cantidad'=>$r->cantidad,
+			'porcentaje'=>$total?round($r->cantidad*100/$total,2):0
+		]);
+
+		return [
+			'detalle' => $detalle,
+			'total' => $total
+		];
+	}
+
+	public function serviciosActivosPorDistancia(array $estadosActivos, $company_id)
+	{
+		$rows = ReparacionOnsite::join(
+				'sucursales_onsite',
+				'reparaciones_onsite.sucursal_onsite_id',
+				'=',
+				'sucursales_onsite.id'
+			)
+			->join(
+				'localidades_onsite',
+				'sucursales_onsite.localidad_onsite_id',
+				'=',
+				'localidades_onsite.id'
+			)
+			->selectRaw("
+				CASE localidades_onsite.id_nivel
+					WHEN 10 THEN '1 - Urbano'
+					WHEN 11 THEN '2 - Rural'
+					WHEN 12 THEN '3 - Extra Rural'
+					WHEN 13 THEN '4 - Otros'
+					ELSE 'Sin Clasificar'
+				END as grupo,
+				COUNT(*) as cantidad
+			")
+			->where('reparaciones_onsite.company_id', $company_id)
+			->whereIn('reparaciones_onsite.id_estado', $estadosActivos)
+			->groupBy('grupo')
+			->get();
+
+		$gruposBase = [
+			'1 - Urbano' => 0,
+			'2 - Rural' => 0,
+			'3 - Extra Rural' => 0,
+			'4 - Otros' => 0,
+			'Sin Clasificar' => 0,
+		];
+
+		foreach ($rows as $row) {
+			$gruposBase[$row->grupo] = $row->cantidad;
+		}
+
+		$total = array_sum($gruposBase);
+
+		$detalle = [];
+		foreach ($gruposBase as $grupo => $cantidad) {
+			$detalle[] = [
+				'grupo' => $grupo,
+				'cantidad' => $cantidad,
+				'porcentaje' => $total ? round($cantidad * 100 / $total, 2) : 0
+			];
+		}
+
+		return [
+			'detalle' => $detalle,
+			'total' => $total
+		];
+	}
+
+	public function serviciosActivosPorAging(array $estadosActivos, $company_id)
+	{
+		$gruposBase = [
+			'EN TIEMPO' => 0,
+			'1 a 5 días' => 0,
+			'6 a 10 días' => 0,
+			'11 a 20 días' => 0,
+			'21 a 30 días' => 0,
+			'30 días' => 0,
+		];
+
+		$rows = ReparacionOnsite::selectRaw("
+			CASE
+				WHEN DATEDIFF(CURDATE(), fecha_vencimiento) < 0 THEN 'EN TIEMPO'
+				WHEN DATEDIFF(CURDATE(), fecha_vencimiento) BETWEEN 1 AND 5 THEN '1 a 5 días'
+				WHEN DATEDIFF(CURDATE(), fecha_vencimiento) BETWEEN 6 AND 10 THEN '6 a 10 días'
+				WHEN DATEDIFF(CURDATE(), fecha_vencimiento) BETWEEN 11 AND 20 THEN '11 a 20 días'
+				WHEN DATEDIFF(CURDATE(), fecha_vencimiento) BETWEEN 21 AND 30 THEN '21 a 30 días'
+				ELSE '30 días'
+			END as grupo,
+			COUNT(*) as cantidad
+		")
+		->where('company_id', $company_id)
+		->whereIn('id_estado', $estadosActivos)
+		->groupBy('grupo')
+		->get();
+
+		foreach ($rows as $row) {
+			$gruposBase[$row->grupo] = $row->cantidad;
+		}
+
+		$total = array_sum($gruposBase);
+
+		$detalle = [];
+		foreach ($gruposBase as $grupo => $cantidad) {
+			$detalle[] = [
+				'grupo' => $grupo,
+				'cantidad' => $cantidad,
+				'porcentaje' => $total ? round($cantidad * 100 / $total, 2) : 0
+			];
+		}
+
+		return [
+			'detalle' => $detalle,
+			'total' => $total
+		];
+	}
+
+	function totalesSlaCerradas($desde, $hasta, $company_id)
+	{
+		$total = ReparacionOnsite::where('company_id', $company_id)
+			->whereBetween('fecha_cerrado', [$desde, $hasta])
+			->count();
+
+		$slaIn = ReparacionOnsite::where('company_id', $company_id)
+			->whereBetween('fecha_cerrado', [$desde, $hasta])
+			->where(function ($q) {
+				$q->whereNull('fecha_vencimiento')
+				->orWhereColumn('fecha_cerrado', '<=', 'fecha_vencimiento');
+			})->count();
+
+		$slaOut = ReparacionOnsite::where('company_id', $company_id)
+			->whereBetween('fecha_cerrado', [$desde, $hasta])
+			->whereNotNull('fecha_vencimiento')
+			->whereColumn('fecha_cerrado', '>', 'fecha_vencimiento')
+			->count();
+
+		//dd($detalle);
+		$detalle = [
+			'sla_in' => [
+				'cantidad' => $slaIn,
+				'porcentaje' => $total ? round($slaIn * 100 / $total, 2) : 0
+			],
+			'sla_out' => [
+				'cantidad' => $slaOut,
+				'porcentaje' => $total ? round($slaOut * 100 / $total, 2) : 0
+			]
+		];
+
+		return [
+			'detalle' => $detalle,
+			'total' => $total
+		];
+	}
+
+	
 
 	public function getDataRepByCase(Request $OriginalRequest, $company_id,$case){
 

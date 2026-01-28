@@ -286,6 +286,9 @@ Route::group(['middleware' => ['auth:api', 'cors'], 'prefix' => 'api'], function
   /* crear reparacion visita */
   Route::post('reparacion/visita/create/{company_id}/{id_reparacion}', [ReparacionOnsiteController::class, 'storeVisitaApi']);
 
+    // kpi Dash
+  Route::post('dashinfo/{company_id}', [ReparacionOnsiteController::class, 'dashInfo']);
+  
   /* listar localidad onsite */
   Route::get('localidad-onsite/{company_id}', [LocalidadController::class, 'getLocalidades']);
 
