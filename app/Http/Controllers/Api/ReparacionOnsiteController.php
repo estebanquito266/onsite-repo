@@ -1039,4 +1039,26 @@ class ReparacionOnsiteController extends Controller
       ], 500);
     }
   }
+
+  public function dashInfo(Request $request, $company_id)
+  {
+      if(!is_numeric($company_id)){
+          return response()->json([
+            'error' => "company_id is not numeric.",
+            'message' => 'Server Error'
+          ], 401);
+      }
+      
+      $request->validate([
+          'fecha_cerrado_desde' => ['required','date','before_or_equal:fecha_cerrado_hasta'],
+          'fecha_cerrado_hasta' => ['required','date','after_or_equal:fecha_cerrado_desde'],
+      ]);
+
+      $mje = $this->reparacion_onsite_service->dashInfo($request, $company_id);
+
+      return response()->json([
+          'data' => $mje,
+      ], 200);
+  }
+  
 }
