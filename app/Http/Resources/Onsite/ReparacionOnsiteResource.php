@@ -123,6 +123,7 @@ class ReparacionOnsiteResource extends JsonResource
         'fecha_registracion_coordinacion' => $this->fecha_registracion_coordinacion,
         'fecha_notificado' => $this->fecha_notificado,
         'fecha_vencimiento' => $this->fecha_vencimiento,
+        'fecha_1_vencimiento' => $this->fecha_1_vencimiento,
         'fecha_cerrado' => $this->fecha_cerrado,
         'sla_status' => $this->sla_status,
         'sla_justificado' => $this->sla_justificado,
@@ -156,8 +157,10 @@ class ReparacionOnsiteResource extends JsonResource
         'sistema_onsite' =>$this->sistema_onsite? $this->sistema_onsite->toArray(): [],
         'solicitud_tipo' =>$this->solicitud_tipo->nombre,
         'imagenes_obra' =>($this->sistema_onsite && $this->sistema_onsite->obra_onsite && $this->sistema_onsite->obra_onsite->imagenes_obras? $this->sistema_onsite->obra_onsite->imagenes_obras->toArray(): []),
-
-
+        'localidad_nombre'    => $this->sucursal_onsite->localidad_onsite->localidad_estandard ?? null,
+        'localidad_cp'        => $this->sucursal_onsite->localidad_onsite->codigo ?? null,
+        'localidad_prov_id'   => $this->sucursal_onsite->localidad_onsite->id_provincia ?? null,
+        'nombre_tecnico' => $this->tecnicoAsignado->name ?? null,
       ],
 
       'links' => [
