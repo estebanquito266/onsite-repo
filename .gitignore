@@ -52,3 +52,8 @@ yarn-error.log
 /public/assets/appreact/fonts
 error_log
 */error_log
+.env_orig_11122025
+.htaccess
+id_rsa_onsite.pub
+id_rsa_onsite.pub.pub
+public/files/
