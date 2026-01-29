@@ -50,3 +50,5 @@ yarn-error.log
 /public/assets/appreact/img
 /public/assets/appreact/fonts/
 /public/assets/appreact/fonts
+error_log
+*/error_log
