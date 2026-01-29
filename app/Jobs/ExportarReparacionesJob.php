@@ -35,6 +35,7 @@ class ExportarReparacionesJob implements ShouldQueue
     public $userCompanyId;
     public $fileName;
     public $azureStorage;
+    
     /**
      * Create a new job instance.
      *
@@ -144,18 +145,7 @@ class ExportarReparacionesJob implements ShouldQueue
         
 
 
-        $query = $query->get(); // Use lazy() to fetch data in chunks
-
-        $reparacionIds = $query->pluck('id')->all();
-
-        $imagenes = DB::table('imagenes_onsite')
-                            ->select('reparacion_onsite_id', 'archivo')
-                            ->whereIn('reparacion_onsite_id', $reparacionIds)
-                            ->orderBy('reparacion_onsite_id')
-                            ->orderBy('id')
-                            ->get()
-                            ->groupBy('reparacion_onsite_id');
-    
+        
 
         Log::info('Memory usage after get: ' . memory_get_usage());
 
@@ -665,7 +655,37 @@ class ExportarReparacionesJob implements ShouldQueue
 
         $URL_IMG = config('app.URL_IMG');
 
-        $query->chunk(1000)->each(function ($chunk) use ($writer, $columns, $style,$imagenes,$URL_IMG) {
+        $query->chunk(1000, function($chunk) use ($writer, $columns, $style, $URL_IMG) {
+
+            $reparacionIds = $chunk->pluck('id')->all();
+
+            $imagenes = DB::table('imagenes_onsite')
+                ->whereIn('reparacion_onsite_id', $reparacionIds)
+                ->orderBy('reparacion_onsite_id')
+                ->orderBy('id')
+                ->get()
+                ->groupBy('reparacion_onsite_id');
+
+            foreach($chunk as $reparacion){
+                $data = [];
+                foreach($columns as $column){
+                    $data[] = $reparacion->$column ?? null;
+                }
+
+                $imgs = $imagenes->get($reparacion->id, collect())->take(5);
+                for($i=0;$i<5;$i++){
+                    $archivo = $imgs[$i]->archivo ?? null;
+                    if($archivo) $archivo = '=HYPERLINK("'.$URL_IMG.'/'.$archivo.'","'.$archivo.'")';
+                    $data[] = $archivo;
+                }
+
+                $data[] = $reparacion->log ?? null;
+                $writer->addRow(WriterEntityFactory::createRowFromArray($data, $style));
+            }
+
+        });
+
+        /*$query->chunk(1000)->each(function ($chunk) use ($writer, $columns, $style,$imagenes,$URL_IMG) {
             $chunk->each(function ($reparacion) use ($writer, $columns, $style,$imagenes,$URL_IMG) {
 
                 $data = [];
@@ -692,7 +712,7 @@ class ExportarReparacionesJob implements ShouldQueue
                 //$writer->addRow(Row::fromValues($data, $style)); php nuevo
                 $writer->addRow($rowFromValues);
             });
-        });
+        });*/
 
         Log::info('Memory usage before export: ' . memory_get_usage());
 
