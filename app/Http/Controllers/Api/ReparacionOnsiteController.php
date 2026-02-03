@@ -1050,6 +1050,7 @@ class ReparacionOnsiteController extends Controller
       }
       
       $request->validate([
+          'empresa_onsite_id' => ['required'],
           'fecha_cerrado_desde' => ['required','date','before_or_equal:fecha_cerrado_hasta'],
           'fecha_cerrado_hasta' => ['required','date','after_or_equal:fecha_cerrado_desde'],
       ]);

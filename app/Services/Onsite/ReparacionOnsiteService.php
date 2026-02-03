@@ -6158,10 +6158,12 @@ class ReparacionOnsiteService
 		];
 
 		$toReturn['filtros']=[
-			"empresa_id" => $request["empresa_onsite_id"] ?? $company_id,
+			"empresa_id" => $request["empresa_onsite_id"],
 			"desde"=> $request["fecha_cerrado_desde"] ?? '',
 			"hasta"=> $request["fecha_cerrado_hasta"] ?? '',
 		];
+
+		$id_empresa_onsite = $request["empresa_onsite_id"];
 
 		foreach ($toReturn as $caseItem => $tmp){
 
@@ -6171,26 +6173,26 @@ class ReparacionOnsiteService
 			
 			switch ($caseItem) {
 				case 'totales_sla_cerradas':
-					$detalle = $this->totalesSlaCerradas($request["fecha_cerrado_desde"],$request["fecha_cerrado_hasta"],$company_id);
+					$detalle = $this->totalesSlaCerradas($request["fecha_cerrado_desde"],$request["fecha_cerrado_hasta"],$company_id,$id_empresa_onsite);
 					break;
 				
 				case 'servicios_activos_por_distancia':
-					$detalle = $this->serviciosActivosPorDistancia([45, 46, 47, 51, 60],$company_id);
+					$detalle = $this->serviciosActivosPorDistancia([45, 46, 47, 51, 60],$company_id,$id_empresa_onsite);
 					break;
 				case 'servicios_activos_por_aging':
-					$detalle = $this->serviciosActivosPorAging([45, 46, 47, 51, 60],$company_id);
+					$detalle = $this->serviciosActivosPorAging([45, 46, 47, 51, 60],$company_id,$id_empresa_onsite);
 					break;
 				case 'servicios_realizados_por_estado':
-					$detalle = $this->serviciosRealizadosPorEstado($request["fecha_cerrado_desde"],$request["fecha_cerrado_hasta"],$company_id);
+					$detalle = $this->serviciosRealizadosPorEstado($request["fecha_cerrado_desde"],$request["fecha_cerrado_hasta"],$company_id,$id_empresa_onsite);
 					break;
 				case 'motivos_no_exitoso':
-					$detalle = $this->motivosNoExitoso($request["fecha_cerrado_desde"],$request["fecha_cerrado_hasta"],$company_id);
+					$detalle = $this->motivosNoExitoso($request["fecha_cerrado_desde"],$request["fecha_cerrado_hasta"],$company_id,$id_empresa_onsite);
 					break;
 				case 'casos_abiertos_por_estado':
-					$detalle = $this->casosAbiertosPorEstado($company_id);
+					$detalle = $this->casosAbiertosPorEstado($company_id,$id_empresa_onsite);
 					break;
 				case 'casos_especiales_resumen':
-					$detalle = $this->casosEspecialesResumen($company_id);
+					$detalle = $this->casosEspecialesResumen($company_id,$id_empresa_onsite);
 					break;
 				default:
 					$item = [
@@ -6207,7 +6209,7 @@ class ReparacionOnsiteService
 		return $toReturn;
 	}
 
-	public function casosEspecialesResumen($company_id)
+	public function casosEspecialesResumen($company_id,$empresa_onsite_id)
 	{
 		$fechaLimite = DB::raw("
 			DATE_SUB(NOW(), INTERVAL (CASE 
@@ -6217,10 +6219,12 @@ class ReparacionOnsiteService
 		");
 
 		$total = ReparacionOnsite::where('company_id', $company_id)
+			->where('id_empresa_onsite',$empresa_onsite_id)
 			->whereIn('id_estado', [48,49,52,53])
 			->count();
 
 		$mayor48 = ReparacionOnsite::where('company_id', $company_id)
+			->where('id_empresa_onsite',$empresa_onsite_id)
 			->whereIn('id_estado', [48,49,52,53])
 			->where('fecha_cerrado', '<', $fechaLimite)
 			->count();
@@ -6244,10 +6248,11 @@ class ReparacionOnsiteService
 		];
 	}
 
-	public function casosAbiertosPorEstado($company_id)
+	public function casosAbiertosPorEstado($company_id,$empresa_onsite_id)
 	{
 		$rows = ReparacionOnsite::selectRaw("id_estado, COUNT(*) as cantidad")
 			->where('company_id', $company_id)
+			->where('id_empresa_onsite',$empresa_onsite_id)
 			->whereNull('fecha_cerrado')
 			->groupBy('id_estado')
 			->get();
@@ -6268,13 +6273,14 @@ class ReparacionOnsiteService
 		];
 	}
 
-	public function motivosNoExitoso($desde, $hasta, $company_id)
+	public function motivosNoExitoso($desde, $hasta, $company_id,$empresa_onsite_id)
 	{
 		$rows = ReparacionOnsite::selectRaw("
 			COALESCE(informe_tecnico,'Sin motivo especificado') as motivo,
 			COUNT(*) as cantidad
 		")
 		->where('company_id', $company_id)
+		->where('id_empresa_onsite',$empresa_onsite_id)
 		->whereBetween('fecha_cerrado', [$desde, $hasta])
 		->where('id_estado', 46)
 		->groupBy('motivo')
@@ -6297,7 +6303,7 @@ class ReparacionOnsiteService
 		];
 	}
 
-	public function serviciosRealizadosPorEstado($desde, $hasta, $company_id)
+	public function serviciosRealizadosPorEstado($desde, $hasta, $company_id,$empresa_onsite_id)
 	{
 		$rows = ReparacionOnsite::selectRaw("
 			CASE
@@ -6309,6 +6315,7 @@ class ReparacionOnsiteService
 			COUNT(*) as cantidad
 		")
 		->where('company_id', $company_id)
+		->where('id_empresa_onsite',$empresa_onsite_id)
 		->whereBetween('fecha_cerrado', [$desde, $hasta])
 		->whereIn('id_estado', [45,46,47,51,60])
 		->groupBy('grupo')
@@ -6328,7 +6335,7 @@ class ReparacionOnsiteService
 		];
 	}
 
-	public function serviciosActivosPorDistancia(array $estadosActivos, $company_id)
+	public function serviciosActivosPorDistancia(array $estadosActivos, $company_id,$empresa_onsite_id)
 	{
 		$rows = ReparacionOnsite::join(
 				'sucursales_onsite',
@@ -6353,6 +6360,7 @@ class ReparacionOnsiteService
 				COUNT(*) as cantidad
 			")
 			->where('reparaciones_onsite.company_id', $company_id)
+			->where('id_empresa_onsite',$empresa_onsite_id)
 			->whereIn('reparaciones_onsite.id_estado', $estadosActivos)
 			->groupBy('grupo')
 			->get();
@@ -6386,7 +6394,7 @@ class ReparacionOnsiteService
 		];
 	}
 
-	public function serviciosActivosPorAging(array $estadosActivos, $company_id)
+	public function serviciosActivosPorAging(array $estadosActivos, $company_id,$empresa_onsite_id)
 	{
 		$gruposBase = [
 			'EN TIEMPO' => 0,
@@ -6409,6 +6417,7 @@ class ReparacionOnsiteService
 			COUNT(*) as cantidad
 		")
 		->where('company_id', $company_id)
+		->where('id_empresa_onsite',$empresa_onsite_id)
 		->whereIn('id_estado', $estadosActivos)
 		->groupBy('grupo')
 		->get();
@@ -6434,13 +6443,15 @@ class ReparacionOnsiteService
 		];
 	}
 
-	function totalesSlaCerradas($desde, $hasta, $company_id)
+	function totalesSlaCerradas($desde, $hasta, $company_id,$empresa_onsite_id)
 	{
 		$total = ReparacionOnsite::where('company_id', $company_id)
+			->where('id_empresa_onsite',$empresa_onsite_id)
 			->whereBetween('fecha_cerrado', [$desde, $hasta])
 			->count();
 
 		$slaIn = ReparacionOnsite::where('company_id', $company_id)
+			->where('id_empresa_onsite',$empresa_onsite_id)
 			->whereBetween('fecha_cerrado', [$desde, $hasta])
 			->where(function ($q) {
 				$q->whereNull('fecha_vencimiento')
@@ -6448,6 +6459,7 @@ class ReparacionOnsiteService
 			})->count();
 
 		$slaOut = ReparacionOnsite::where('company_id', $company_id)
+			->where('id_empresa_onsite',$empresa_onsite_id)
 			->whereBetween('fecha_cerrado', [$desde, $hasta])
 			->whereNotNull('fecha_vencimiento')
 			->whereColumn('fecha_cerrado', '>', 'fecha_vencimiento')
