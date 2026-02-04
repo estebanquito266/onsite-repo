@@ -6165,6 +6165,8 @@ class ReparacionOnsiteService
 
 		$id_empresa_onsite = $request["empresa_onsite_id"];
 
+		$estadosActivos = EstadoOnsite::where('activo',1)->pluck('id')->toArray();
+
 		foreach ($toReturn as $caseItem => $tmp){
 
 			if($caseItem == 'filtros'){
@@ -6177,10 +6179,10 @@ class ReparacionOnsiteService
 					break;
 				
 				case 'servicios_activos_por_distancia':
-					$detalle = $this->serviciosActivosPorDistancia([45, 46, 47, 51, 60],$company_id,$id_empresa_onsite);
+					$detalle = $this->serviciosActivosPorDistancia($estadosActivos,$company_id,$id_empresa_onsite);
 					break;
 				case 'servicios_activos_por_aging':
-					$detalle = $this->serviciosActivosPorAging([45, 46, 47, 51, 60],$company_id,$id_empresa_onsite);
+					$detalle = $this->serviciosActivosPorAging($estadosActivos,$company_id,$id_empresa_onsite);
 					break;
 				case 'servicios_realizados_por_estado':
 					$detalle = $this->serviciosRealizadosPorEstado($request["fecha_cerrado_desde"],$request["fecha_cerrado_hasta"],$company_id,$id_empresa_onsite);
