@@ -77,7 +77,7 @@ class EstadoOnsiteRepository
   /**
    * Devuelve los estados cerrados de la company del usuario
    *
-   * @return integer
+   * @return EstadoOnsite $estadoOnsite
    */
   public function getEstadosByCerradosByUserCompany($value)
   {

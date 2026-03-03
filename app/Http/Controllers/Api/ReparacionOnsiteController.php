@@ -103,7 +103,7 @@ class ReparacionOnsiteController extends Controller
 
     $user_id = Auth::user()->id;
 
-    $reparaciones_onsite_query = $this->reparacion_onsite_repository->filtrar($request['filter']);
+    $reparaciones_onsite_query = $this->reparacion_onsite_repository->filtrar($request['filter'],$request->all());
 
     $reparaciones_onsite_query->where('id_tecnico_asignado', $user_id)->applySorts($request['sort']);
 

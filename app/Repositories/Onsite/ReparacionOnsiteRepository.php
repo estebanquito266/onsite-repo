@@ -6,6 +6,7 @@ use App\Models\Onsite\EstadoOnsite;
 use Auth;
 use App\Models\Onsite\ReparacionOnsite;
 use App\Repositories\Onsite\EstadoOnsiteRepository;
+use Carbon\Carbon;
 use Log;
 
 class ReparacionOnsiteRepository
@@ -23,26 +24,61 @@ class ReparacionOnsiteRepository
   /**
    * Aplica los filtros y orden a la consulta
    */
-  public function filtrar($filtros)
+  public function filtrar($filtros,$originalRequest=[])
   {
 
-    $query = ReparacionOnsite::where('company_id', Auth::user()->companies->first()->id)
-      ->where('created_at', '>', '2025-05-01');
+    $query = ReparacionOnsite::where('company_id', 1)
+      ->where('created_at', '>', '2025-01-01');
 
     // Se fija si se envio el filtro 'activas'
-    if (array_key_exists('activas', $filtros)) {
+    if (isset($originalRequest['filter']) && array_key_exists('activas', $filtros)) {
       $estados_query = $this->estado_onsite_repository->activo($filtros['activas']);
-      $query->whereIn('id_estado', $estados_query->get()->modelKeys());
+      $resultEstadoAct = $estados_query->get()->modelKeys();
+      $resultEstadoAct = !is_array($resultEstadoAct) ? [$resultEstadoAct] : $resultEstadoAct;
+      $query->whereIn('id_estado', $resultEstadoAct);
       // quita el filtro ya utilizado
       unset($filtros['activas']);
     }
 
     // Se fija si se envio el filtro 'cerradas'
-    if (array_key_exists('cerradas', $filtros)) {
+    if (isset($originalRequest['filter']) &&  array_key_exists('cerradas', $filtros)) {
       $estados_query = $this->estado_onsite_repository->getEstadosByCerradosByUserCompany($filtros['cerradas']);
-      $query->whereIn('id_estado', $estados_query->get()->modelKeys());
+      $resultEstado = $estados_query->get()->modelKeys();
+      $resultEstado = !is_array($resultEstado) ? [$resultEstado] : $resultEstado;
+      $query->whereIn('id_estado', $resultEstado);
       // quita el filtro ya utilizado
       unset($filtros['cerradas']);
+    }
+
+    if (isset($originalRequest['datefrom'])) {
+        $raw = $originalRequest['datefrom'];
+        $dateFrom = Carbon::parse($raw);
+
+        if (!str_contains($raw, ':')) {
+            $dateFrom->startOfDay();
+        }
+
+        $query->where('fecha_cerrado', '>=', $dateFrom->format('Y-m-d H:i:s'));
+    }
+
+    if (isset($originalRequest['dateto'])) {
+        $raw = $originalRequest['dateto'];
+        $dateTo = Carbon::parse($raw);
+
+        if (!str_contains($raw, ':')) {
+            $dateTo->endOfDay();
+        }
+
+        $query->where('fecha_cerrado', '<=', $dateTo->format('Y-m-d H:i:s'));
+    }
+
+    if (isset($originalRequest['id_estado'])) {
+
+        if(is_array($originalRequest['id_estado'])){
+          $query->whereIn('id_estado', $originalRequest['id_estado']);
+        }elseif(is_numeric($originalRequest['id_estado'])){
+          $query->where('id_estado', $originalRequest['id_estado']);
+        }
     }
 
     if ($filtros) {
@@ -55,6 +91,7 @@ class ReparacionOnsiteRepository
       }
     }
 
+    
     $query->with('historial_estados_onsite.usuario');
     $query->with('sucursal_onsite.sistemas_onsite.unidades_exteriores.imagenes_unidad_exterior');
     $query->with('sucursal_onsite.sistemas_onsite.unidades_interiores.imagenes_unidad_interior');
