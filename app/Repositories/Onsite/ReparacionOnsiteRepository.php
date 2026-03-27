@@ -27,7 +27,7 @@ class ReparacionOnsiteRepository
   public function filtrar($filtros,$originalRequest=[])
   {
 
-    $query = ReparacionOnsite::where('company_id', 1)
+    $query = ReparacionOnsite::where('company_id',  Auth::user()->companies->first()->id)
       ->where('created_at', '>', '2025-01-01');
 
     // Se fija si se envio el filtro 'activas'
